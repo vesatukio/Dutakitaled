@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LED sparepart bahanAluminium - Dutakita</title>
+<title>LED Aluminium - Dutakita</title>
 
 <style>
 body{
   margin:0;
   font-family: Arial, sans-serif;
   background:#f4f6f8;
-  color:#222;
 }
 
 header{
@@ -25,16 +24,6 @@ header{
   text-align:center;
 }
 
-.badge{
-  background:#ff3b3b;
-  color:white;
-  display:inline-block;
-  padding:5px 10px;
-  border-radius:5px;
-  font-size:13px;
-  margin-top:10px;
-}
-
 .card{
   background:white;
   margin:10px auto;
@@ -45,10 +34,28 @@ header{
   text-align:left;
 }
 
+img{
+  width:100%;
+  border-radius:8px;
+  cursor:zoom-in;
+}
+
 .price{
   font-weight:bold;
   color:#e91e63;
   font-size:18px;
+}
+
+.qty{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:10px;
+}
+
+button{
+  padding:5px 10px;
+  font-size:16px;
 }
 
 .btn{
@@ -63,16 +70,33 @@ header{
   font-weight:bold;
 }
 
-.info{
-  font-size:14px;
-  color:#555;
+#cart{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#fff;
+  padding:10px;
+  box-shadow:0 -2px 10px rgba(0,0,0,0.2);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
-.footer{
-  text-align:center;
-  padding:20px;
-  font-size:14px;
-  color:#666;
+.zoom{
+  position:fixed;
+  top:0;left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.9);
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+
+.zoom img{
+  max-width:90%;
+  max-height:90%;
 }
 </style>
 </head>
@@ -80,79 +104,86 @@ header{
 <body>
 
 <header>
-  <h2>LED Aluminium Hemat Energi 💡</h2>
-  <p>Kuat • Terang • Tahan Lama</p>
-  <div class="badge">🔥 COD & Bisa Kirim Seluruh Indonesia</div>
+  <h2>LED Aluminium 💡</h2>
+  <p>COD • Kirim Seluruh Indonesia</p>
 </header>
 
 <div class="container">
 
-  <div class="card">
-    <h3>LED 5W</h3>
-    <p class="price">Rp3.000</p>
-  </div>
+<!-- PRODUK -->
+<div class="card">
+  <img src="https://i.imgur.com/8Km9tLL.jpg" onclick="zoom(this.src)">
+  <h3>LED 5W</h3>
+  <p class="price">Rp3.000</p>
 
-  <div class="card">
-    <h3>LED 7W</h3>
-    <p class="price">Rp3.750</p>
+  <div class="qty">
+    <button onclick="minus('p1')">-</button>
+    <span id="p1">0</span>
+    <button onclick="plus('p1',3000)">+</button>
   </div>
+</div>
 
-  <div class="card">
-    <h3>LED 9W</h3>
-    <p class="price">Rp4.250</p>
+<div class="card">
+  <img src="https://i.imgur.com/8Km9tLL.jpg" onclick="zoom(this.src)">
+  <h3>LED 12W</h3>
+  <p class="price">Rp6.000</p>
+
+  <div class="qty">
+    <button onclick="minus('p2')">-</button>
+    <span id="p2">0</span>
+    <button onclick="plus('p2',6000)">+</button>
   </div>
-
-  <div class="card">
-    <h3>LED 12W</h3>
-    <p class="price">Rp6.000</p>
-  </div>
-
-  <div class="card">
-    <h3>LED 15W</h3>
-    <p class="price">Rp6.500</p>
-  </div>
-
-  <div class="card">
-    <h3>LED 18W</h3>
-    <p class="price">Rp8.000</p>
-  </div>
-
-  <div class="card">
-    <h3>LED 24W</h3>
-    <p class="price">Rp11.000</p>
-  </div>
-
-  <div class="card">
-    <h3>LED 30W</h3>
-    <p class="price">Rp15.000</p>
-  </div>
-
-  <div class="card">
-    <h3>LED 40W</h3>
-    <p class="price">Rp17.000</p>
-  </div>
-
-  <div class="card">
-    <h3>LED 50W</h3>
-    <p class="price">Rp19.000</p>
-  </div>
-
-  <div class="card">
-    <h3>📍 Lokasi</h3>
-    <p class="info">
-      Subah, Kabupaten Batang, Jawa Tengah<br>
-      🚚 Bisa kirim seluruh Indonesia<br>
-      💰 COD (Bayar setelah barang diterima)
-    </p>
-
-    <a class="btn" href="https://wa.me/6288224166270?text=Halo kak, saya mau order LED Aluminium">CHAT WHATSAPP</a>
-  </div>
+</div>
 
 </div>
 
-<div class="footer">
-  © Duta Terang LED
+<!-- CART MELAYANG -->
+<div id="cart">
+  <div>Total: Rp <span id="total">0</span></div>
+  <a id="wa" class="btn" href="#">Order WA</a>
 </div>
+
+<!-- ZOOM -->
+<div class="zoom" id="zoomBox" onclick="this.style.display='none'">
+  <img id="zoomImg">
+</div>
+
+<script>
+let total = 0;
+let order = {};
+
+function plus(id, price){
+  order[id] = (order[id] || 0) + 1;
+  document.getElementById(id).innerText = order[id];
+  total += price;
+  update();
+}
+
+function minus(id){
+  if(order[id] > 0){
+    order[id]--;
+    document.getElementById(id).innerText = order[id];
+    total -= (id=="p1"?3000:6000);
+    update();
+  }
+}
+
+function update(){
+  document.getElementById("total").innerText = total;
+
+  let text = "Halo kak, saya mau order:%0A";
+  if(order["p1"]) text += "LED 5W x "+order["p1"]+"%0A";
+  if(order["p2"]) text += "LED 12W x "+order["p2"]+"%0A";
+
+  document.getElementById("wa").href =
+  "https://wa.me/6288224166270?text="+text;
+}
+
+function zoom(src){
+  document.getElementById("zoomImg").src = src;
+  document.getElementById("zoomBox").style.display="flex";
+}
+</script>
 
 </body>
 </html>
