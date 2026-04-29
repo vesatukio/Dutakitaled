@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Duta Terang LED</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  margin:0;
+  background:#f6f6f6;
+  color:#222;
+}
+
+header{
+  background:#00bcd4;
+  color:white;
+  text-align:center;
+  padding:15px;
+}
+
+.container{
+  padding:10px;
+  text-align:center;
+}
+
+.card{
+  background:white;
+  margin:10px auto;
+  padding:10px;
+  border-radius:8px;
+  max-width:300px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.btn{
+  display:block;
+  background:#25D366;
+  color:white;
+  padding:10px;
+  margin-top:8px;
+  text-decoration:none;
+  border-radius:5px;
+}
+
+.price{
+  color:red;
+  font-weight:bold;
+}
+
+.small{
+  font-size:13px;
+  color:#666;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>Duta Terang LED 💡</h2>
+  <p>Lampu Hemat & Terang</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h3>Lampu LED 5W</h3>
+    <p class="small">Hemat listrik, cocok kamar</p>
+    <p class="price">Rp10.000</p>
+    <a class="btn" href="https://wa.me/6288224166270?text=Saya mau Lampu LED 5W">Order</a>
+  </div>
+
+  <div class="card">
+    <h3>Lampu LED 12W</h3>
+    <p class="small">Terang maksimal</p>
+    <p class="price">Rp15.000</p>
+    <a class="btn" href="https://wa.me/6288224166270?text=Saya mau Lampu LED 12W">Order</a>
+  </div>
+
+  <div class="card">
+    <h3>Lampu 18W</h3>
+    <p class="small">Super terang</p>
+    <p class="price">Rp25.000</p>
+    <a class="btn" href="https://wa.me/6288224166270?text=Saya mau Lampu 18W">Order</a>
+  </div>
+
+</div>
+
+</body>
+</html>
