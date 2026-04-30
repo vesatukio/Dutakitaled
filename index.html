@@ -207,12 +207,12 @@ function render(){
   produk.forEach(p => {
 
     let hargaDiskon = p.harga - (p.harga * (p.diskon || 0) / 100);
-    let habis = p.stok <= 0;
+    let habis = Number(p.stok) <= 0;
     let img = (p.gambar && p.gambar.includes("http")) ? p.gambar : "https://i.imgur.com/8Km9tLL.jpg";
-    let kategori = (p.kategori || '').toLowerCase().trim();
+    let kategori = mapKategori(p.kategori);
 
     html += `
-    <div class="card" data-cat="${kategori || 'all'}">
+    <div class="card" data-cat="${kategori}">
       ${p.diskon > 0 ? `<div class="discount">-${p.diskon}%</div>` : ""}
       ${habis ? `<div class="habis">HABIS</div>` : ""}
 
@@ -238,7 +238,7 @@ function render(){
 
   document.getElementById("list").innerHTML = html;
 }
-
+if(!p.nama || !p.harga) return;
 function plus(id, price, name, stok){
 
   if(!order[id]){
@@ -288,10 +288,10 @@ function update(){
 function filter(cat, btn){
 
   document.querySelectorAll(".card").forEach(c=>{
-    const cardCat = (c.dataset.cat || '').toLowerCase().trim();
+    const cardCat = (c.dataset.cat || '').trim();
 
     c.style.display =
-      (cat === "all" || cardCat.includes(cat)) ? "flex" : "none";
+      (cat === "all" || cardCat === cat) ? "flex" : "none";
   });
 
   document.querySelectorAll(".category button").forEach(b=>{
@@ -307,7 +307,15 @@ function zoom(src){
 }
 
 load();
+function mapKategori(k){
+  k = Number(k);
 
+  if(k === 10 || k === 5) return "led";
+  if(k === 3 || k === 100 || k === 0) return "alat";
+  if(k === 2) return "casing";
+
+  return "lain";
+}
 </script>
 
 </body>
