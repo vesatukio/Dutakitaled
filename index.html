@@ -259,10 +259,27 @@ function render(){
         }
 
         <div class="qty">
-          <button onclick="minus('${p.id}')" ${habis?'disabled':''}>-</button>
-          <span id="${p.id}">0</span>
-          <button onclick="plus('${p.id}',${hargaDiskon},'${p.nama}',${p.stok})" ${habis?'disabled':''}>+</button>
-        </div>
+  <button onclick="minus('${p.id}')" ${habis?'disabled':''}>-</button>
+
+  <input 
+    type="number"
+    id="input-${p.id}"
+    value="0"
+    min="0"
+    max="${p.stok}"
+    style="
+      width:45px;
+      text-align:center;
+      border:1px solid #ddd;
+      border-radius:6px;
+      font-size:12px;
+      padding:2px;
+    "
+    onchange="manualSet('${p.id}',${hargaDiskon},'${p.nama}',${p.stok},this.value)"
+  >
+
+  <button onclick="plus('${p.id}',${hargaDiskon},'${p.nama}',${p.stok})" ${habis?'disabled':''}>+</button>
+</div>
       </div>
     </div>`;
   });
@@ -283,6 +300,8 @@ function plus(id, price, name, stok){
   document.getElementById(id).innerText = order[id].qty;
 
   total += price;
+   // 👇 INI YANG KAMU TANYA (TARUH DI SINI)
+  document.getElementById("input-"+id).value = order[id].qty;
   update();
 }
 
@@ -297,7 +316,26 @@ function minus(id){
     update();
   }
 }
+function manualSet(id, price, name, stok, val){
 
+  let qty = parseInt(val) || 0;
+
+  if(qty < 0) qty = 0;
+  if(qty > stok) qty = stok;
+
+  if(!order[id]){
+    order[id] = {qty:0,name,price};
+  }
+
+  // hitung selisih biar total tidak rusak
+  let diff = qty - order[id].qty;
+
+  order[id].qty = qty;
+
+  total += diff * price;
+document.getElementById("input-"+id).value = order[id].qty;
+  update();
+}
 /* UPDATE CART */
 function update(){
 
