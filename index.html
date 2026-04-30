@@ -17,8 +17,7 @@ header{
   background:#00bcd4;
   color:white;
   text-align:center;
-  padding:8px;
-  font-size:14px;
+  padding:10px;
 }
 
 /* KATEGORI */
@@ -62,16 +61,27 @@ header{
   padding:10px;
   border-radius:10px;
   box-shadow:0 2px 8px rgba(0,0,0,0.1);
-  align-items:center;
   position:relative;
 }
 
-/* DISKON STICKER */
+/* DISKON */
 .discount{
   position:absolute;
   top:5px;
   right:5px;
   background:red;
+  color:white;
+  font-size:10px;
+  padding:3px 6px;
+  border-radius:5px;
+}
+
+/* HABIS */
+.habis{
+  position:absolute;
+  top:5px;
+  left:5px;
+  background:black;
   color:white;
   font-size:10px;
   padding:3px 6px;
@@ -102,8 +112,8 @@ header{
 /* QTY */
 .qty{
   display:flex;
-  gap:8px;
   align-items:center;
+  gap:6px;
 }
 
 /* CART */
@@ -154,83 +164,13 @@ COD • Seluruh Indonesia
 
 <!-- KATEGORI -->
 <div class="category">
-  <button class="active" onclick="filter('all', this)">Semua</button>
-  <button onclick="filter('led', this)">LED</button>
-  <button onclick="filter('alat', this)">Alat</button>
-  <button onclick="filter('casing', this)">Casing</button>
+  <button class="active" onclick="filter('all',this)">Semua</button>
+  <button onclick="filter('led',this)">LED</button>
+  <button onclick="filter('alat',this)">Alat</button>
+  <button onclick="filter('casing',this)">Casing</button>
 </div>
 
-<div class="container">
-
-<!-- LED 5W (DISKON) -->
-<div class="card" data-cat="led">
-  <div class="discount">-50%</div>
-  <img src="https://i.imgur.com/8Km9tLL.jpg" onclick="zoom(this.src)">
-  <div>
-    <b>LED 5W</b><br>
-    <span class="price-old">Rp6.000</span><br>
-    <span class="price-new">Rp3.000</span>
-
-    <div class="qty">
-      <button onclick="minus('p1')">-</button>
-      <span id="p1">0</span>
-      <button onclick="plus('p1',3000,'LED 5W')">+</button>
-    </div>
-  </div>
-</div>
-
-<!-- LED 7W -->
-<div class="card" data-cat="led">
-  <div class="discount">-50%</div>
-  <img src="https://i.imgur.com/8Km9tLL.jpg" onclick="zoom(this.src)">
-  <div>
-    <b>LED 7W</b><br>
-    <span class="price-old">Rp7.500</span><br>
-    <span class="price-new">Rp3.750</span>
-
-    <div class="qty">
-      <button onclick="minus('p2')">-</button>
-      <span id="p2">0</span>
-      <button onclick="plus('p2',3750,'LED 7W')">+</button>
-    </div>
-  </div>
-</div>
-
-<!-- ALAT -->
-<div class="card" data-cat="alat">
-  <div class="discount">-50%</div>
-  <img src="https://i.imgur.com/8Km9tLL.jpg" onclick="zoom(this.src)">
-  <div>
-    <b>Test Pen</b><br>
-    <span class="price-old">Rp10.000</span><br>
-    <span class="price-new">Rp5.000</span>
-
-    <div class="qty">
-      <button onclick="minus('p3')">-</button>
-      <span id="p3">0</span>
-      <button onclick="plus('p3',5000,'Test Pen')">+</button>
-    </div>
-  </div>
-</div>
-
-<!-- CASING -->
-<div class="card" data-cat="casing">
-  <div class="discount">-50%</div>
-  <img src="https://i.imgur.com/8Km9tLL.jpg" onclick="zoom(this.src)">
-  <div>
-    <b>Casing LED</b><br>
-    <span class="price-old">Rp5.000</span><br>
-    <span class="price-new">Rp2.500</span>
-
-    <div class="qty">
-      <button onclick="minus('p4')">-</button>
-      <span id="p4">0</span>
-      <button onclick="plus('p4',2500,'Casing LED')">+</button>
-    </div>
-  </div>
-</div>
-
-</div>
+<div class="container" id="list"></div>
 
 <!-- CART -->
 <div id="cart">
@@ -247,63 +187,124 @@ COD • Seluruh Indonesia
 </div>
 
 <script>
-let total=0;
-let order={};
 
-function plus(id, price, name){
-  order[id]=order[id]||{qty:0,name,price};
+const API_URL = "PASTE_URL_APPS_SCRIPT_KAMU";
+
+let produk = [];
+let order = {};
+let total = 0;
+
+async function load(){
+  const res = await fetch(API_URL);
+  produk = await res.json();
+  render();
+}
+
+function render(){
+
+  let html = "";
+
+  produk.forEach(p=>{
+
+    let hargaDiskon = p.harga - (p.harga * (p.diskon||0)/100);
+    let habis = p.stok <= 0;
+
+    html += `
+    <div class="card" data-cat="${p.kategori}">
+
+      ${p.diskon ? `<div class="discount">-${p.diskon}%</div>` : ""}
+
+      ${habis ? `<div class="habis">HABIS</div>` : ""}
+
+      <img src="${p.gambar}" onclick="zoom(this.src)">
+
+      <div>
+        <b>${p.nama}</b><br>
+
+        ${p.diskon ?
+        `<span class="price-old">Rp${p.harga}</span><br>
+         <span class="price-new">Rp${hargaDiskon}</span>` :
+        `<span class="price-new">Rp${p.harga}</span>`}
+
+        <div class="qty">
+          <button onclick="minus('${p.id}')" ${habis?'disabled':''}>-</button>
+          <span id="${p.id}">0</span>
+          <button onclick="plus('${p.id}',${hargaDiskon},'${p.nama}',${p.stok})" ${habis?'disabled':''}>+</button>
+        </div>
+
+      </div>
+    </div>`;
+  });
+
+  document.getElementById("list").innerHTML = html;
+}
+
+function plus(id, price, name, stok){
+
+  order[id] = order[id] || {qty:0,name,price,stok};
+
+  if(order[id].qty >= stok) return;
+
   order[id].qty++;
-  document.getElementById(id).innerText=order[id].qty;
-  total+=price;
+  document.getElementById(id).innerText = order[id].qty;
+
+  total += price;
   update();
 }
 
 function minus(id){
-  if(order[id]?.qty>0){
+
+  if(order[id]?.qty > 0){
     order[id].qty--;
-    document.getElementById(id).innerText=order[id].qty;
-    total-=order[id].price;
+    document.getElementById(id).innerText = order[id].qty;
+    total -= order[id].price;
     update();
   }
 }
 
 function update(){
-  document.getElementById("total").innerText=total;
 
-  let text="Halo kak, saya mau order:%0A";
-  let summary="";
+  document.getElementById("total").innerText = total;
+
+  let text = "Halo kak, saya mau order:%0A";
+  let summary = "";
 
   for(let k in order){
-    if(order[k].qty>0){
-      text+="- "+order[k].name+" x "+order[k].qty+"%0A";
-      summary+=order[k].name+" x"+order[k].qty+", ";
+    if(order[k].qty > 0){
+      text += "- " + order[k].name + " x " + order[k].qty + "%0A";
+      summary += order[k].name + " x" + order[k].qty + ", ";
     }
   }
 
-  document.getElementById("summary").innerText=
-  summary||"Belum ada order";
+  document.getElementById("summary").innerText =
+  summary || "Belum ada order";
 
-  document.getElementById("wa").href=
-  "https://wa.me/6288224166270?text="+text;
+  document.getElementById("wa").href =
+  "https://wa.me/6288224166270?text=" + text;
 }
 
-/* FILTER KATEGORI */
+/* FILTER */
 function filter(cat, btn){
-  document.querySelectorAll(".card").forEach(el=>{
-    el.style.display=(cat==="all"||el.dataset.cat===cat)?"flex":"none";
+
+  document.querySelectorAll(".card").forEach(c=>{
+    c.style.display = (cat==="all" || c.dataset.cat===cat) ? "flex" : "none";
   });
 
   document.querySelectorAll(".category button").forEach(b=>{
     b.classList.remove("active");
   });
+
   btn.classList.add("active");
 }
 
 /* ZOOM */
 function zoom(src){
-  document.getElementById("zoomImg").src=src;
-  document.getElementById("zoom").style.display="flex";
+  document.getElementById("zoomImg").src = src;
+  document.getElementById("zoom").style.display = "flex";
 }
+
+load();
+
 </script>
 
 </body>
