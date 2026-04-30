@@ -209,10 +209,10 @@ function render(){
     let hargaDiskon = p.harga - (p.harga * (p.diskon || 0) / 100);
     let habis = p.stok <= 0;
     let img = (p.gambar && p.gambar.includes("http")) ? p.gambar : "https://i.imgur.com/8Km9tLL.jpg";
-    let kategori = (p.kategori || '').toLowerCase();
+    let kategori = (p.kategori || '').toLowerCase().trim();
 
     html += `
-    <div class="card" data-cat="${kategori}">
+    <div class="card" data-cat="${kategori || 'all'}">
       ${p.diskon > 0 ? `<div class="discount">-${p.diskon}%</div>` : ""}
       ${habis ? `<div class="habis">HABIS</div>` : ""}
 
@@ -288,7 +288,10 @@ function update(){
 function filter(cat, btn){
 
   document.querySelectorAll(".card").forEach(c=>{
-    c.style.display = (cat === "all" || c.dataset.cat === cat) ? "flex" : "none";
+    const cardCat = (c.dataset.cat || '').toLowerCase().trim();
+
+    c.style.display =
+      (cat === "all" || cardCat.includes(cat)) ? "flex" : "none";
   });
 
   document.querySelectorAll(".category button").forEach(b=>{
