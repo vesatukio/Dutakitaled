@@ -106,6 +106,31 @@ header{
 }
 
 #zoom img{width:100%;height:100%;object-fit:contain}
+  /* FLOATING CART */
+#cart{
+  position:fixed;
+  bottom:10px;
+  left:10px;
+  right:10px;
+  background:#fff;
+  padding:10px;
+  border-radius:12px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.2);
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  transition:0.3s;
+  z-index:999;
+}
+
+/* HIDE STATE */
+#cart.hide{
+  transform:translateY(120%);
+  opacity:0;
+  pointer-events:none;
+}
 </style>
 </head>
 
@@ -125,12 +150,41 @@ COD • Seluruh Indonesia
 
 <div class="container" id="list"></div>
 
-<div id="cart">
-  <div>
-    Total: Rp <span id="total">0</span><br>
+<div id="cart" class="hide">
+
+  <!-- KIRI -->
+  <div style="display:flex;flex-direction:column;gap:4px;">
+    <button onclick="resetCart()" style="
+      background:#e91e63;color:#fff;border:none;
+      padding:6px 10px;border-radius:6px;
+      font-size:12px;cursor:pointer;
+    ">
+      Reset
+    </button>
+
     <small id="summary">Belum ada order</small>
   </div>
-  <a id="wa">Checkout WA</a>
+
+  <!-- KANAN -->
+  <div style="text-align:right;">
+    <div style="font-weight:bold;color:#00bcd4;">
+      Rp <span id="total">0</span>
+    </div>
+
+    <a id="wa" style="
+      display:inline-block;
+      margin-top:6px;
+      background:#25D366;
+      color:#fff;
+      padding:6px 10px;
+      border-radius:6px;
+      text-decoration:none;
+      font-size:12px;
+    ">
+      WA
+    </a>
+  </div>
+
 </div>
 
 <div id="zoom" onclick="this.style.display='none'">
@@ -241,11 +295,17 @@ function update(){
 
   document.getElementById("total").innerText = total;
 
+  const cart = document.getElementById("cart");
+
+  /* AUTO SHOW / HIDE */
+  let hasItem = false;
+
   let text = "Halo kak, saya mau order:%0A";
   let summary = "";
 
   for(let k in order){
     if(order[k].qty > 0){
+      hasItem = true;
       text += "- "+order[k].name+" x "+order[k].qty+"%0A";
       summary += order[k].name+" x"+order[k].qty+", ";
     }
@@ -256,6 +316,13 @@ function update(){
 
   document.getElementById("wa").href =
     "https://wa.me/6288224166270?text="+text;
+
+  /* SHOW / HIDE CART */
+  if(hasItem){
+    cart.classList.remove("hide");
+  }else{
+    cart.classList.add("hide");
+  }
 }
 
 /* FILTER */
@@ -280,7 +347,17 @@ function zoom(src){
 }
 
 load();
+function resetCart(){
 
+  order = {};
+  total = 0;
+
+  document.querySelectorAll(".qty span").forEach(el=>{
+    el.innerText = "0";
+  });
+
+  update();
+}
 </script>
 
 </body>
