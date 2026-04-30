@@ -131,14 +131,62 @@ header{
   opacity:0;
   pointer-events:none;
 }
+  header{
+  background:#00bcd4;
+  color:#fff;
+  text-align:center;
+  padding:10px;
+  position:relative;
+  overflow:hidden;
+}
+
+/* efek gelombang hidup */
+header::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-50%;
+  width:200%;
+  height:100%;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,0.25),transparent);
+  animation:shine 3s infinite;
+}
+
+@keyframes shine{
+  0%{transform:translateX(-100%);}
+  100%{transform:translateX(100%);}
+}
+
+/* teks header naik turun halus */
+header b{
+  display:inline-block;
+  animation:bounce 2.5s infinite ease-in-out;
+}
+
+@keyframes bounce{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-2px);}
+}
+
+/* subtitle COD */
+header small{
+  display:block;
+  opacity:0.9;
+  animation:fade 3s infinite;
+}
+
+@keyframes fade{
+  0%,100%{opacity:0.6;}
+  50%{opacity:1;}
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<b>Duta Terang LED</b><br>
-COD • Seluruh Indonesia
+  <b>Duta Terang LED</b><br>
+  <small>COD • Seluruh Indonesia ⚡ Fast Response</small>
 </header>
 
 <div class="category">
