@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LED Aluminium - Duta Terang</title>
+<title>Duta Terang LED</title>
 
 <style>
 body{
   margin:0;
-  font-family: Arial, sans-serif;
+  font-family: Arial;
   background:#f5f6f8;
 }
 
-/* HEADER DIPERKECIL */
+/* HEADER */
 header{
   background:#00bcd4;
   color:white;
@@ -24,21 +24,26 @@ header{
 /* KATEGORI */
 .category{
   display:flex;
-  justify-content:space-around;
-  background:white;
+  gap:6px;
   padding:8px;
+  background:white;
   position:sticky;
   top:0;
   z-index:10;
-  box-shadow:0 2px 5px rgba(0,0,0,0.1);
 }
 
 .category button{
   border:none;
-  background:#f0f0f0;
   padding:6px 10px;
   border-radius:6px;
+  background:#eee;
   font-size:12px;
+  cursor:pointer;
+}
+
+.category button.active{
+  background:#00bcd4;
+  color:white;
 }
 
 /* CONTAINER */
@@ -48,7 +53,7 @@ header{
   margin:auto;
 }
 
-/* PRODUCT */
+/* CARD */
 .card{
   background:white;
   display:flex;
@@ -58,8 +63,22 @@ header{
   border-radius:10px;
   box-shadow:0 2px 8px rgba(0,0,0,0.1);
   align-items:center;
+  position:relative;
 }
 
+/* DISKON STICKER */
+.discount{
+  position:absolute;
+  top:5px;
+  right:5px;
+  background:red;
+  color:white;
+  font-size:10px;
+  padding:3px 6px;
+  border-radius:5px;
+}
+
+/* IMAGE */
 .card img{
   width:70px;
   height:70px;
@@ -68,9 +87,14 @@ header{
   cursor:zoom-in;
 }
 
-.info{ flex:1; }
+/* PRICE */
+.price-old{
+  text-decoration:line-through;
+  color:#999;
+  font-size:12px;
+}
 
-.price{
+.price-new{
   color:#e91e63;
   font-weight:bold;
 }
@@ -78,15 +102,11 @@ header{
 /* QTY */
 .qty{
   display:flex;
-  align-items:center;
   gap:8px;
+  align-items:center;
 }
 
-.qty button{
-  padding:5px 10px;
-}
-
-/* FLOAT CART */
+/* CART */
 #cart{
   position:fixed;
   bottom:0;
@@ -97,35 +117,29 @@ header{
   box-shadow:0 -2px 10px rgba(0,0,0,0.2);
   display:flex;
   justify-content:space-between;
-  align-items:center;
 }
 
 #wa{
   background:#25D366;
   color:white;
   padding:10px;
-  text-decoration:none;
   border-radius:6px;
-  font-weight:bold;
+  text-decoration:none;
 }
 
 /* ZOOM */
 #zoom{
   position:fixed;
-  top:0;
-  left:0;
-  width:100vw;
-  height:100vh;
-  background:rgba(0,0,0,0.95);
+  inset:0;
+  background:rgba(0,0,0,0.9);
   display:none;
   justify-content:center;
   align-items:center;
-  z-index:9999;
 }
 
 #zoom img{
-  width:100vw;
-  height:100vh;
+  width:100%;
+  height:100%;
   object-fit:contain;
 }
 </style>
@@ -134,25 +148,29 @@ header{
 <body>
 
 <header>
-  <b>Duta Terang LED</b><br>
-  COD • Kirim Seluruh Indonesia
+<b>Duta Terang LED</b><br>
+COD • Seluruh Indonesia
 </header>
 
 <!-- KATEGORI -->
 <div class="category">
-  <button>LED</button>
-  <button>Alat</button>
-  <button>Casing</button>
+  <button class="active" onclick="filter('all', this)">Semua</button>
+  <button onclick="filter('led', this)">LED</button>
+  <button onclick="filter('alat', this)">Alat</button>
+  <button onclick="filter('casing', this)">Casing</button>
 </div>
 
 <div class="container">
 
-<!-- LED -->
-<div class="card">
+<!-- LED 5W (DISKON) -->
+<div class="card" data-cat="led">
+  <div class="discount">-50%</div>
   <img src="https://i.imgur.com/8Km9tLL.jpg" onclick="zoom(this.src)">
-  <div class="info">
+  <div>
     <b>LED 5W</b><br>
-    <span class="price">Rp3.000</span>
+    <span class="price-old">Rp6.000</span><br>
+    <span class="price-new">Rp3.000</span>
+
     <div class="qty">
       <button onclick="minus('p1')">-</button>
       <span id="p1">0</span>
@@ -161,11 +179,15 @@ header{
   </div>
 </div>
 
-<div class="card">
+<!-- LED 7W -->
+<div class="card" data-cat="led">
+  <div class="discount">-50%</div>
   <img src="https://i.imgur.com/8Km9tLL.jpg" onclick="zoom(this.src)">
-  <div class="info">
+  <div>
     <b>LED 7W</b><br>
-    <span class="price">Rp3.750</span>
+    <span class="price-old">Rp7.500</span><br>
+    <span class="price-new">Rp3.750</span>
+
     <div class="qty">
       <button onclick="minus('p2')">-</button>
       <span id="p2">0</span>
@@ -174,57 +196,49 @@ header{
   </div>
 </div>
 
-<div class="card">
+<!-- ALAT -->
+<div class="card" data-cat="alat">
+  <div class="discount">-50%</div>
   <img src="https://i.imgur.com/8Km9tLL.jpg" onclick="zoom(this.src)">
-  <div class="info">
-    <b>LED 12W</b><br>
-    <span class="price">Rp6.000</span>
+  <div>
+    <b>Test Pen</b><br>
+    <span class="price-old">Rp10.000</span><br>
+    <span class="price-new">Rp5.000</span>
+
     <div class="qty">
       <button onclick="minus('p3')">-</button>
       <span id="p3">0</span>
-      <button onclick="plus('p3',6000,'LED 12W')">+</button>
-    </div>
-  </div>
-</div>
-
-<!-- ALAT -->
-<div class="card">
-  <img src="https://i.imgur.com/8Km9tLL.jpg" onclick="zoom(this.src)">
-  <div class="info">
-    <b>Test Pen Listrik</b><br>
-    <span class="price">Rp5.000</span>
-    <div class="qty">
-      <button onclick="minus('p4')">-</button>
-      <span id="p4">0</span>
-      <button onclick="plus('p4',5000,'Test Pen')">+</button>
+      <button onclick="plus('p3',5000,'Test Pen')">+</button>
     </div>
   </div>
 </div>
 
 <!-- CASING -->
-<div class="card">
+<div class="card" data-cat="casing">
+  <div class="discount">-50%</div>
   <img src="https://i.imgur.com/8Km9tLL.jpg" onclick="zoom(this.src)">
-  <div class="info">
-    <b>Casing Lampu 5W</b><br>
-    <span class="price">Rp2.500</span>
+  <div>
+    <b>Casing LED</b><br>
+    <span class="price-old">Rp5.000</span><br>
+    <span class="price-new">Rp2.500</span>
+
     <div class="qty">
-      <button onclick="minus('p5')">-</button>
-      <span id="p5">0</span>
-      <button onclick="plus('p5',2500,'Casing 5W')">+</button>
+      <button onclick="minus('p4')">-</button>
+      <span id="p4">0</span>
+      <button onclick="plus('p4',2500,'Casing LED')">+</button>
     </div>
   </div>
 </div>
 
 </div>
 
-<!-- FLOAT CART -->
+<!-- CART -->
 <div id="cart">
   <div>
     Total: Rp <span id="total">0</span><br>
     <small id="summary">Belum ada order</small>
   </div>
-
-  <a id="wa" href="#">Checkout WA</a>
+  <a id="wa">Checkout WA</a>
 </div>
 
 <!-- ZOOM -->
@@ -233,51 +247,62 @@ header{
 </div>
 
 <script>
-let total = 0;
-let order = {};
+let total=0;
+let order={};
 
 function plus(id, price, name){
-  order[id] = order[id] || {qty:0, name:name, price:price};
+  order[id]=order[id]||{qty:0,name,price};
   order[id].qty++;
-
-  document.getElementById(id).innerText = order[id].qty;
-  total += price;
+  document.getElementById(id).innerText=order[id].qty;
+  total+=price;
   update();
 }
 
 function minus(id){
-  if(order[id] && order[id].qty > 0){
+  if(order[id]?.qty>0){
     order[id].qty--;
-    document.getElementById(id).innerText = order[id].qty;
-    total -= order[id].price;
+    document.getElementById(id).innerText=order[id].qty;
+    total-=order[id].price;
     update();
   }
 }
 
 function update(){
-  document.getElementById("total").innerText = total;
+  document.getElementById("total").innerText=total;
 
-  let text = "Halo kak, saya mau order:%0A";
-  let summary = "";
+  let text="Halo kak, saya mau order:%0A";
+  let summary="";
 
   for(let k in order){
-    if(order[k].qty > 0){
-      text += "- " + order[k].name + " x " + order[k].qty + "%0A";
-      summary += order[k].name + " x" + order[k].qty + ", ";
+    if(order[k].qty>0){
+      text+="- "+order[k].name+" x "+order[k].qty+"%0A";
+      summary+=order[k].name+" x"+order[k].qty+", ";
     }
   }
 
-  if(summary=="") summary="Belum ada order";
+  document.getElementById("summary").innerText=
+  summary||"Belum ada order";
 
-  document.getElementById("summary").innerText = summary;
-
-  document.getElementById("wa").href =
-  "https://wa.me/6288224166270?text=" + text;
+  document.getElementById("wa").href=
+  "https://wa.me/6288224166270?text="+text;
 }
 
+/* FILTER KATEGORI */
+function filter(cat, btn){
+  document.querySelectorAll(".card").forEach(el=>{
+    el.style.display=(cat==="all"||el.dataset.cat===cat)?"flex":"none";
+  });
+
+  document.querySelectorAll(".category button").forEach(b=>{
+    b.classList.remove("active");
+  });
+  btn.classList.add("active");
+}
+
+/* ZOOM */
 function zoom(src){
-  document.getElementById("zoomImg").src = src;
-  document.getElementById("zoom").style.display = "flex";
+  document.getElementById("zoomImg").src=src;
+  document.getElementById("zoom").style.display="flex";
 }
 </script>
 
