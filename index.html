@@ -147,17 +147,19 @@ function render(){
     let hargaDiskon = p.harga - (p.harga * (p.diskon || 0) / 100);
     let habis = Number(p.stok) <= 0;
 
-    // 🔥 FIX GAMBAR PALING AMAN
-    let img = "https://via.placeholder.com/100";
+  // 🔥 FIX GAMBAR PALING AMAN
+let img = "https://via.placeholder.com/100";
 
-    if (typeof p.gambar === "string") {
-      let clean = p.gambar.trim();
+try {
+  let clean = String(p.gambar || "").trim().replace(/"/g, "");
 
-      if (clean.startsWith("http")) {
-        img = clean;
-      }
-    }
-
+  // hanya terima url valid
+  if (clean.startsWith("http") && clean.match(/\.(jpg|jpeg|png|webp|gif)(\?|$)/i)) {
+    img = clean;
+  }
+} catch (e) {
+  img = "https://via.placeholder.com/100";
+}
     html += `
     <div class="card" data-cat="${kategori}">
       ${p.diskon > 0 ? `<div class="discount">-${p.diskon}%</div>` : ""}
