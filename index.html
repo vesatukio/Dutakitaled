@@ -151,12 +151,16 @@ console.log("DATA GAMBAR:", p.gambar);
 let img = "https://via.placeholder.com/100";
 
 try {
-  let clean = String(p.gambar || "").trim().replace(/"/g, "");
+  let raw = String(p.gambar || "").trim();
 
-  // hanya terima url valid
-  if (clean.startsWith("http") && clean.match(/\.(jpg|jpeg|png|webp|gif)(\?|$)/i)) {
-    img = clean;
+  // hanya terima image langsung
+  if (raw.match(/^https?:\/\/.*\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i)) {
+    img = raw;
   }
+
+} catch (e) {
+  img = "https://via.placeholder.com/100";
+}
 } catch (e) {
   img = "https://via.placeholder.com/100";
 }
