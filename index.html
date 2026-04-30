@@ -20,7 +20,7 @@ header{
   padding:10px;
 }
 
-/* KATEGORI */
+/* CATEGORY */
 .category{
   display:flex;
   gap:6px;
@@ -44,7 +44,6 @@ header{
   background:#00bcd4;
   color:white;
   font-weight:bold;
-  transform:scale(1.05);
 }
 
 /* CONTAINER */
@@ -198,28 +197,23 @@ async function load(){
   render();
 }
 
-function formatRupiah(angka){
-  return "Rp " + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+function formatRupiah(num){
+  return "Rp " + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
 function render(){
-
   let html = "";
 
-  produk.forEach(p=>{
+  produk.forEach(p => {
 
-    let hargaDiskon = p.harga - (p.harga * (p.diskon||0)/100);
+    let hargaDiskon = p.harga - (p.harga * (p.diskon || 0) / 100);
     let habis = p.stok <= 0;
-
-    let img = p.gambar && p.gambar.includes("http") 
-      ? p.gambar 
-      : "https://i.imgur.com/8Km9tLL.jpg";
+    let img = (p.gambar && p.gambar.includes("http")) ? p.gambar : "https://i.imgur.com/8Km9tLL.jpg";
+    let kategori = (p.kategori || '').toLowerCase();
 
     html += `
-    <div class="card" data-cat="${p.kategori}">
-
+    <div class="card" data-cat="${kategori}">
       ${p.diskon > 0 ? `<div class="discount">-${p.diskon}%</div>` : ""}
-
       ${habis ? `<div class="habis">HABIS</div>` : ""}
 
       <img src="${img}" onclick="zoom(this.src)">
@@ -228,16 +222,16 @@ function render(){
         <b>${p.nama}</b><br>
 
         ${p.diskon > 0 ?
-        `<span class="price-old">${formatRupiah(p.harga)}</span><br>
-         <span class="price-new">${formatRupiah(hargaDiskon)}</span>` :
-        `<span class="price-new">${formatRupiah(p.harga)}</span>`}
+          `<span class="price-old">${formatRupiah(p.harga)}</span><br>
+           <span class="price-new">${formatRupiah(hargaDiskon)}</span>` :
+          `<span class="price-new">${formatRupiah(p.harga)}</span>`
+        }
 
         <div class="qty">
           <button onclick="minus('${p.id}')" ${habis?'disabled':''}>-</button>
           <span id="${p.id}">0</span>
           <button onclick="plus('${p.id}',${hargaDiskon},'${p.nama}',${p.stok})" ${habis?'disabled':''}>+</button>
         </div>
-
       </div>
     </div>`;
   });
@@ -247,7 +241,9 @@ function render(){
 
 function plus(id, price, name, stok){
 
-  order[id] = order[id] || {qty:0,name,price,stok};
+  if(!order[id]){
+    order[id] = {qty:0,name,price,stok};
+  }
 
   if(order[id].qty >= stok) return;
 
@@ -260,7 +256,7 @@ function plus(id, price, name, stok){
 
 function minus(id){
 
-  if(order[id]?.qty > 0){
+  if(order[id] && order[id].qty > 0){
     order[id].qty--;
     document.getElementById(id).innerText = order[id].qty;
     total -= order[id].price;
@@ -283,16 +279,16 @@ function update(){
   }
 
   document.getElementById("summary").innerText =
-  summary || "Belum ada order";
+    summary || "Belum ada order";
 
   document.getElementById("wa").href =
-  "https://wa.me/6288224166270?text=" + text;
+    "https://wa.me/6288224166270?text=" + text;
 }
 
 function filter(cat, btn){
 
   document.querySelectorAll(".card").forEach(c=>{
-    c.style.display = (cat==="all" || c.dataset.cat===cat) ? "flex" : "none";
+    c.style.display = (cat === "all" || c.dataset.cat === cat) ? "flex" : "none";
   });
 
   document.querySelectorAll(".category button").forEach(b=>{
