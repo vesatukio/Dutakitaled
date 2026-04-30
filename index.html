@@ -140,44 +140,28 @@ header{
   overflow:hidden;
 }
 
-/* efek gelombang hidup */
-header::before{
-  content:"";
-  position:absolute;
-  top:0;
-  left:-50%;
-  width:200%;
-  height:100%;
-  background:linear-gradient(120deg,transparent,rgba(255,255,255,0.25),transparent);
-  animation:shine 3s infinite;
-}
-
-@keyframes shine{
-  0%{transform:translateX(-100%);}
-  100%{transform:translateX(100%);}
-}
-
-/* teks header naik turun halus */
-header b{
-  display:inline-block;
-  animation:bounce 2.5s infinite ease-in-out;
-}
-
-@keyframes bounce{
-  0%,100%{transform:translateY(0);}
-  50%{transform:translateY(-2px);}
-}
-
-/* subtitle COD */
-header small{
-  display:block;
+.running-text{
+  white-space:nowrap;
+  overflow:hidden;
+  font-size:12px;
   opacity:0.9;
-  animation:fade 3s infinite;
+  margin-top:4px;
+  position:relative;
 }
 
-@keyframes fade{
-  0%,100%{opacity:0.6;}
-  50%{opacity:1;}
+/* teks berjalan */
+.running-text{
+  display:inline-block;
+  animation:scrollText 12s linear infinite;
+}
+
+@keyframes scrollText{
+  0%{
+    transform:translateX(100%);
+  }
+  100%{
+    transform:translateX(-100%);
+  }
 }
 </style>
 </head>
@@ -186,7 +170,9 @@ header small{
 
 <header>
   <b>Duta Terang LED</b><br>
-  <small>COD • Seluruh Indonesia ⚡ Fast Response</small>
+  <div class="running-text">
+  COD • Seluruh Indonesia ⚡ Fast Response • Garansi Produk • Respon Cepat 24 Jam
+</div>
 </header>
 
 <div class="category">
