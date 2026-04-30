@@ -147,21 +147,28 @@ function render(){
     let hargaDiskon = p.harga - (p.harga * (p.diskon || 0) / 100);
     let habis = Number(p.stok) <= 0;
 
-    let img = (p.gambar && p.gambar.startsWith("http"))
-      ? p.gambar
-      : "https://via.placeholder.com/100";
+    // 🔥 FIX GAMBAR PALING AMAN
+    let img = "https://via.placeholder.com/100";
+
+    if (typeof p.gambar === "string") {
+      let clean = p.gambar.trim();
+
+      if (clean.startsWith("http")) {
+        img = clean;
+      }
+    }
 
     html += `
     <div class="card" data-cat="${kategori}">
-      ${p.diskon>0?`<div class="discount">-${p.diskon}%</div>`:""}
-      ${habis?`<div class="habis">HABIS</div>`:""}
+      ${p.diskon > 0 ? `<div class="discount">-${p.diskon}%</div>` : ""}
+      ${habis ? `<div class="habis">HABIS</div>` : ""}
 
       <img src="${img}" onclick="zoom(this.src)">
 
       <div>
         <b>${p.nama}</b><br>
 
-        ${p.diskon>0?
+        ${p.diskon > 0 ?
           `<span class="price-old">${rupiah(p.harga)}</span><br>
            <span class="price-new">${rupiah(hargaDiskon)}</span>` :
           `<span class="price-new">${rupiah(p.harga)}</span>`
@@ -178,7 +185,6 @@ function render(){
 
   document.getElementById("list").innerHTML = html;
 }
-
 /* PLUS */
 function plus(id, price, name, stok){
 
