@@ -115,11 +115,8 @@ let total = 0;
 
 /* MAP KATEGORI */
 function mapKategori(k){
-  k = Number(k);
-  if(k === 10 || k === 5) return "led";
-  if(k === 3 || k === 100 || k === 0) return "alat";
-  if(k === 2) return "casing";
-  return "lain";
+  if(!k) return "lain";
+  return String(k).toLowerCase();
 }
 
 /* LOAD DATA */
