@@ -6,152 +6,74 @@
 <title>Duta Terang LED</title>
 
 <style>
-body{
-  margin:0;
-  font-family: Arial;
-  background:#f5f6f8;
-}
+body{margin:0;font-family:Arial;background:#f5f6f8}
 
-/* HEADER */
 header{
-  background:#00bcd4;
-  color:white;
-  text-align:center;
-  padding:10px;
+  background:#00bcd4;color:#fff;text-align:center;padding:10px
 }
 
-/* CATEGORY */
 .category{
-  display:flex;
-  gap:6px;
-  padding:8px;
-  background:white;
-  position:sticky;
-  top:0;
-  z-index:10;
+  display:flex;gap:6px;padding:8px;background:#fff;
+  position:sticky;top:0;z-index:10
 }
 
 .category button{
-  border:none;
-  padding:6px 10px;
-  border-radius:6px;
-  background:#eee;
-  font-size:12px;
-  cursor:pointer;
+  border:none;padding:6px 10px;border-radius:6px;
+  background:#eee;font-size:12px;cursor:pointer
 }
 
-.category button.active{
-  background:#00bcd4;
-  color:white;
-  font-weight:bold;
-}
+.category button.active{background:#00bcd4;color:#fff}
 
-/* CONTAINER */
-.container{
-  padding:10px;
-  max-width:600px;
-  margin:auto;
-}
+.container{padding:10px;max-width:600px;margin:auto}
 
-/* CARD */
 .card{
-  background:white;
-  display:flex;
-  gap:10px;
-  margin:10px 0;
-  padding:10px;
-  border-radius:10px;
+  background:#fff;display:flex;gap:10px;margin:10px 0;
+  padding:10px;border-radius:10px;
   box-shadow:0 2px 8px rgba(0,0,0,0.1);
-  position:relative;
+  position:relative
 }
 
-/* LABEL */
+.card img{
+  width:70px;height:70px;object-fit:cover;
+  border-radius:6px;cursor:pointer
+}
+
 .discount{
-  position:absolute;
-  top:5px;
-  right:5px;
-  background:red;
-  color:white;
-  font-size:10px;
-  padding:3px 6px;
-  border-radius:5px;
+  position:absolute;top:5px;right:5px;
+  background:red;color:#fff;font-size:10px;
+  padding:3px 6px;border-radius:5px
 }
 
 .habis{
-  position:absolute;
-  top:5px;
-  left:5px;
-  background:black;
-  color:white;
-  font-size:10px;
-  padding:3px 6px;
-  border-radius:5px;
+  position:absolute;top:5px;left:5px;
+  background:black;color:#fff;font-size:10px;
+  padding:3px 6px;border-radius:5px
 }
 
-/* IMAGE */
-.card img{
-  width:70px;
-  height:70px;
-  object-fit:cover;
-  border-radius:6px;
-  cursor:zoom-in;
-}
+.price-old{font-size:12px;color:#999;text-decoration:line-through}
+.price-new{color:#e91e63;font-weight:bold}
 
-/* PRICE */
-.price-old{
-  text-decoration:line-through;
-  color:#999;
-  font-size:12px;
-}
+.qty{display:flex;align-items:center;gap:6px}
 
-.price-new{
-  color:#e91e63;
-  font-weight:bold;
-}
-
-/* QTY */
-.qty{
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-
-/* CART */
 #cart{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:white;
-  padding:10px;
-  box-shadow:0 -2px 10px rgba(0,0,0,0.2);
-  display:flex;
-  justify-content:space-between;
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;padding:10px;
+  display:flex;justify-content:space-between;
+  box-shadow:0 -2px 10px rgba(0,0,0,0.2)
 }
 
 #wa{
-  background:#25D366;
-  color:white;
-  padding:10px;
-  border-radius:6px;
-  text-decoration:none;
+  background:#25D366;color:#fff;
+  padding:10px;border-radius:6px;
+  text-decoration:none
 }
 
-/* ZOOM */
 #zoom{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.9);
-  display:none;
-  justify-content:center;
-  align-items:center;
+  position:fixed;inset:0;background:rgba(0,0,0,0.9);
+  display:none;justify-content:center;align-items:center
 }
 
-#zoom img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-}
+#zoom img{width:100%;height:100%;object-fit:contain}
 </style>
 </head>
 
@@ -191,40 +113,58 @@ let produk = [];
 let order = {};
 let total = 0;
 
+/* MAP KATEGORI */
+function mapKategori(k){
+  k = Number(k);
+  if(k === 10 || k === 5) return "led";
+  if(k === 3 || k === 100 || k === 0) return "alat";
+  if(k === 2) return "casing";
+  return "lain";
+}
+
+/* LOAD DATA */
 async function load(){
   const res = await fetch(API_URL);
   produk = await res.json();
   render();
 }
 
-function formatRupiah(num){
-  return "Rp " + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+/* FORMAT RUPIAH */
+function rupiah(n){
+  return "Rp " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,".");
 }
 
+/* RENDER PRODUK */
 function render(){
+
   let html = "";
 
   produk.forEach(p => {
 
+    if(!p || !p.nama || !p.harga) return;
+
+    let kategori = mapKategori(p.kategori);
     let hargaDiskon = p.harga - (p.harga * (p.diskon || 0) / 100);
     let habis = Number(p.stok) <= 0;
-    let img = (p.gambar && p.gambar.includes("http")) ? p.gambar : "https://i.imgur.com/8Km9tLL.jpg";
-    let kategori = mapKategori(p.kategori);
+
+    let img = (p.gambar && p.gambar.startsWith("http"))
+      ? p.gambar
+      : "https://via.placeholder.com/100";
 
     html += `
     <div class="card" data-cat="${kategori}">
-      ${p.diskon > 0 ? `<div class="discount">-${p.diskon}%</div>` : ""}
-      ${habis ? `<div class="habis">HABIS</div>` : ""}
+      ${p.diskon>0?`<div class="discount">-${p.diskon}%</div>`:""}
+      ${habis?`<div class="habis">HABIS</div>`:""}
 
       <img src="${img}" onclick="zoom(this.src)">
 
       <div>
         <b>${p.nama}</b><br>
 
-        ${p.diskon > 0 ?
-          `<span class="price-old">${formatRupiah(p.harga)}</span><br>
-           <span class="price-new">${formatRupiah(hargaDiskon)}</span>` :
-          `<span class="price-new">${formatRupiah(p.harga)}</span>`
+        ${p.diskon>0?
+          `<span class="price-old">${rupiah(p.harga)}</span><br>
+           <span class="price-new">${rupiah(hargaDiskon)}</span>` :
+          `<span class="price-new">${rupiah(p.harga)}</span>`
         }
 
         <div class="qty">
@@ -238,11 +178,12 @@ function render(){
 
   document.getElementById("list").innerHTML = html;
 }
-if(!p.nama || !p.harga) return;
+
+/* PLUS */
 function plus(id, price, name, stok){
 
   if(!order[id]){
-    order[id] = {qty:0,name,price,stok};
+    order[id] = {qty:0,name,price};
   }
 
   if(order[id].qty >= stok) return;
@@ -254,16 +195,19 @@ function plus(id, price, name, stok){
   update();
 }
 
+/* MINUS */
 function minus(id){
 
   if(order[id] && order[id].qty > 0){
     order[id].qty--;
     document.getElementById(id).innerText = order[id].qty;
+
     total -= order[id].price;
     update();
   }
 }
 
+/* UPDATE CART */
 function update(){
 
   document.getElementById("total").innerText = total;
@@ -273,8 +217,8 @@ function update(){
 
   for(let k in order){
     if(order[k].qty > 0){
-      text += "- " + order[k].name + " x " + order[k].qty + "%0A";
-      summary += order[k].name + " x" + order[k].qty + ", ";
+      text += "- "+order[k].name+" x "+order[k].qty+"%0A";
+      summary += order[k].name+" x"+order[k].qty+", ";
     }
   }
 
@@ -282,16 +226,15 @@ function update(){
     summary || "Belum ada order";
 
   document.getElementById("wa").href =
-    "https://wa.me/6288224166270?text=" + text;
+    "https://wa.me/6288224166270?text="+text;
 }
 
-function filter(cat, btn){
+/* FILTER */
+function filter(cat,btn){
 
   document.querySelectorAll(".card").forEach(c=>{
-    const cardCat = (c.dataset.cat || '').trim();
-
-    c.style.display =
-      (cat === "all" || cardCat === cat) ? "flex" : "none";
+    let cc = c.dataset.cat;
+    c.style.display = (cat==="all" || cc===cat) ? "flex" : "none";
   });
 
   document.querySelectorAll(".category button").forEach(b=>{
@@ -301,21 +244,14 @@ function filter(cat, btn){
   btn.classList.add("active");
 }
 
+/* ZOOM */
 function zoom(src){
   document.getElementById("zoomImg").src = src;
-  document.getElementById("zoom").style.display = "flex";
+  document.getElementById("zoom").style.display="flex";
 }
 
 load();
-function mapKategori(k){
-  k = Number(k);
 
-  if(k === 10 || k === 5) return "led";
-  if(k === 3 || k === 100 || k === 0) return "alat";
-  if(k === 2) return "casing";
-
-  return "lain";
-}
 </script>
 
 </body>
