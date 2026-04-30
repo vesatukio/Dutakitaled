@@ -139,28 +139,33 @@ header{
   position:relative;
   overflow:hidden;
 }
-
-.running-text{
-  white-space:nowrap;
+/* teks berjalan */
+.running-wrap{
   overflow:hidden;
+  white-space:nowrap;
+  margin-top:4px;
+}
+
+.running-track{
+  display:flex;
+  width:max-content;
+  animation:marquee 12s linear infinite;
+}
+
+.running-track span{
+  white-space:nowrap;
   font-size:12px;
   opacity:0.9;
-  margin-top:4px;
-  position:relative;
+  padding-right:50px;
 }
 
-/* teks berjalan */
-.running-text{
-  display:inline-block;
-  animation:scrollText 12s linear infinite;
-}
-
-@keyframes scrollText{
+/* animasi jalan terus tanpa putus */
+@keyframes marquee{
   0%{
-    transform:translateX(100%);
+    transform:translateX(0);
   }
   100%{
-    transform:translateX(-100%);
+    transform:translateX(-50%);
   }
 }
 </style>
@@ -168,10 +173,11 @@ header{
 
 <body>
 
-<header>
-  <b>Duta Terang LED</b><br>
-  <div class="running-text">
-  COD • Seluruh Indonesia ⚡ Fast Response • Garansi Produk • Respon Cepat 24 Jam
+<div class="running-wrap">
+  <div class="running-track">
+    <span>COD • Seluruh Indonesia ⚡ Fast Response • Produk berkualitas • Respon Cepat 24 Jam • </span>
+    <span>COD • Seluruh Indonesia ⚡ order bisa shopee, tiktok, tokopedia • Produk bagus • Respon Cepat 24 Jam • </span>
+  </div>
 </div>
 </header>
 
