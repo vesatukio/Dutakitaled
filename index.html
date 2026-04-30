@@ -12,13 +12,36 @@ body{
   background:#f5f6f8;
 }
 
+/* HEADER DIPERKECIL */
 header{
   background:#00bcd4;
   color:white;
   text-align:center;
-  padding:15px;
+  padding:8px;
+  font-size:14px;
 }
 
+/* KATEGORI */
+.category{
+  display:flex;
+  justify-content:space-around;
+  background:white;
+  padding:8px;
+  position:sticky;
+  top:0;
+  z-index:10;
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+.category button{
+  border:none;
+  background:#f0f0f0;
+  padding:6px 10px;
+  border-radius:6px;
+  font-size:12px;
+}
+
+/* CONTAINER */
 .container{
   padding:10px;
   max-width:600px;
@@ -45,9 +68,7 @@ header{
   cursor:zoom-in;
 }
 
-.info{
-  flex:1;
-}
+.info{ flex:1; }
 
 .price{
   color:#e91e63;
@@ -55,14 +76,14 @@ header{
 }
 
 /* QTY */
-.qty button{
-  padding:5px 10px;
-}
-
 .qty{
   display:flex;
   align-items:center;
   gap:8px;
+}
+
+.qty button{
+  padding:5px 10px;
 }
 
 /* FLOAT CART */
@@ -106,7 +127,6 @@ header{
   width:100vw;
   height:100vh;
   object-fit:contain;
-  cursor:zoom-out;
 }
 </style>
 </head>
@@ -114,19 +134,25 @@ header{
 <body>
 
 <header>
-  <h3>LED Aluminium 💡</h3>
-  <p>COD • Kirim Seluruh Indonesia</p>
+  <b>Duta Terang LED</b><br>
+  COD • Kirim Seluruh Indonesia
 </header>
+
+<!-- KATEGORI -->
+<div class="category">
+  <button>LED</button>
+  <button>Alat</button>
+  <button>Casing</button>
+</div>
 
 <div class="container">
 
-<!-- PRODUCT 1 -->
+<!-- LED -->
 <div class="card">
   <img src="https://i.imgur.com/8Km9tLL.jpg" onclick="zoom(this.src)">
   <div class="info">
     <b>LED 5W</b><br>
     <span class="price">Rp3.000</span>
-
     <div class="qty">
       <button onclick="minus('p1')">-</button>
       <span id="p1">0</span>
@@ -135,13 +161,11 @@ header{
   </div>
 </div>
 
-<!-- PRODUCT 2 -->
 <div class="card">
   <img src="https://i.imgur.com/8Km9tLL.jpg" onclick="zoom(this.src)">
   <div class="info">
     <b>LED 7W</b><br>
     <span class="price">Rp3.750</span>
-
     <div class="qty">
       <button onclick="minus('p2')">-</button>
       <span id="p2">0</span>
@@ -150,17 +174,43 @@ header{
   </div>
 </div>
 
-<!-- PRODUCT 3 -->
 <div class="card">
   <img src="https://i.imgur.com/8Km9tLL.jpg" onclick="zoom(this.src)">
   <div class="info">
     <b>LED 12W</b><br>
     <span class="price">Rp6.000</span>
-
     <div class="qty">
       <button onclick="minus('p3')">-</button>
       <span id="p3">0</span>
       <button onclick="plus('p3',6000,'LED 12W')">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- ALAT -->
+<div class="card">
+  <img src="https://i.imgur.com/8Km9tLL.jpg" onclick="zoom(this.src)">
+  <div class="info">
+    <b>Test Pen Listrik</b><br>
+    <span class="price">Rp5.000</span>
+    <div class="qty">
+      <button onclick="minus('p4')">-</button>
+      <span id="p4">0</span>
+      <button onclick="plus('p4',5000,'Test Pen')">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- CASING -->
+<div class="card">
+  <img src="https://i.imgur.com/8Km9tLL.jpg" onclick="zoom(this.src)">
+  <div class="info">
+    <b>Casing Lampu 5W</b><br>
+    <span class="price">Rp2.500</span>
+    <div class="qty">
+      <button onclick="minus('p5')">-</button>
+      <span id="p5">0</span>
+      <button onclick="plus('p5',2500,'Casing 5W')">+</button>
     </div>
   </div>
 </div>
@@ -226,16 +276,9 @@ function update(){
 }
 
 function zoom(src){
-  const z = document.getElementById("zoom");
-  const img = document.getElementById("zoomImg");
-
-  img.src = src;
-  z.style.display = "flex";
+  document.getElementById("zoomImg").src = src;
+  document.getElementById("zoom").style.display = "flex";
 }
-
-document.getElementById("zoom").addEventListener("click", function(){
-  this.style.display = "none";
-});
 </script>
 
 </body>
