@@ -296,44 +296,51 @@ function plus(id, price, name, stok){
 
   if(order[id].qty >= stok) return;
 
-  order[id].qty++;
-  document.getElementById(id).innerText = order[id].qty;
+  order[id].qty = (order[id].qty || 0) + 1;
 
   total += price;
-   // 👇 INI YANG KAMU TANYA (TARUH DI SINI)
+
+  document.getElementById(id).innerText = order[id].qty;
   document.getElementById("input-"+id).value = order[id].qty;
+
   update();
 }
-
 /* MINUS */
 function minus(id){
 
-  if(order[id] && order[id].qty > 0){
-    order[id].qty--;
-    document.getElementById(id).innerText = order[id].qty;
-
-    total -= order[id].price;
-    update();
+  if(!order[id]){
+    order[id] = {qty:0,price:0,name:""};
   }
+
+  if(order[id].qty <= 0) return;
+
+  order[id].qty = order[id].qty - 1;
+
+  total -= order[id].price;
+
+  document.getElementById(id).innerText = order[id].qty;
+  document.getElementById("input-"+id).value = order[id].qty;
+
+  update();
 }
-function manualSet(id, price, name, stok, val){
+  /* MANUAL */
+  function manualSet(id, price, name, stok, val){
 
-  let qty = parseInt(val) || 0;
-
-  if(qty < 0) qty = 0;
+  let qty = parseInt(val);
+  if(isNaN(qty) || qty < 0) qty = 0;
   if(qty > stok) qty = stok;
 
   if(!order[id]){
     order[id] = {qty:0,name,price};
   }
 
-  // hitung selisih biar total tidak rusak
   let diff = qty - order[id].qty;
 
   order[id].qty = qty;
-
   total += diff * price;
-document.getElementById("input-"+id).value = order[id].qty;
+
+  document.getElementById(id).innerText = qty;
+
   update();
 }
 /* UPDATE CART */
