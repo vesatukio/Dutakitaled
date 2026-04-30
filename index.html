@@ -43,6 +43,8 @@ header{
 .category button.active{
   background:#00bcd4;
   color:white;
+  font-weight:bold;
+  transform:scale(1.05);
 }
 
 /* CONTAINER */
@@ -64,7 +66,7 @@ header{
   position:relative;
 }
 
-/* DISKON */
+/* LABEL */
 .discount{
   position:absolute;
   top:5px;
@@ -76,7 +78,6 @@ header{
   border-radius:5px;
 }
 
-/* HABIS */
 .habis{
   position:absolute;
   top:5px;
@@ -162,7 +163,6 @@ header{
 COD • Seluruh Indonesia
 </header>
 
-<!-- KATEGORI -->
 <div class="category">
   <button class="active" onclick="filter('all',this)">Semua</button>
   <button onclick="filter('led',this)">LED</button>
@@ -172,7 +172,6 @@ COD • Seluruh Indonesia
 
 <div class="container" id="list"></div>
 
-<!-- CART -->
 <div id="cart">
   <div>
     Total: Rp <span id="total">0</span><br>
@@ -181,7 +180,6 @@ COD • Seluruh Indonesia
   <a id="wa">Checkout WA</a>
 </div>
 
-<!-- ZOOM -->
 <div id="zoom" onclick="this.style.display='none'">
   <img id="zoomImg">
 </div>
@@ -200,6 +198,10 @@ async function load(){
   render();
 }
 
+function formatRupiah(angka){
+  return "Rp " + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
 function render(){
 
   let html = "";
@@ -209,22 +211,26 @@ function render(){
     let hargaDiskon = p.harga - (p.harga * (p.diskon||0)/100);
     let habis = p.stok <= 0;
 
+    let img = p.gambar && p.gambar.includes("http") 
+      ? p.gambar 
+      : "https://i.imgur.com/8Km9tLL.jpg";
+
     html += `
     <div class="card" data-cat="${p.kategori}">
 
-      ${p.diskon ? `<div class="discount">-${p.diskon}%</div>` : ""}
+      ${p.diskon > 0 ? `<div class="discount">-${p.diskon}%</div>` : ""}
 
       ${habis ? `<div class="habis">HABIS</div>` : ""}
 
-      <img src="${p.gambar}" onclick="zoom(this.src)">
+      <img src="${img}" onclick="zoom(this.src)">
 
       <div>
         <b>${p.nama}</b><br>
 
-        ${p.diskon ?
-        `<span class="price-old">Rp${p.harga}</span><br>
-         <span class="price-new">Rp${hargaDiskon}</span>` :
-        `<span class="price-new">Rp${p.harga}</span>`}
+        ${p.diskon > 0 ?
+        `<span class="price-old">${formatRupiah(p.harga)}</span><br>
+         <span class="price-new">${formatRupiah(hargaDiskon)}</span>` :
+        `<span class="price-new">${formatRupiah(p.harga)}</span>`}
 
         <div class="qty">
           <button onclick="minus('${p.id}')" ${habis?'disabled':''}>-</button>
@@ -283,7 +289,6 @@ function update(){
   "https://wa.me/6288224166270?text=" + text;
 }
 
-/* FILTER */
 function filter(cat, btn){
 
   document.querySelectorAll(".card").forEach(c=>{
@@ -297,7 +302,6 @@ function filter(cat, btn){
   btn.classList.add("active");
 }
 
-/* ZOOM */
 function zoom(src){
   document.getElementById("zoomImg").src = src;
   document.getElementById("zoom").style.display = "flex";
