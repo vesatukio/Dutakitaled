@@ -305,19 +305,30 @@ function update(){
 
   const cart = document.getElementById("cart");
 
-  /* AUTO SHOW / HIDE */
   let hasItem = false;
 
-  let text = "Halo kak, saya mau order:%0A";
+  let text = "🛒 ORDER DUTA TERANG LED%0A%0A";
   let summary = "";
+  let itemCount = 0;
 
   for(let k in order){
     if(order[k].qty > 0){
       hasItem = true;
-      text += "- "+order[k].name+" x "+order[k].qty+"%0A";
-      summary += order[k].name+" x"+order[k].qty+", ";
+
+      let line = order[k].name+" x"+order[k].qty;
+
+      text += line + "%0A";
+      summary += line + ", ";
+
+      itemCount += order[k].qty;
     }
   }
+
+  text += "%0A--------------------%0A";
+  text += "Item : "+itemCount+" pcs%0A";
+  text += "Total: Rp "+total+"%0A";
+  text += "--------------------%0A%0A";
+  text += "Terima kasih sudah order 🙏";
 
   document.getElementById("summary").innerText =
     summary || "Belum ada order";
@@ -325,7 +336,6 @@ function update(){
   document.getElementById("wa").href =
     "https://wa.me/6288224166270?text="+text;
 
-  /* SHOW / HIDE CART */
   if(hasItem){
     cart.classList.remove("hide");
   }else{
