@@ -136,7 +136,7 @@ function rupiah(n){
 
 /* RENDER PRODUK */
 function render(){
-console.log("DATA GAMBAR:", p.gambar);
+
   let html = "";
 
   produk.forEach(p => {
@@ -147,34 +147,21 @@ console.log("DATA GAMBAR:", p.gambar);
     let hargaDiskon = p.harga - (p.harga * (p.diskon || 0) / 100);
     let habis = Number(p.stok) <= 0;
 
-  // 🔥 FIX GAMBAR PALING AMAN
-let img = "https://via.placeholder.com/100";
+    let img = (p.gambar && p.gambar.startsWith("http"))
+      ? p.gambar
+      : "https://via.placeholder.com/100";
 
-try {
-  let raw = String(p.gambar || "").trim();
-
-  // hanya terima image langsung
-  if (raw.match(/^https?:\/\/.*\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i)) {
-    img = raw;
-  }
-
-} catch (e) {
-  img = "https://via.placeholder.com/100";
-}
-} catch (e) {
-  img = "https://via.placeholder.com/100";
-}
     html += `
     <div class="card" data-cat="${kategori}">
-      ${p.diskon > 0 ? `<div class="discount">-${p.diskon}%</div>` : ""}
-      ${habis ? `<div class="habis">HABIS</div>` : ""}
+      ${p.diskon>0?`<div class="discount">-${p.diskon}%</div>`:""}
+      ${habis?`<div class="habis">HABIS</div>`:""}
 
       <img src="${img}" onclick="zoom(this.src)">
 
       <div>
         <b>${p.nama}</b><br>
 
-        ${p.diskon > 0 ?
+        ${p.diskon>0?
           `<span class="price-old">${rupiah(p.harga)}</span><br>
            <span class="price-new">${rupiah(hargaDiskon)}</span>` :
           `<span class="price-new">${rupiah(p.harga)}</span>`
@@ -191,6 +178,7 @@ try {
 
   document.getElementById("list").innerHTML = html;
 }
+
 /* PLUS */
 function plus(id, price, name, stok){
 
