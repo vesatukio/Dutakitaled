@@ -104,7 +104,23 @@ header{
   justify-content:space-between;
 }
 #cart.hide{display:none}
+.card{
+  position:relative; /* 🔥 WAJIB supaya badge nempel di card */
+}
 
+/* BADGE DISKON POJOK KANAN ATAS */
+.badge{
+  position:absolute;
+  top:8px;
+  right:8px;
+  background:#e91e63;
+  color:#fff;
+  font-size:11px;
+  padding:3px 6px;
+  border-radius:6px;
+  font-weight:bold;
+  z-index:2;
+}
 /* ZOOM */
 #zoom{
   position:fixed;
@@ -273,6 +289,37 @@ function render(){
       <img src="${p.gambar}" onclick="zoom(this.src)">
       <b>${p.nama}</b><br>
 <span class="harga">${rupiah(harga)}</span>
+html+=`
+<div class="card" data-cat="${kategori}" style="position:relative;">
+
+  ${p.diskon > 0 ? `
+    <div class="badge" style="
+      position:absolute;
+      top:8px;
+      right:8px;
+      background:#e91e63;
+      color:#fff;
+      font-size:11px;
+      padding:3px 6px;
+      border-radius:6px;
+      font-weight:bold;
+    ">
+      -${Math.round((p.diskon / p.harga) * 100)}%
+    </div>
+  ` : ""}
+
+  <img src="${p.gambar}" onclick="zoom(this.src)">
+
+  <b>${p.nama}</b><br>
+
+  <span class="harga">
+    ${p.diskon > 0 
+      ? `<del style="color:#999;font-size:12px;">${rupiah(p.harga)}</del><br>
+         ${rupiah(p.harga - p.diskon)}`
+      : rupiah(p.harga)
+    }
+  </span>
+      
       <div class="qty">
         <button onclick="minus('${p.id}')">-</button>
         <span id="${p.id}">0</span>
