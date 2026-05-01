@@ -151,6 +151,12 @@ header{
   right:10px;
   cursor:pointer;
 }
+  .harga{
+  display:block;
+  color:#e91e63;
+  font-weight:bold;
+  margin-top:2px;
+}
 </style>
 </head>
 
@@ -222,8 +228,8 @@ function render(){
     html+=`
     <div class="card" data-cat="${kategori}">
       <img src="${p.gambar}" onclick="zoom(this.src)">
-      <b>${p.nama}</b>
-      Rp ${harga}
+      <b>${p.nama}</b><br>
+<span class="harga">${rupiah(harga)}</span>
       <div class="qty">
         <button onclick="minus('${p.id}')">-</button>
         <span id="${p.id}">0</span>
@@ -233,6 +239,9 @@ function render(){
   });
 
   list.innerHTML=html;
+}
+  function rupiah(n){
+  return "Rp " + Number(n).toLocaleString("id-ID");
 }
 function renderKategori(){
 
