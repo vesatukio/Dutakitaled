@@ -29,7 +29,6 @@
         .category button { border: none; padding: 6px 15px; border-radius: 20px; background: #f0f0f0; cursor: pointer; white-space: nowrap; font-size: 12px; font-weight: 600; }
         .category button.active { background: var(--primary); color: #fff; }
 
-        /* PERBAIKAN JARAK KARTU (Lebih Rapat) */
         .container { padding: 8px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-width: 800px; margin: auto; }
         .card { background: #fff; border-radius: 10px; padding: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; }
         .card img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px; background: #f9f9f9; }
@@ -41,7 +40,6 @@
         .qty button { width: 28px; height: 28px; border: none; background: var(--primary); color: #fff; border-radius: 4px; font-size: 18px; cursor: pointer; }
         .qty span { font-weight: bold; font-size: 14px; }
 
-        /* PERBAIKAN FONT RINGKASAN (Lebih Besar) */
         #cart { 
             position: fixed; bottom: 12px; left: 12px; right: 12px; 
             background: #fff; padding: 12px; border-radius: 12px; 
@@ -50,69 +48,30 @@
             transition: 0.3s transform ease-out;
         }
         #cart.hide { transform: translateY(150%); }
-        #summary { 
-            font-size: 13px; /* Ukuran diperbesar */
-            font-weight: 500;
-            color: #444; 
-            white-space: pre-line; 
-            text-align: right; 
-            margin-bottom: 5px; 
-            max-height: 90px; 
-            overflow-y: auto; 
-        }
+        #summary { font-size: 13px; font-weight: 500; color: #444; white-space: pre-line; text-align: right; margin-bottom: 5px; max-height: 90px; overflow-y: auto; }
 
         #total { font-size: 17px; font-weight: 800; }
         #btn-reset { background: var(--danger); border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; color: #fff; }
         #btn-wa { background: var(--wa); color: #fff; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px; display: inline-block; }
 
-        /* MODAL INSTALL */
+        /* CSS POPUP INSTALL */
         #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9998; display: none; }
         #installContainer {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 80%; max-width: 300px; background: #fff; padding: 20px; border-radius: 15px;
             z-index: 9999; text-align: center; display: none;
         }
-        #btnDoInstall { background: var(--primary); color: #fff; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: bold; margin-top: 10px; }
-        .close-popup { position: absolute; top: 8px; right: 8px; border: none; background: none; font-size: 16px; color: #aaa; }
-/* Tombol Nanti/Minimize */
-.btn-later {
-    background: #eee;
-    color: #666;
-    border: none;
-    padding: 10px;
-    border-radius: 10px;
-    width: 100%;
-    margin-top: 8px;
-    font-weight: bold;
-    cursor: pointer;
-}
+        #btnDoInstall { background: var(--primary); color: #fff; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: bold; margin-top: 10px; cursor: pointer; }
+        .close-popup { position: absolute; top: 8px; right: 8px; border: none; background: none; font-size: 16px; color: #aaa; cursor: pointer; }
+        .btn-later { background: #eee; color: #666; border: none; padding: 10px; border-radius: 10px; width: 100%; margin-top: 8px; font-weight: bold; cursor: pointer; }
 
-/* Ikon Kecil saat Minimize */
-#miniInstallBtn {
-    position: fixed;
-    bottom: 85px; /* Di atas tombol keranjang */
-    left: 15px;
-    background: var(--primary);
-    color: white;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: none; /* Sembunyi di awal */
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    z-index: 9997;
-    cursor: pointer;
-    animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-    40% {transform: translateY(-10px);}
-    60% {transform: translateY(-5px);}
-}
-        
+        #miniInstallBtn {
+            position: fixed; bottom: 85px; left: 15px; background: var(--primary); color: white; 
+            width: 50px; height: 50px; border-radius: 50%; display: none; align-items: center; 
+            justify-content: center; font-size: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+            z-index: 9997; cursor: pointer; animation: bounce 2s infinite;
+        }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
     </style>
 </head>
 <body>
@@ -128,20 +87,29 @@
 </header>
 
 <div class="category" id="cat-bar">
-    <button class="active" onclick="filter('all',this)">Semua</button>
+    <button class="active" onclick="filter('all', this)">Semua</button>
 </div>
 
 <div class="container" id="list">Memuat produk...</div>
 
 <div id="cart" class="hide">
-    <div>
-        <button id="btn-reset" onclick="resetCart()">🗑️ Hapus</button>
-    </div>
+    <div><button id="btn-reset" onclick="resetCart()">🗑️ Hapus</button></div>
     <div style="text-align: right;">
         <div id="summary"></div>
         <div style="color:var(--primary); margin-bottom: 5px;">Total: <span id="total">0</span></div>
         <a id="btn-wa" href="#">Kirim Pesanan</a>
     </div>
+</div>
+
+<!-- ELEMEN INSTALL PWA -->
+<div id="miniInstallBtn" onclick="showPopup()">📲</div>
+<div id="overlay" onclick="minimizePopup()"></div>
+<div id="installContainer">
+    <button class="close-popup" onclick="minimizePopup()">✕</button>
+    <h3>Duta Terang LED</h3>
+    <p>Dapatkan akses lebih cepat dan fitur <b>Order Offline</b> dengan menginstal aplikasi.</p>
+    <button id="btnDoInstall">📲 Pasang Sekarang</button>
+    <button class="btn-later" onclick="minimizePopup()">Nanti Saja</button>
 </div>
 
 <script>
@@ -155,10 +123,10 @@ async function load() {
         const res = await fetch(API_URL);
         produk = await res.json();
         render();
-        loadFromLocal(); // <--- TAMBAHAN: Muat pesanan dari memori HP setelah produk tampil
+        loadFromLocal();
     } catch (e) { 
-        document.getElementById("list").innerText = "Koneksi terputus. Anda masih bisa melihat keranjang."; 
-        loadFromLocal(); // <--- TAMBAHAN: Tetap muat pesanan meski internet gagal
+        document.getElementById("list").innerText = "Koneksi terputus. Anda tetap bisa berbelanja."; 
+        loadFromLocal();
     }
 }
 
@@ -167,18 +135,15 @@ function rupiah(n) { return "Rp " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g
 function render() {
     let htmlProduk = "";
     let setKategori = new Set();
-
     produk.forEach(p => {
         if (!p.nama) return;
         let kat = p.kategori ? p.kategori.trim() : "Lainnya";
         setKategori.add(kat);
-
         let hargaDiskon = p.harga - (p.harga * (p.diskon || 0) / 100);
         let habis = Number(p.stok) <= 0;
-
         htmlProduk += `
         <div class="card" data-cat="${kat.toLowerCase()}">
-            ${habis ? `<div style="position:absolute; background:rgba(0,0,0,0.5); color:#fff; width:100%; top:40%; text-align:center; font-size:10px; padding:4px 0;">HABIS</div>` : ""}
+            ${habis ? `<div style="position:absolute; background:rgba(0,0,0,0.5); color:#fff; width:100%; top:40%; text-align:center; font-size:10px; padding:4px 0; z-index:1;">HABIS</div>` : ""}
             <img src="${p.gambar || 'https://via.placeholder.com/150'}" loading="lazy">
             <div class="card-info">
                 <b>${p.nama}</b>
@@ -191,7 +156,6 @@ function render() {
             </div>
         </div>`;
     });
-
     document.getElementById("list").innerHTML = htmlProduk;
     renderCatButtons(setKategori);
 }
@@ -199,9 +163,7 @@ function render() {
 function renderCatButtons(kategoriSet) {
     const bar = document.getElementById("cat-bar");
     let html = `<button class="active" onclick="filter('all', this)">Semua</button>`;
-    kategoriSet.forEach(k => {
-        html += `<button onclick="filter('${k.toLowerCase()}', this)">${k}</button>`;
-    });
+    kategoriSet.forEach(k => { html += `<button onclick="filter('${k.toLowerCase()}', this)">${k}</button>`; });
     bar.innerHTML = html;
 }
 
@@ -209,7 +171,6 @@ function changeQty(id, delta, price, name, stok = 999) {
     if (!order[id]) order[id] = { qty: 0, name, price };
     if (delta > 0 && order[id].qty >= stok) return;
     if (delta < 0 && order[id].qty <= 0) return;
-
     order[id].qty += delta;
     total += (delta * price);
     document.getElementById(`qty-${id}`).innerText = order[id].qty;
@@ -221,10 +182,7 @@ function updateCart() {
     const summaryEl = document.getElementById("summary");
     const totalEl = document.getElementById("total");
     const waLink = document.getElementById("btn-wa");
-
-    let hasItem = false;
-    let summaryText = "";
-    let waText = "🛒 *ORDER DUTA TERANG LED*%0A%0A";
+    let hasItem = false, summaryText = "", waText = "🛒 *ORDER DUTA TERANG LED*%0A%0A";
 
     for (let id in order) {
         if (order[id].qty > 0) {
@@ -233,34 +191,27 @@ function updateCart() {
             waText += `• ${order[id].name} (x${order[id].qty})%0A`;
         }
     }
-
     totalEl.innerText = rupiah(total);
     summaryEl.innerText = summaryText;
     waLink.href = "https://wa.me/6288224166270?text=" + waText + "%0A*Total: " + rupiah(total) + "*";
-
-    if (hasItem && total > 0) cartEl.classList.remove("hide");
-    else cartEl.classList.add("hide");
-
-    // TAMBAHAN: Simpan ke memori lokal HP setiap ada perubahan
+    if (hasItem && total > 0) cartEl.classList.remove("hide"); else cartEl.classList.add("hide");
     localStorage.setItem("duta_terang_cart", JSON.stringify({ order, total }));
 }
 
 function resetCart() {
     if(confirm("Hapus pesanan?")) {
         order = {}; total = 0;
-        localStorage.removeItem("duta_terang_cart"); // TAMBAHAN: Hapus memori lokal
+        localStorage.removeItem("duta_terang_cart");
         document.querySelectorAll("[id^='qty-']").forEach(el => el.innerText = "0");
         updateCart();
     }
 }
-    function loadFromLocal() {
+
+function loadFromLocal() {
     const saved = localStorage.getItem("duta_terang_cart");
     if (saved) {
         const parsed = JSON.parse(saved);
-        order = parsed.order;
-        total = parsed.total;
-        
-        // Update angka di layar HP agar sinkron dengan data yang disimpan
+        order = parsed.order; total = parsed.total;
         for (let id in order) {
             const el = document.getElementById(`qty-${id}`);
             if (el) el.innerText = order[id].qty;
@@ -270,84 +221,50 @@ function resetCart() {
 }
 
 function filter(cat, btn) {
-    document.querySelectorAll(".card").forEach(c => {
-        c.style.display = (cat === 'all' || c.dataset.cat === cat) ? 'flex' : 'none';
-    });
+    document.querySelectorAll(".card").forEach(c => { c.style.display = (cat === 'all' || c.dataset.cat === cat) ? 'flex' : 'none'; });
     document.querySelectorAll(".category button").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
 }
 
-load();
-</script>
-
-<div id="overlay" onclick="closePopup()"></div>
-<div id="installContainer">
-    <button class="close-popup" onclick="closePopup()">✕</button>
-    <h3>Instal Aplikasi</h3>
-    <p>Akses lebih cepat & info stok terbaru langsung dari layar HP.</p>
-    <button id="btnDoInstall">Pasang Sekarang</button>
-</div>
-
-<script>
+// LOGIKA INSTALL PWA
 let defPrompt;
-const installContainer = document.getElementById("installContainer");
-const overlay = document.getElementById("overlay");
+const instContainer = document.getElementById("installContainer");
+const ovl = document.getElementById("overlay");
 const miniBtn = document.getElementById("miniInstallBtn");
 
 window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault(); 
-    defPrompt = e;
-    // Munculkan popup otomatis di awal
+    e.preventDefault(); defPrompt = e;
     setTimeout(showPopup, 3000);
 });
 
 function showPopup() {
-    installContainer.style.display = "block";
-    overlay.style.display = "block";
-    miniBtn.style.display = "none"; // Sembunyikan ikon kecil saat popup buka
+    instContainer.style.display = "block";
+    ovl.style.display = "block";
+    miniBtn.style.display = "none";
 }
 
 function minimizePopup() {
-    installContainer.style.display = "none";
-    overlay.style.display = "none";
-    miniBtn.style.display = "flex"; // Tampilkan ikon melayang kecil
+    instContainer.style.display = "none";
+    ovl.style.display = "none";
+    miniBtn.style.display = "flex";
 }
 
 document.getElementById('btnDoInstall').addEventListener('click', async () => {
     if (defPrompt) {
         defPrompt.prompt();
         const { outcome } = await defPrompt.userChoice;
-        if (outcome === 'accepted') {
-            miniBtn.style.display = "none";
-        }
+        if (outcome === 'accepted') miniBtn.style.display = "none";
         defPrompt = null;
         minimizePopup();
     }
 });
 
-// Jika sudah terinstal, hilangkan semua tombol install
 window.addEventListener('appinstalled', () => {
     miniBtn.style.display = "none";
-    installContainer.style.display = "none";
+    instContainer.style.display = "none";
 });
+
+load();
 </script>
-<!-- ... kode lainnya ... -->
-
-    <!-- TARUH DI SINI (Paling bawah sebelum body tutup) -->
-    <!-- Ikon Melayang (tampil saat di-minimize) -->
-    <div id="miniInstallBtn" onclick="showPopup()">📲</div>
-
-    <!-- Popup Utama -->
-    <div id="overlay" onclick="minimizePopup()"></div>
-    <div id="installContainer">
-        <button class="close-popup" onclick="minimizePopup()">✕</button>
-        <h3>Duta Terang LED</h3>
-        <p>Dapatkan akses lebih cepat dan fitur <b>Order Offline</b> dengan menginstal aplikasi.</p>
-        <button id="btnDoInstall">📲 Pasang Sekarang</button>
-        <button class="btn-later" onclick="minimizePopup()">Nanti Saja</button>
-    </div>
-
-</body>
-</html>
 </body>
 </html>
