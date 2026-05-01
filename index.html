@@ -248,9 +248,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyhgdk0elMuqM4-00OIR8zb
 let produk = [];
 let order = {};
 let total = 0;
-function formatRupiah(n){
-  return "Rp " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,".");
-}
+
 /* MAP KATEGORI */
 function mapKategori(k){
   if(!k) return "lain";
@@ -345,14 +343,14 @@ function minus(id){
 /* UPDATE CART */
 function update(){
 
-  document.getElementById("total").innerText = formatRupiah(total);
+  document.getElementById("total").innerText = total;
 
   const cart = document.getElementById("cart");
 
   let hasItem = false;
 
   let text = "🛒 ORDER DUTA TERANG LED%0A%0A";
-  summary += "• " + order[k].name + " x" + order[k].qty + "\n";
+  let summary = "";
   let itemCount = 0;
 
   for(let k in order){
@@ -362,7 +360,7 @@ function update(){
       let line = order[k].name+" x"+order[k].qty;
 
       text += line + "%0A";
-      summary += "• " + order[k].name + " x" + order[k].qty + "\n";
+      summary += line + ", ";
 
       itemCount += order[k].qty;
     }
@@ -370,7 +368,7 @@ function update(){
 
   text += "%0A--------------------%0A";
   text += "Item : "+itemCount+" pcs%0A";
-  text += "Total: " + formatRupiah(total) + "%0A";
+  text += "Total: Rp "+total+"%0A";
   text += "--------------------%0A%0A";
   text += "Terima kasih sudah order 🙏";
 
