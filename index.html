@@ -119,7 +119,7 @@ header{
 /* INSTALL BUTTON */
 #installBtn{
   position:fixed;
-  bottom:140px; /* dinaikkan supaya tidak nutup cart */
+  bottom:90px; /* sedikit di atas cart */
   right:15px;
   background:#00bcd4;
   color:#fff;
@@ -128,8 +128,8 @@ header{
   border-radius:20px;
   display:none;
   z-index:999;
+  transition:0.3s;
 }
-
 /* POPUP */
 #installPopup{
   position:fixed;
@@ -336,8 +336,7 @@ function minus(id){
 }
 function update(){
 
-  // total
-  document.getElementById("total").innerText = rupiah(total || 0);
+  document.getElementById("total").innerText = rupiah(total);
 
   let text = "🛒 ORDER DUTA TERANG LED%0A%0A";
   let summary = "";
@@ -357,6 +356,22 @@ function update(){
     }
   }
 
+  document.getElementById("summary").innerText =
+    summary || "Belum ada order";
+
+  document.getElementById("count").innerText =
+    count + " item";
+
+  document.getElementById("wa").href =
+    "https://wa.me/6288224166270?text=" + encodeURIComponent(text);
+
+  // show/hide cart
+  document.getElementById("cart").classList.toggle("hide", !hasItem);
+
+  // install button ikut naik/turun
+  document.getElementById("installBtn").style.bottom =
+    hasItem ? "110px" : "90px";
+}
   // ringkasan
   document.getElementById("summary").innerText =
     summary || "Belum ada order";
