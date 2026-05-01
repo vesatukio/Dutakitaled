@@ -42,9 +42,66 @@
 
         #btn-reset { background: #eee; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #666; }
         #btn-wa { background: var(--wa); color: #fff; text-decoration: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; font-size: 13px; display: inline-block; }
+/* POPUP INSTALL MELAYANG */
+#installContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 85%;
+    max-width: 320px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    z-index: 9999;
+    text-align: center;
+    display: none; /* Sembunyi secara default */
+    animation: zoomIn 0.3s ease-out;
+}
 
-        #installBtn { margin-top: 10px; padding: 6px 12px; border: none; border-radius: 5px; background: #fff; color: var(--primary); font-weight: bold; display: none; cursor: pointer; }
-    </style>
+@keyframes zoomIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+#installContainer h3 { margin: 0 0 10px; color: var(--primary); font-size: 18px; }
+#installContainer p { font-size: 13px; color: #666; margin-bottom: 15px; line-height: 1.4; }
+
+#btnDoInstall {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+}
+
+.close-popup {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #eee;
+    color: #999;
+    border: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Background Gelap di Belakang Popup */
+#overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 9998;
+    display: none;
+}
+        </style>
 </head>
 <body>
 
@@ -56,7 +113,7 @@
             <span>⚡ COD Seluruh Indonesia • Respon Cepat 24 Jam • Produk Berkualitas • </span>
         </div>
     </div>
-    <button id="installBtn">📲 INSTALL APP</button>
+    
 </header>
 
 <div class="category">
@@ -219,21 +276,55 @@ if ('serviceWorker' in navigator) {
 }
 
 let deferredPrompt;
+const installContainer = document.getElementById("installContainer");
+const overlay = document.getElementById("overlay");
+const btnDoInstall = document.getElementById("btnDoInstall");
+
+// Menangkap event install
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    document.getElementById("installBtn").style.display = "inline-block";
-});
-
-document.getElementById("installBtn").addEventListener('click', async () => {
-    if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt = null;
-        document.getElementById("installBtn").style.display = "none";
+    
+    // Cek apakah user sudah pernah menutup popup di sesi ini
+    if (!sessionStorage.getItem('installDismissed')) {
+        showInstallPopup();
     }
 });
 
+function showInstallPopup() {
+    installContainer.style.display = "block";
+    overlay.style.display = "block";
+}
+
+function closeInstallPopup() {
+    installContainer.style.display = "none";
+    overlay.style.display = "none";
+    // Simpan status agar popup tidak muncul lagi selama sesi ini dibuka
+    sessionStorage.setItem('installDismissed', 'true');
+}
+
+btnDoInstall.addEventListener('click', async () => {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response: ${outcome}`);
+        deferredPrompt = null;
+        closeInstallPopup();
+    }
+});
+
+// Menutup popup jika user mengklik area gelap (overlay)
+overlay.addEventListener('click', closeInstallPopup);
+
 load();
 </script>
+    <!-- Popup Install App -->
+<div id="overlay"></div>
+<div id="installContainer">
+    <button class="close-popup" onclick="closeInstallPopup()">✕</button>
+    <h3>Duta Terang LED App</h3>
+    <p>🎁 <b>PROMO KHUSUS!</b><br>Dapatkan info stok terbaru dan respon lebih cepat langsung dari layar HP Anda.</p>
+    <button id="btnDoInstall">📲 Install Sekarang</button>
+</div>
 </body>
 </html>
