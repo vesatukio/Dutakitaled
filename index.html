@@ -336,16 +336,20 @@ function minus(id){
 }
 function update(){
 
-  document.getElementById("total").innerText = rupiah(total);
+  function update(){
 
   let text = "🛒 ORDER DUTA TERANG LED%0A%0A";
   let summary = "";
   let count = 0;
   let hasItem = false;
 
+  total = 0;
+
   for(let k in order){
     if(order[k].qty > 0){
       hasItem = true;
+
+      total += order[k].qty * order[k].harga;
 
       let line = order[k].nama + " x" + order[k].qty;
 
@@ -356,39 +360,30 @@ function update(){
     }
   }
 
+  // TOTAL
+  document.getElementById("total").innerText = rupiah(total);
+
+  // RINGKASAN
   document.getElementById("summary").innerText =
     summary || "Belum ada order";
 
+  // JUMLAH ITEM
   document.getElementById("count").innerText =
     count + " item";
 
-  document.getElementById("wa").href =
-    "https://wa.me/6288224166270?text=" + encodeURIComponent(text);
-
-  // show/hide cart
-  document.getElementById("cart").classList.toggle("hide", !hasItem);
-
-  // install button ikut naik/turun
-  document.getElementById("installBtn").style.bottom =
-    hasItem ? "110px" : "90px";
-}
-  // ringkasan
-  document.getElementById("summary").innerText =
-    summary || "Belum ada order";
-
-  // jumlah item
-  document.getElementById("count").innerText =
-    count + " item";
-
-  // WA link
+  // WA LINK
   document.getElementById("wa").href =
     "https://wa.me/6288224166270?text=" +
     encodeURIComponent(text);
 
-  // show/hide cart
-  document.getElementById("cart").classList.toggle("hide", !hasItem);
-}
+  // CART SHOW/HIDE
+  document.getElementById("cart")
+    .classList.toggle("hide", !hasItem);
 
+  // INSTALL BUTTON NGIKUT CART
+  document.getElementById("installBtn").style.bottom =
+    hasItem ? "110px" : "90px";
+}
 function resetCart(){
   order={};total=0;
   document.querySelectorAll(".qty span").forEach(e=>e.innerText=0);
