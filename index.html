@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+  
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Duta Terang LED</title>
-
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00bcd4">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 body{margin:0;font-family:Arial;background:#f5f6f8}
 
@@ -419,7 +422,29 @@ function resetCart(){
 
   update();
 }
-</script>
+   </script>
+  <script>
+ const installBtn = document.getElementById("installBtn");
+const installPopup = document.getElementById("installPopup");
+    </script>
+<button id="installBtn" style="display:none;position:fixed;bottom:80px;right:10px;z-index:999;">
+  Install App
+</button>
 
+<div id="installPopup" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.7);
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+">
+  <div style="background:#fff;padding:20px;border-radius:10px;text-align:center;">
+    <p>Install Duta Terang LED?</p>
+    <button onclick="installApp()">Install</button>
+    <button onclick="closePopup()">Batal</button>
+  </div>
+</div>
 </body>
 </html>
