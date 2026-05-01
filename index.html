@@ -349,34 +349,48 @@ function update(){
 
   let hasItem = false;
 
-  let text = "🛒 ORDER DUTA TERANG LED%0A%0A";
-  let summary = "";
   let itemCount = 0;
+
+  // 🔥 invoice otomatis
+  let now = new Date();
+  let tanggal = now.toLocaleDateString("id-ID");
+  let jam = now.toLocaleTimeString("id-ID", {hour:"2-digit", minute:"2-digit"});
+  let invoice = "INV-" + now.getFullYear() + (now.getMonth()+1) + now.getDate() + "-" + Math.floor(Math.random()*900+100);
+
+  let text = "";
+
+  text += "DUTA TERANG LED%0A";
+  text += "INVOICE: " + invoice + "%0A";
+  text += tanggal + " " + jam + "%0A";
+  text += "%0A--------------------%0A";
+
+  let summary = "";
 
   for(let k in order){
     if(order[k].qty > 0){
       hasItem = true;
 
-      let line = order[k].name+" x"+order[k].qty;
+      let line = `${order[k].name} x${order[k].qty}`;
 
       text += line + "%0A";
-      summary += line + ", ";
+      summary += line + "\n";
 
       itemCount += order[k].qty;
     }
   }
 
   text += "%0A--------------------%0A";
-  text += "Item : "+itemCount+" pcs%0A";
-  text += "Total: Rp "+total+"%0A";
-  text += "--------------------%0A%0A";
-  text += "Terima kasih sudah order 🙏";
+  text += `Total: Rp ${formatRupiah(total)}%0A`;
+  text += "--------------------%0A";
+  text += `Item: ${itemCount} pcs%0A`;
+  text += "--------------------%0A";
+  text += "Terima kasih 🙏";
 
   document.getElementById("summary").innerText =
     summary || "Belum ada order";
 
   document.getElementById("wa").href =
-    "https://wa.me/6288224166270?text="+text;
+    "https://wa.me/6288224166270?text=" + encodeURIComponent(text);
 
   if(hasItem){
     cart.classList.remove("hide");
@@ -384,7 +398,6 @@ function update(){
     cart.classList.add("hide");
   }
 }
-
 /* FILTER */
 function filter(cat,btn){
 
