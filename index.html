@@ -211,10 +211,16 @@ async function load(){
 /* RENDER */
 function render(){
   let html="";
+
   produk.forEach(p=>{
-    let harga=p.harga;
+
+    let harga = p.harga;
+
+    // ⬇️ TAMBAH INI
+    let kategori = (p.kategori || "lain").toString().toLowerCase().trim();
+
     html+=`
-    <div class="card">
+    <div class="card" data-cat="${kategori}">
       <img src="${p.gambar}" onclick="zoom(this.src)">
       <b>${p.nama}</b>
       Rp ${harga}
@@ -225,6 +231,7 @@ function render(){
       </div>
     </div>`;
   });
+
   list.innerHTML=html;
 }
 function renderKategori(){
@@ -289,7 +296,18 @@ function zoom(src){
 
 /* FILTER */
 function filter(cat,btn){
-  document.querySelectorAll(".category button").forEach(b=>b.classList.remove("active"));
+
+  // filter produk
+  document.querySelectorAll(".card").forEach(c=>{
+    let cc = c.dataset.cat;
+    c.style.display = (cat==="all" || cc===cat) ? "block" : "none";
+  });
+
+  // aktifkan tombol
+  document.querySelectorAll(".category button").forEach(b=>{
+    b.classList.remove("active");
+  });
+
   btn.classList.add("active");
 }
 
