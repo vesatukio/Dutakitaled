@@ -177,11 +177,52 @@ header{
 <div class="container" id="list"></div>
 
 <div id="cart" class="hide">
-  <button onclick="resetCart()">Reset</button>
+
+  <!-- KIRI -->
   <div>
-    Total: Rp <span id="total">0</span><br>
-    <a id="wa">Checkout WA</a>
+    <button onclick="resetCart()" style="
+      background:#f44336;
+      color:#fff;
+      border:none;
+      padding:8px 12px;
+      border-radius:8px;
+      font-size:12px;
+      cursor:pointer;
+    ">
+      Reset
+    </button>
   </div>
+
+  <!-- KANAN -->
+  <div style="text-align:right">
+
+    <div style="font-weight:bold;color:#00bcd4;">
+      Total: Rp <span id="total">0</span>
+    </div>
+
+    <small id="summary" style="color:#666;display:block;">
+      Belum ada order
+    </small>
+
+    <small id="count" style="color:#333;font-weight:bold;display:block;">
+      0 item
+    </small>
+
+    <a id="wa" style="
+      display:inline-block;
+      margin-top:6px;
+      background:#25D366;
+      color:#fff;
+      padding:6px 10px;
+      border-radius:6px;
+      text-decoration:none;
+      font-size:12px;
+    ">
+      Checkout WA
+    </a>
+
+  </div>
+
 </div>
 
 <div id="zoom" onclick="this.style.display='none'">
