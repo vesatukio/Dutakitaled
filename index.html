@@ -3,420 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#00bcd4">
     <title>Duta Terang LED</title>
-
-    <!-- ICON ANDROID / IOS -->
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="icon-192.png">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#00bcd4">
 
     <style>
-        :root {
-            --primary: #00bcd4;
-            --secondary: #e91e63;
-            --success: #25D366;
-            --bg-body: #f5f6f8;
-            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+        :root { --primary: #00bcd4; --pink: #e91e63; --wa: #25D366; }
+        body { margin: 0; font-family: sans-serif; background: #f5f6f8; padding-bottom: 120px; }
+        
+        header { background: var(--primary); color: #fff; text-align: center; padding: 15px; position: relative; }
+        .running-wrap { overflow: hidden; white-space: nowrap; margin-top: 5px; background: rgba(0,0,0,0.1); padding: 5px 0; }
+        .running-track { display: flex; width: max-content; animation: marquee 15s linear infinite; }
+        .running-track span { padding-right: 50px; font-size: 12px; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        .category { display: flex; gap: 8px; padding: 10px; background: #fff; position: sticky; top: 0; z-index: 100; overflow-x: auto; }
+        .category button { border: none; padding: 8px 15px; border-radius: 20px; background: #eee; cursor: pointer; white-space: nowrap; }
+        .category button.active { background: var(--primary); color: #fff; }
+
+        .container { padding: 10px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 600px; margin: auto; }
+        .card { background: #fff; border-radius: 10px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: relative; display: flex; flex-direction: column; }
+        .card img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; cursor: pointer; }
+        .price-new { color: var(--pink); font-weight: bold; display: block; margin: 4px 0; }
+        
+        .qty { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 8px; }
+        .qty button { width: 30px; height: 30px; border: none; background: var(--primary); color: #white; border-radius: 6px; color: #fff; font-size: 18px; cursor: pointer; }
+
+        /* FLOATING CART */
+        #cart { 
+            position: fixed; bottom: 15px; left: 15px; right: 15px; 
+            background: #fff; padding: 15px; border-radius: 12px; 
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2); 
+            z-index: 999; display: flex; justify-content: space-between; align-items: center;
+            transition: 0.4s transform ease, 0.4s opacity ease;
         }
+        #cart.hide { transform: translateY(150%); opacity: 0; pointer-events: none; }
+        #summary { font-size: 11px; color: #666; white-space: pre-line; text-align: right; margin-bottom: 5px; max-height: 60px; overflow-y: auto; }
 
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: var(--bg-body);
-            color: #333;
-            padding-bottom: 100px; /* Space for floating cart */
-        }
+        #btn-reset { background: #eee; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #666; }
+        #btn-wa { background: var(--wa); color: #fff; text-decoration: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; font-size: 13px; display: inline-block; }
 
-        /* --- HEADER & ANNOUNCEMENT --- */
-        header {
-            background: var(--primary);
-            color: #fff;
-            text-align: center;
-            padding: 15px 10px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .running-wrap {
-            overflow: hidden;
-            white-space: nowrap;
-            margin-top: 8px;
-            background: rgba(0,0,0,0.1);
-            padding: 4px 0;
-        }
-
-        .running-track {
-            display: flex;
-            width: max-content;
-            animation: marquee 20s linear infinite;
-        }
-
-        .running-track span {
-            font-size: 11px;
-            font-weight: bold;
-            padding-right: 50px;
-            text-transform: uppercase;
-        }
-
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        /* --- CATEGORY --- */
-        .category {
-            display: flex;
-            gap: 8px;
-            padding: 12px;
-            background: #fff;
-            overflow-x: auto;
-            border-bottom: 1px solid #eee;
-        }
-
-        .category button {
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            background: #eee;
-            font-size: 13px;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: 0.3s;
-        }
-
-        .category button.active {
-            background: var(--primary);
-            color: #fff;
-        }
-
-        /* --- PRODUCT GRID --- */
-        .container {
-            padding: 15px;
-            max-width: 800px;
-            margin: auto;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-
-        .card {
-            background: #fff;
-            display: flex;
-            flex-direction: column;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            position: relative;
-            transition: transform 0.2s;
-        }
-
-        .card:active { transform: scale(0.98); }
-
-        .card img {
-            width: 100%;
-            height: 140px;
-            object-fit: cover;
-            cursor: zoom-in;
-        }
-
-        .card-info {
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .card b {
-            font-size: 14px;
-            margin-bottom: 5px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            height: 36px;
-        }
-
-        .price-old { font-size: 11px; color: #999; text-decoration: line-through; }
-        .price-new { color: var(--secondary); font-weight: bold; font-size: 15px; }
-
-        /* --- BADGES --- */
-        .discount {
-            position: absolute; top: 8px; right: 8px;
-            background: var(--secondary); color: #fff;
-            font-size: 10px; font-weight: bold;
-            padding: 3px 7px; border-radius: 4px;
-        }
-
-        .habis {
-            position: absolute; top: 8px; left: 8px;
-            background: rgba(0,0,0,0.7); color: #fff;
-            font-size: 10px; padding: 3px 7px; border-radius: 4px;
-        }
-
-        /* --- QTY CONTROL --- */
-        .qty {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: auto;
-            padding-top: 10px;
-        }
-
-        .qty button {
-            width: 30px; height: 30px;
-            border: none;
-            background: var(--primary);
-            color: #fff;
-            border-radius: 8px;
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        .qty button:disabled { background: #ccc; }
-
-        /* --- FLOATING CART --- */
-        #cart {
-            position: fixed;
-            bottom: 20px; left: 15px; right: 15px;
-            background: #fff;
-            padding: 15px;
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        #cart.hide { transform: translateY(150%); opacity: 0; }
-
-        #summary {
-            font-size: 11px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        #wa {
-            background: var(--success);
-            color: #fff;
-            padding: 10px 15px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 13px;
-        }
-
-        /* --- ZOOM MODAL --- */
-        #zoom {
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.9);
-            display: none; justify-content: center; align-items: center;
-            z-index: 2000;
-        }
-
-        #zoom img { max-width: 90%; max-height: 80%; border-radius: 8px; }
-
-        @media (max-width: 400px) {
-            .container { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
-        }
+        #installBtn { margin-top: 10px; padding: 6px 12px; border: none; border-radius: 5px; background: #fff; color: var(--primary); font-weight: bold; display: none; cursor: pointer; }
     </style>
 </head>
-
 <body>
 
 <header>
     <b>DUTA TERANG LED</b>
     <div class="running-wrap">
         <div class="running-track">
-            <span>⚡ COD Seluruh Indonesia • Respon Cepat 24 Jam • Produk Berkualitas Terjamin • </span>
-            <span>⚡ Order bisa via Shopee, TikTok, Tokopedia • Pengiriman Kilat • </span>
+            <span>⚡ COD Seluruh Indonesia • Respon Cepat 24 Jam • Produk Berkualitas • </span>
+            <span>⚡ COD Seluruh Indonesia • Respon Cepat 24 Jam • Produk Berkualitas • </span>
         </div>
     </div>
-    <button id="installBtn" style="margin-top:10px; padding:8px 12px; border:none; border-radius:20px; background:#fff; color:var(--primary); font-size:11px; font-weight:bold; display:none; cursor:pointer;">
-        📲 INSTALL APP
-    </button>
+    <button id="installBtn">📲 INSTALL APP</button>
 </header>
 
 <div class="category">
     <button class="active" onclick="filter('all',this)">Semua</button>
     <button onclick="filter('led',this)">LED</button>
     <button onclick="filter('alat',this)">Alat</button>
-    <button onclick="filter('casing',this)">Casing</button>
 </div>
 
-<div class="container" id="list">
-    <!-- Produk akan muncul di sini -->
-</div>
+<div class="container" id="list">Memuat produk...</div>
 
+<!-- KERANJANG (Awalnya tersembunyi dengan class 'hide') -->
 <div id="cart" class="hide">
     <div>
-        <button onclick="resetCart()" style="background:none; border:1px solid #ddd; color:#999; padding:8px 12px; border-radius:8px; font-size:12px; cursor:pointer;">
-            Reset
-        </button>
+        <button id="btn-reset" onclick="resetCart()">Reset</button>
     </div>
-
     <div style="text-align: right;">
-        <div id="summary">Belum ada order</div>
-        <div style="font-weight:bold; color:var(--primary); font-size:16px; margin-bottom:8px;">
-            Total: <span id="total">0</span>
-        </div>
-        <a id="wa" href="#">Checkout WA</a>
+        <div id="summary"></div>
+        <div style="font-weight:bold; color:var(--primary); margin-bottom: 8px;">Total: <span id="total">0</span></div>
+        <a id="btn-wa" href="#">Checkout WA</a>
     </div>
-</div>
-
-<div id="zoom" onclick="this.style.display='none'">
-    <img id="zoomImg">
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyhgdk0elMuqM4-00OIR8zbUqp-k80RnbuYyPDDqGHsEk7aSCg60kgT5HTYL_hIVSDc/exec";
-    let produk = [];
-    let order = {};
-    let total = 0;
+const API_URL = "https://script.google.com/macros/s/AKfycbyhgdk0elMuqM4-00OIR8zbUqp-k80RnbuYyPDDqGHsEk7aSCg60kgT5HTYL_hIVSDc/exec";
+let produk = [];
+let order = {};
+let total = 0;
 
-    // Load Data
-    async function load() {
-        try {
-            const res = await fetch(API_URL);
-            produk = await res.json();
-            render();
-        } catch (err) {
-            console.error("Gagal memuat data:", err);
-            document.getElementById("list").innerHTML = "<p>Gagal memuat data produk...</p>";
-        }
-    }
+async function load() {
+    try {
+        const res = await fetch(API_URL);
+        produk = await res.json();
+        render();
+    } catch (e) { document.getElementById("list").innerText = "Gagal memuat data."; }
+}
 
-    function rupiah(n) {
-        return "Rp " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
+function rupiah(n) { return "Rp " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
 
-    function render() {
-        let html = "";
-        produk.forEach(p => {
-            if (!p || !p.nama || !p.harga) return;
-
-            let kategori = (p.kategori || "lain").toLowerCase();
-            let hargaDiskon = p.harga - (p.harga * (p.diskon || 0) / 100);
-            let habis = Number(p.stok) <= 0;
-            let img = (p.gambar && p.gambar.startsWith("http")) ? p.gambar : "https://via.placeholder.com/150";
-
-            html += `
-            <div class="card" data-cat="${kategori}">
-                ${p.diskon > 0 ? `<div class="discount">-${p.diskon}%</div>` : ""}
-                ${habis ? `<div class="habis">HABIS</div>` : ""}
-                <img src="${img}" loading="lazy" onclick="zoom('${img}')">
-                <div class="card-info">
-                    <b>${p.nama}</b>
-                    ${p.diskon > 0 ? 
-                        `<span class="price-old">${rupiah(p.harga)}</span>
-                         <span class="price-new">${rupiah(hargaDiskon)}</span>` : 
-                        `<span class="price-new">${rupiah(p.harga)}</span>`
-                    }
-                    <div class="qty">
-                        <button onclick="minus('${p.id}')" ${habis ? 'disabled' : ''}>−</button>
-                        <span id="qty-${p.id}" style="font-weight:bold">0</span>
-                        <button onclick="plus('${p.id}', ${hargaDiskon}, '${p.nama}', ${p.stok})" ${habis ? 'disabled' : ''}>+</button>
-                    </div>
+function render() {
+    let html = "";
+    produk.forEach(p => {
+        let hargaDiskon = p.harga - (p.harga * (p.diskon || 0) / 100);
+        html += `
+        <div class="card" data-cat="${(p.kategori||'').toLowerCase()}">
+            <img src="${p.gambar || 'https://via.placeholder.com/150'}" loading="lazy">
+            <div style="margin-top:8px">
+                <b style="font-size:13px">${p.nama}</b>
+                <span class="price-new">${rupiah(hargaDiskon)}</span>
+                <div class="qty">
+                    <button onclick="changeQty('${p.id}', -1, ${hargaDiskon}, '${p.nama}')">−</button>
+                    <span id="qty-${p.id}" style="font-weight:bold">0</span>
+                    <button onclick="changeQty('${p.id}', 1, ${hargaDiskon}, '${p.nama}', ${p.stok})">+</button>
                 </div>
-            </div>`;
-        });
-        document.getElementById("list").innerHTML = html;
-    }
-
-    function plus(id, price, name, stok) {
-        if (!order[id]) order[id] = { qty: 0, name, price };
-        if (order[id].qty >= stok) return alert("Stok terbatas!");
-
-        order[id].qty++;
-        document.getElementById("qty-" + id).innerText = order[id].qty;
-        total += price;
-        update();
-    }
-
-    function minus(id) {
-        if (order[id] && order[id].qty > 0) {
-            total -= order[id].price;
-            order[id].qty--;
-            document.getElementById("qty-" + id).innerText = order[id].qty;
-            update();
-        }
-    }
-
-    function update() {
-        document.getElementById("total").innerText = rupiah(total);
-        const cartEl = document.getElementById("cart");
-        
-        let hasItem = false;
-        let waText = "🛒 *ORDER DUTA TERANG LED*%0A%0A";
-        let summaryText = "";
-        let itemCount = 0;
-
-        for (let k in order) {
-            if (order[k].qty > 0) {
-                hasItem = true;
-                let line = `• ${order[k].name} (x${order[k].qty})`;
-                waText += line + "%0A";
-                summaryText += line + "\n";
-                itemCount += order[k].qty;
-            }
-        }
-
-        waText += `%0A*Total: ${rupiah(total)}*%0A*Item: ${itemCount} pcs*%0A%0AMohon diproses kak 🙏`;
-        
-        document.getElementById("summary").innerText = summaryText || "Belum ada order";
-        document.getElementById("wa").href = "https://wa.me/6288224166270?text=" + waText;
-
-        if (hasItem) cartEl.classList.remove("hide");
-        else cartEl.classList.add("hide");
-    }
-
-    function filter(cat, btn) {
-        document.querySelectorAll(".card").forEach(c => {
-            c.style.display = (cat === "all" || c.dataset.cat === cat) ? "flex" : "none";
-        });
-        document.querySelectorAll(".category button").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-    }
-
-    function zoom(src) {
-        document.getElementById("zoomImg").src = src;
-        document.getElementById("zoom").style.display = "flex";
-    }
-
-    function resetCart() {
-        if(confirm("Hapus semua pesanan?")) {
-            order = {};
-            total = 0;
-            document.querySelectorAll("[id^='qty-']").forEach(el => el.innerText = "0");
-            update();
-        }
-    }
-
-    // PWA & Service Worker
-    if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("sw.js").catch(console.error);
-    }
-
-    let deferredPrompt;
-    window.addEventListener("beforeinstallprompt", (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        document.getElementById("installBtn").style.display = "inline-block";
+            </div>
+        </div>`;
     });
+    document.getElementById("list").innerHTML = html;
+}
 
-    document.getElementById("installBtn").addEventListener("click", async () => {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt = null;
-            document.getElementById("installBtn").style.display = "none";
+function changeQty(id, delta, price, name, stok = 999) {
+    if (!order[id]) order[id] = { qty: 0, name, price };
+    
+    if (delta > 0 && order[id].qty >= stok) return alert("Stok habis!");
+    if (delta < 0 && order[id].qty <= 0) return;
+
+    order[id].qty += delta;
+    total += (delta * price);
+    
+    document.getElementById(`qty-${id}`).innerText = order[id].qty;
+    updateCart();
+}
+
+function updateCart() {
+    const cartEl = document.getElementById("cart");
+    const summaryEl = document.getElementById("summary");
+    const totalEl = document.getElementById("total");
+    const waLink = document.getElementById("btn-wa");
+
+    let hasItem = false;
+    let summaryText = "";
+    let waText = "🛒 *ORDER DUTA TERANG LED*%0A%0A";
+
+    for (let id in order) {
+        if (order[id].qty > 0) {
+            hasItem = true;
+            let line = `• ${order[id].name} (x${order[id].qty})`;
+            summaryText += line + "\n";
+            waText += line + "%0A";
         }
-    });
+    }
 
-    load();
+    totalEl.innerText = rupiah(total);
+    summaryEl.innerText = summaryText;
+    waLink.href = "https://wa.me/6288224166270?text=" + waText + "%0A*Total: " + rupiah(total) + "*";
+
+    if (hasItem && total > 0) cartEl.classList.remove("hide");
+    else cartEl.classList.add("hide");
+}
+
+function resetCart() {
+    if(confirm("Hapus semua pesanan?")) {
+        order = {};
+        total = 0;
+        document.querySelectorAll("[id^='qty-']").forEach(el => el.innerText = "0");
+        updateCart();
+    }
+}
+
+function filter(cat, btn) {
+    document.querySelectorAll(".card").forEach(c => {
+        c.style.display = (cat === 'all' || c.dataset.cat === cat) ? "flex" : "none";
+    });
+    document.querySelectorAll(".category button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+}
+
+// SERVICE WORKER & PWA
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').then(() => console.log("SW Active"));
+}
+
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById("installBtn").style.display = "inline-block";
+});
+
+document.getElementById("installBtn").addEventListener('click', async () => {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt = null;
+        document.getElementById("installBtn").style.display = "none";
+    }
+});
+
+load();
 </script>
-
 </body>
 </html>
