@@ -425,6 +425,11 @@ function resetCart(){
 
   update();
 }
+  if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js")
+    .then(() => console.log("SW Registered"))
+    .catch(err => console.log("SW Failed", err));
+}
 </script>
 
 </body>
