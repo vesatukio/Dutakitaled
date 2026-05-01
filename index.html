@@ -2,330 +2,421 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Duta Terang LED</title>
 
 <style>
-body{
-  font-family:sans-serif;
-  margin:0;
-  background:#f9f9f9;
-  padding-bottom:80px;
-}
+body{margin:0;font-family:Arial;background:#f5f6f8}
 
 header{
-  background:#00bcd4;
-  color:#fff;
-  padding:12px;
-  text-align:center;
-  font-size:1.2em;
-  font-weight:bold;
+  background:#00bcd4;color:#fff;text-align:center;padding:10px
 }
 
-/* SEARCH */
-#search{
-  width:100%;
+.category{
+  display:flex;gap:6px;padding:8px;background:#fff;
+  position:sticky;top:0;z-index:10
+}
+
+.category button{
+  border:none;padding:6px 10px;border-radius:6px;
+  background:#eee;font-size:12px;cursor:pointer
+}
+
+.category button.active{background:#00bcd4;color:#fff}
+
+.container{
   padding:10px;
-  border-radius:10px;
-  border:1px solid #ccc;
-}
-
-/* KATEGORI */
-#kategori{
-  display:flex;
-  flex-wrap:wrap;
-  gap:5px;
-  padding:10px;
-}
-
-#kategori button{
-  background:#e0f7fa;
-  border:none;
-  border-radius:20px;
-  padding:6px 12px;
-  font-size:0.85em;
-  cursor:pointer;
-}
-
-/* PRODUK */
-#produk{
+  max-width:600px;
+  margin:auto;
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-  gap:12px;
-  padding:10px;
+  grid-template-columns:repeat(2, 1fr);
+  gap:10px;
 }
 
 .card{
   background:#fff;
-  border-radius:12px;
-  padding:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
   display:flex;
   flex-direction:column;
-}
-
-.card img{
+  gap:6px;
+  padding:10px;
+  border-radius:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
+  position:relative;
+}.card img{
   width:100%;
-  height:90px;
-  object-fit:contain;
-  margin-bottom:5px;
-}
-
-.card h4{
-  margin:0;
-  font-size:0.9em;
-}
-
-.harga{
-  color:#e91e63;
-  font-weight:bold;
-  margin:4px 0;
+  height:120px;
+  object-fit:cover;
+  border-radius:8px;
+  cursor:pointer;
 }
 
 .qty{
   display:flex;
-  justify-content:center;
-  gap:5px;
-  margin-top:8px;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:5px;
 }
 
 .qty button{
-  width:28px;
-  height:28px;
+  padding:4px 10px;
   border:none;
+  background:#00bcd4;
+  color:#fff;
   border-radius:6px;
-  background:#eee;
 }
 
-.qty input{
-  width:40px;
-  text-align:center;
+.card b{
+  font-size:13px;
+  min-height:32px;
 }
 
-/* FLOAT */
-#floatingTotal{
+.discount{
+  position:absolute;top:5px;right:5px;
+  background:red;color:#fff;font-size:10px;
+  padding:3px 6px;border-radius:5px
+}
+
+.habis{
+  position:absolute;top:5px;left:5px;
+  background:black;color:#fff;font-size:10px;
+  padding:3px 6px;border-radius:5px
+}
+
+.price-old{font-size:12px;color:#999;text-decoration:line-through}
+.price-new{color:#e91e63;font-weight:bold}
+
+.qty{display:flex;align-items:center;gap:6px}
+
+#cart{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;padding:10px;
+  display:flex;justify-content:space-between;
+  box-shadow:0 -2px 10px rgba(0,0,0,0.2)
+}
+
+#wa{
+  background:#25D366;color:#fff;
+  padding:10px;border-radius:6px;
+  text-decoration:none
+}
+
+#zoom{
+  position:fixed;inset:0;background:rgba(0,0,0,0.9);
+  display:none;justify-content:center;align-items:center
+}
+
+#zoom img{width:100%;height:100%;object-fit:contain}
+  /* FLOATING CART */
+#cart{
   position:fixed;
-  bottom:70px;
+  bottom:10px;
+  left:10px;
   right:10px;
   background:#fff;
-  padding:6px 12px;
-  border-radius:20px;
-  box-shadow:0 2px 6px rgba(0,0,0,.3);
-  font-weight:bold;
-}
+  padding:10px;
+  border-radius:12px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.2);
 
-/* FOOTER */
-.footer{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:#fff;
   display:flex;
-  justify-content:space-around;
-  padding:5px 0;
+  justify-content:space-between;
+  align-items:center;
+
+  transition:0.3s;
+  z-index:999;
 }
 
-.footer button{
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  border:none;
+/* HIDE STATE */
+#cart.hide{
+  transform:translateY(120%);
+  opacity:0;
+  pointer-events:none;
+}
+  header{
+  background:#00bcd4;
   color:#fff;
-  font-size:18px;
+  text-align:center;
+  padding:10px;
+  position:relative;
+  overflow:hidden;
+}
+/* teks berjalan */
+.running-wrap{
+  overflow:hidden;
+  white-space:nowrap;
+  margin-top:4px;
 }
 
-.keranjang{background:#4caf50}
-.reset{background:#f44336}
+.running-track{
+  display:flex;
+  width:max-content;
+  animation:marquee 12s linear infinite;
+}
+
+.running-track span{
+  white-space:nowrap;
+  font-size:12px;
+  opacity:0.9;
+  padding-right:50px;
+}
+
+/* animasi jalan terus tanpa putus */
+@keyframes marquee{
+  0%{
+    transform:translateX(0);
+  }
+  100%{
+    transform:translateX(-50%);
+  }
+}
 </style>
 </head>
 
 <body>
 
-<header>Duta Terang LED</header>
+<header>
+  <b>Duta Terang LED</b><br>
+  <div class="running-wrap">
+  <div class="running-track">
+      <span>COD • Seluruh Indonesia ⚡ Fast Response • Produk berkualitas • Respon Cepat 24 Jam • </span>
+    <span>COD • Seluruh Indonesia ⚡ order bisa shopee, tiktok, tokopedia • Produk bagus • Respon Cepat 24 Jam • </span>
+  </div>
+</div>
+</header>
 
-<div style="padding:10px">
-  <input id="search" placeholder="Cari produk..." oninput="cari(this.value)">
+<div class="category">
+  <button class="active" onclick="filter('all',this)">Semua</button>
+  <button onclick="filter('led',this)">LED</button>
+  <button onclick="filter('alat',this)">Alat</button>
+  <button onclick="filter('casing',this)">Casing</button>
 </div>
 
-<div id="kategori"></div>
-<div id="produk">Loading produk...</div>
+<div class="container" id="list"></div>
 
-<div id="floatingTotal">0 Barang | Rp 0</div>
+<div id="cart" class="hide">
 
-<div class="footer">
-  <button class="keranjang" onclick="focusSearch()">🔍</button>
-  <button class="keranjang" onclick="checkout()">🛒</button>
-  <button class="reset" onclick="resetCart()">🔄</button>
+  <!-- KIRI: RESET SAJA -->
+  <div>
+    <button onclick="resetCart()" style="
+      background:#e91e63;
+      color:#fff;
+      border:none;
+      padding:8px 12px;
+      border-radius:8px;
+      font-size:12px;
+      cursor:pointer;
+    ">
+      Reset
+    </button>
+  </div>
+
+  <!-- KANAN: VERTIKAL -->
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+
+    <div style="font-weight:bold;color:#00bcd4;">
+      Total: Rp <span id="total">0</span>
+    </div>
+
+    <small id="summary" style="color:#666;max-width:180px;text-align:right;">
+      Belum ada order
+    </small>
+
+    <a id="wa" style="
+      background:#25D366;
+      color:#fff;
+      padding:8px 12px;
+      border-radius:8px;
+      text-decoration:none;
+      font-size:12px;
+      margin-top:4px;
+    ">
+      Checkout WA
+    </a>
+
+  </div>
+
+</div>
+
+
+<div id="zoom" onclick="this.style.display='none'">
+  <img id="zoomImg">
 </div>
 
 <script>
-const apiURL = "https://script.google.com/macros/s/AKfycbyvF-VzgZyEzaPup3-M7UCCq8fdHoyW4QIIDAUXjV8TUHgd8kOdbiU2rRonnmDY_dzM/exec";
-const noWA = "6288224166270";
 
-let produkList = [];
-let currentData = [];
-let cart = JSON.parse(localStorage.getItem("cart") || "{}");
+const API_URL = "https://script.google.com/macros/s/AKfycbyhgdk0elMuqM4-00OIR8zbUqp-k80RnbuYyPDDqGHsEk7aSCg60kgT5HTYL_hIVSDc/exec";
+
+let produk = [];
+let order = {};
+let total = 0;
+
+/* MAP KATEGORI */
+function mapKategori(k){
+  if(!k) return "lain";
+  return String(k).toLowerCase();
+}
 
 /* LOAD DATA */
-fetch(apiURL)
-.then(res => res.json())
-.then(res => {
-  let rows = res.data || [];
-
-  produkList = rows.map(r => ({
-    id: r.id, // PENTING: pakai ID asli
-    nama: r.nama,
-    harga: Number(r.harga) || 0,
-    kategori: (r.kategori || "").toUpperCase().trim(),
-    gambar: r.gambar || "https://via.placeholder.com/150"
-  }));
-
-  buatKategori();
-  currentData = produkList;
-  tampil(currentData);
-})
-.catch(err => {
-  console.error(err);
-  document.getElementById("produk").innerHTML = "Gagal load data";
-});
-
-/* KATEGORI */
-function buatKategori(){
-  let set = new Set();
-
-  produkList.forEach(p => {
-    if(p.kategori) set.add(p.kategori);
-  });
-
-  let html = `<button onclick="tampil(produkList)">SEMUA</button>`;
-
-  set.forEach(k => {
-    html += `<button onclick="klikKategori('${k}')">${k}</button>`;
-  });
-
-  document.getElementById("kategori").innerHTML = html;
+async function load(){
+  const res = await fetch(API_URL);
+  produk = await res.json();
+  render();
 }
 
-function klikKategori(k){
-  currentData = produkList.filter(p => p.kategori === k);
-  tampil(currentData);
+/* FORMAT RUPIAH */
+function rupiah(n){
+  return "Rp " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,".");
 }
 
-/* SEARCH */
-function cari(text){
-  text = text.toLowerCase().trim();
-
-  if(!text){
-    tampil(produkList);
-    return;
-  }
-
-  currentData = produkList.filter(p =>
-    p.nama.toLowerCase().includes(text) ||
-    String(p.harga).includes(text)
-  );
-
-  tampil(currentData);
-}
-
-/* TAMPIL */
-function tampil(data){
-  if(!data.length){
-    document.getElementById("produk").innerHTML = "Produk tidak ditemukan";
-    return;
-  }
+/* RENDER PRODUK */
+function render(){
 
   let html = "";
 
-  data.forEach(p => {
-    let qty = cart[p.id] || 0;
+  produk.forEach(p => {
+
+    if(!p || !p.nama || !p.harga) return;
+
+    let kategori = mapKategori(p.kategori);
+    let hargaDiskon = p.harga - (p.harga * (p.diskon || 0) / 100);
+    let habis = Number(p.stok) <= 0;
+
+    let img = (p.gambar && p.gambar.startsWith("http"))
+      ? p.gambar
+      : "https://via.placeholder.com/100";
 
     html += `
-    <div class="card">
-      <img src="${p.gambar}">
-      <h4>${p.nama}</h4>
-      <div class="harga">Rp ${p.harga.toLocaleString()}</div>
+    <div class="card" data-cat="${kategori}">
+      ${p.diskon>0?`<div class="discount">-${p.diskon}%</div>`:""}
+      ${habis?`<div class="habis">HABIS</div>`:""}
 
-      <div class="qty">
-        <button onclick="ubah(${p.id},-1)">-</button>
-        <input value="${qty}" onchange="manual(${p.id},this.value)">
-        <button onclick="ubah(${p.id},1)">+</button>
+      <img src="${img}" onclick="zoom(this.src)">
+
+      <div>
+        <b>${p.nama}</b><br>
+
+        ${p.diskon>0?
+          `<span class="price-old">${rupiah(p.harga)}</span><br>
+           <span class="price-new">${rupiah(hargaDiskon)}</span>` :
+          `<span class="price-new">${rupiah(p.harga)}</span>`
+        }
+
+        <div class="qty">
+          <button onclick="minus('${p.id}')" ${habis?'disabled':''}>-</button>
+          <span id="${p.id}">0</span>
+          <button onclick="plus('${p.id}',${hargaDiskon},'${p.nama}',${p.stok})" ${habis?'disabled':''}>+</button>
+        </div>
       </div>
     </div>`;
   });
 
-  document.getElementById("produk").innerHTML = html;
-  hitungTotal();
+  document.getElementById("list").innerHTML = html;
 }
 
-/* CART */
-function ubah(id,val){
-  cart[id] = (cart[id] || 0) + val;
-  if(cart[id] < 0) cart[id] = 0;
-  simpan();
+/* PLUS */
+function plus(id, price, name, stok){
+
+  if(!order[id]){
+    order[id] = {qty:0,name,price};
+  }
+
+  if(order[id].qty >= stok) return;
+
+  order[id].qty++;
+  document.getElementById(id).innerText = order[id].qty;
+
+  total += price;
+  update();
 }
 
-function manual(id,val){
-  cart[id] = parseInt(val) || 0;
-  simpan();
+/* MINUS */
+function minus(id){
+
+  if(order[id] && order[id].qty > 0){
+    order[id].qty--;
+    document.getElementById(id).innerText = order[id].qty;
+
+    total -= order[id].price;
+    update();
+  }
 }
 
-function simpan(){
-  localStorage.setItem("cart", JSON.stringify(cart));
-  tampil(currentData);
-}
+/* UPDATE CART */
+function update(){
 
-/* RESET */
-function resetCart(){
-  cart = {};
-  simpan();
-}
+  document.getElementById("total").innerText = total;
 
-/* CHECKOUT */
-function checkout(){
-  let text = "Order:\n\n";
-  let total = 0;
-  let ada = false;
+  const cart = document.getElementById("cart");
 
-  produkList.forEach(p => {
-    let q = cart[p.id] || 0;
-    if(q > 0){
-      ada = true;
-      total += q * p.harga;
-      text += `${p.nama} x ${q}\n`;
+  let hasItem = false;
+
+  let text = "🛒 ORDER DUTA TERANG LED%0A%0A";
+  let summary = "";
+  let itemCount = 0;
+
+  for(let k in order){
+    if(order[k].qty > 0){
+      hasItem = true;
+
+      let line = order[k].name+" x"+order[k].qty;
+
+      text += line + "%0A";
+      summary += line + ", ";
+
+      itemCount += order[k].qty;
     }
-  });
-
-  if(!ada){
-    alert("Belum ada pesanan");
-    return;
   }
 
-  text += `\nTotal: Rp ${total.toLocaleString()}`;
+  text += "%0A--------------------%0A";
+  text += "Item : "+itemCount+" pcs%0A";
+  text += "Total: Rp "+total+"%0A";
+  text += "--------------------%0A%0A";
+  text += "Terima kasih sudah order 🙏";
 
-  if(confirm(text + "\n\nKirim WhatsApp?")){
-    window.open(`https://wa.me/${noWA}?text=${encodeURIComponent(text)}`);
+  document.getElementById("summary").innerText =
+    summary || "Belum ada order";
+
+  document.getElementById("wa").href =
+    "https://wa.me/6288224166270?text="+text;
+
+  if(hasItem){
+    cart.classList.remove("hide");
+  }else{
+    cart.classList.add("hide");
   }
 }
 
-/* UI */
-function focusSearch(){
-  document.getElementById("search").focus();
-}
+/* FILTER */
+function filter(cat,btn){
 
-function hitungTotal(){
-  let total = 0;
-  let count = 0;
-
-  produkList.forEach(p => {
-    let q = cart[p.id] || 0;
-    total += q * p.harga;
-    count += q;
+  document.querySelectorAll(".card").forEach(c=>{
+    let cc = c.dataset.cat;
+    c.style.display = (cat==="all" || cc===cat) ? "flex" : "none";
   });
 
-  document.getElementById("floatingTotal").innerText =
-    `${count} Barang | Rp ${total.toLocaleString()}`;
+  document.querySelectorAll(".category button").forEach(b=>{
+    b.classList.remove("active");
+  });
+
+  btn.classList.add("active");
+}
+
+/* ZOOM */
+function zoom(src){
+  document.getElementById("zoomImg").src = src;
+  document.getElementById("zoom").style.display="flex";
+}
+
+load();
+function resetCart(){
+
+  order = {};
+  total = 0;
+
+  document.querySelectorAll(".qty span").forEach(el=>{
+    el.innerText = "0";
+  });
+
+  update();
 }
 </script>
 
