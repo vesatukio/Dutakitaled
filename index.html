@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Duta Terang LED</title>
-
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00bcd4">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <style>
 body{margin:0;font-family:Arial;background:#f5f6f8}
 
@@ -167,6 +170,63 @@ header{
   100%{
     transform:translateX(-50%);
   }
+}
+  /* INSTALL BUTTON */
+#installBtn{
+  position:fixed;
+  bottom:90px;
+  right:15px;
+  background:#00bcd4;
+  color:#fff;
+  border:none;
+  padding:10px 14px;
+  border-radius:30px;
+  font-size:12px;
+  display:none;
+  z-index:9999;
+  box-shadow:0 4px 10px rgba(0,0,0,0.2);
+  animation:fadeInUp 0.5s;
+}
+
+/* POPUP INSTALL */
+#installPopup{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.popupBox{
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  text-align:center;
+  width:80%;
+  max-width:300px;
+  animation:scaleUp 0.3s;
+}
+
+.popupBox button{
+  background:#00bcd4;
+  color:#fff;
+  border:none;
+  padding:10px 20px;
+  border-radius:8px;
+  margin-top:10px;
+}
+
+/* ANIMASI */
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+@keyframes scaleUp{
+  from{transform:scale(0.8)}
+  to{transform:scale(1)}
 }
 </style>
 </head>
@@ -419,6 +479,59 @@ function resetCart(){
   update();
 }
 </script>
+  <script>
+let deferredPrompt;
 
+/* TANGKAP EVENT INSTALL */
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  // munculkan tombol
+  document.getElementById("installBtn").style.display = "block";
+
+  // munculkan popup setelah 3 detik
+  setTimeout(()=>{
+    document.getElementById("installPopup").style.display="flex";
+  },3000);
+});
+
+/* KLIK INSTALL */
+function installApp(){
+  if(!deferredPrompt) return;
+
+  deferredPrompt.prompt();
+
+  deferredPrompt.userChoice.then(choice=>{
+    if(choice.outcome==="accepted"){
+      document.getElementById("installPopup").style.display="none";
+      document.getElementById("installBtn").style.display="none";
+    }
+  });
+}
+
+/* AUTO CLOSE POPUP */
+document.getElementById("installPopup").addEventListener("click", (e)=>{
+  if(e.target.id==="installPopup"){
+    e.target.style.display="none";
+  }
+});
+
+/* REGISTER SERVICE WORKER */
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js")
+  .then(()=>console.log("PWA aktif"))
+  .catch(err=>console.log("SW gagal",err));
+}
+</script>
+<div id="installPopup">
+  <div class="popupBox">
+    <h3>Install App</h3>
+    <p>Biar belanja lebih cepat 🚀<br>Pasang Duta Terang LED</p>
+    <button onclick="installApp()">Install</button>
+  </div>
+</div>
+
+<button id="installBtn" onclick="installApp()">⬇ Install</button>
 </body>
 </html>
