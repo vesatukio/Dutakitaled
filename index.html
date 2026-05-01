@@ -228,6 +228,27 @@ header{
   from{transform:scale(0.8)}
   to{transform:scale(1)}
 }
+  #closeFloating{
+  position:fixed;
+  top:15px;
+  right:15px;
+  z-index:10000;
+
+  background:#fff;
+  color:#000;
+  border:none;
+  border-radius:50%;
+  width:35px;
+  height:35px;
+
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+
+  box-shadow:0 2px 8px rgba(0,0,0,0.3);
+
+  display:none;
+}
 </style>
 </head>
 
@@ -478,10 +499,19 @@ function resetCart(){
 
   update();
 }
+
+    function showPopup(){
+  document.getElementById("installPopup").style.display = "flex";
+  document.getElementById("closeFloating").style.display = "block";
+}
+
+function closePopup(){
+  document.getElementById("installPopup").style.display = "none";
+  document.getElementById("closeFloating").style.display = "none";
+}
+let deferredPrompt;
 </script>
   <script>
-let deferredPrompt;
-
 /* TANGKAP EVENT INSTALL */
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
@@ -491,9 +521,10 @@ window.addEventListener("beforeinstallprompt", (e) => {
   document.getElementById("installBtn").style.display = "block";
 
   // munculkan popup setelah 3 detik
-  setTimeout(()=>{
-    document.getElementById("installPopup").style.display="flex";
-  },3000);
+  document.getElementById("installPopup").addEventListener("click", (e)=>{
+  if(e.target.id==="installPopup"){
+  closePopup();
+  }
 });
 
 /* KLIK INSTALL */
@@ -547,5 +578,6 @@ if("serviceWorker" in navigator){
 </div>
 
 <button id="installBtn" onclick="installApp()">⬇ Install</button>
+  <button id="closeFloating" onclick="closePopup()">✖</button>
 </body>
 </html>
