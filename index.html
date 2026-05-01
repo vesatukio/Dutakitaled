@@ -116,7 +116,11 @@ async function load() {
         const res = await fetch(API_URL);
         produk = await res.json();
         render();
-    } catch (e) { document.getElementById("list").innerText = "Gagal memuat data."; }
+        loadFromLocal(); // <--- TAMBAHAN: Muat pesanan dari memori HP setelah produk tampil
+    } catch (e) { 
+        document.getElementById("list").innerText = "Koneksi terputus. Anda masih bisa melihat keranjang."; 
+        loadFromLocal(); // <--- TAMBAHAN: Tetap muat pesanan meski internet gagal
+    }
 }
 
 function rupiah(n) { return "Rp " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
@@ -197,12 +201,31 @@ function updateCart() {
 
     if (hasItem && total > 0) cartEl.classList.remove("hide");
     else cartEl.classList.add("hide");
+
+    // TAMBAHAN: Simpan ke memori lokal HP setiap ada perubahan
+    localStorage.setItem("duta_terang_cart", JSON.stringify({ order, total }));
 }
 
 function resetCart() {
     if(confirm("Hapus pesanan?")) {
         order = {}; total = 0;
+        localStorage.removeItem("duta_terang_cart"); // TAMBAHAN: Hapus memori lokal
         document.querySelectorAll("[id^='qty-']").forEach(el => el.innerText = "0");
+        updateCart();
+    }
+}
+    function loadFromLocal() {
+    const saved = localStorage.getItem("duta_terang_cart");
+    if (saved) {
+        const parsed = JSON.parse(saved);
+        order = parsed.order;
+        total = parsed.total;
+        
+        // Update angka di layar HP agar sinkron dengan data yang disimpan
+        for (let id in order) {
+            const el = document.getElementById(`qty-${id}`);
+            if (el) el.innerText = order[id].qty;
+        }
         updateCart();
     }
 }
