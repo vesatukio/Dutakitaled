@@ -95,25 +95,57 @@ async function load() {
 
 function rupiah(n) { return "Rp " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
 
+/* RENDER PRODUK & KATEGORI OTOMATIS */
 function render() {
-    let html = "";
+    let htmlProduk = "";
+    let setKategori = new Set(); // Tempat menyimpan kategori unik
+
     produk.forEach(p => {
+        if (!p.nama) return;
+
+        // Ambil kategori & masukkan ke Set (otomatis menghapus duplikat)
+        let kat = p.kategori ? p.kategori.trim() : "Lainnya";
+        setKategori.add(kat);
+
         let hargaDiskon = p.harga - (p.harga * (p.diskon || 0) / 100);
-        html += `
-        <div class="card" data-cat="${(p.kategori||'').toLowerCase()}">
-            <img src="${p.gambar || 'https://via.placeholder.com/150'}" loading="lazy">
-            <div style="margin-top:8px">
-                <b style="font-size:13px">${p.nama}</b>
+        let habis = Number(p.stok) <= 0;
+
+        htmlProduk += `
+        <div class="card" data-cat="${kat.toLowerCase()}">
+            ${p.diskon > 0 ? `<div class="discount">-${p.diskon}%</div>` : ""}
+            ${habis ? `<div class="habis">HABIS</div>` : ""}
+            <img src="${p.gambar || 'https://via.placeholder.com/150'}" onclick="zoom(this.src)">
+            <div class="card-info">
+                <b>${p.nama}</b>
                 <span class="price-new">${rupiah(hargaDiskon)}</span>
                 <div class="qty">
                     <button onclick="changeQty('${p.id}', -1, ${hargaDiskon}, '${p.nama}')">−</button>
-                    <span id="qty-${p.id}" style="font-weight:bold">0</span>
-                    <button onclick="changeQty('${p.id}', 1, ${hargaDiskon}, '${p.nama}', ${p.stok})">+</button>
+                    <span id="qty-${p.id}">0</span>
+                    <button onclick="changeQty('${p.id}', 1, ${hargaDiskon}, '${p.nama}', ${p.stok})" ${habis ? 'disabled' : ''}>+</button>
                 </div>
             </div>
         </div>`;
     });
-    document.getElementById("list").innerHTML = html;
+
+    // Tampilkan Produk
+    document.getElementById("list").innerHTML = htmlProduk;
+
+    // Tampilkan Tombol Kategori
+    renderCategoryButtons(setKategori);
+}
+
+/* FUNGSI UNTUK MEMBUAT TOMBOL KATEGORI */
+function renderCategoryButtons(kategoriSet) {
+    const catContainer = document.querySelector(".category");
+    
+    // Tombol "Semua" tetap ada di awal
+    let htmlKat = `<button class="active" onclick="filter('all', this)">Semua</button>`;
+
+    kategoriSet.forEach(kat => {
+        htmlKat += `<button onclick="filter('${kat.toLowerCase()}', this)">${kat}</button>`;
+    });
+
+    catContainer.innerHTML = htmlKat;
 }
 
 function changeQty(id, delta, price, name, stok = 999) {
@@ -166,9 +198,17 @@ function resetCart() {
 }
 
 function filter(cat, btn) {
-    document.querySelectorAll(".card").forEach(c => {
-        c.style.display = (cat === 'all' || c.dataset.cat === cat) ? "flex" : "none";
+    const cards = document.querySelectorAll(".card");
+    cards.forEach(card => {
+        const productCat = card.getAttribute("data-cat");
+        if (cat === "all" || productCat === cat) {
+            card.style.display = "flex";
+        } else {
+            card.style.display = "none";
+        }
     });
+
+    // Update status tombol aktif
     document.querySelectorAll(".category button").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
 }
