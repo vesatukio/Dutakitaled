@@ -5,92 +5,108 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Duta Terang LED</title>
 
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#00bcd4">
-
 <style>
 body{margin:0;font-family:Arial;background:#f5f6f8}
 
-/* HEADER */
 header{
-  background:#00bcd4;
-  color:#fff;
-  text-align:center;
-  padding:10px;
-  overflow:hidden;
+  background:#00bcd4;color:#fff;text-align:center;padding:10px
 }
 
-/* TEXT BERJALAN */
-.running-wrap{overflow:hidden;white-space:nowrap}
-.running-track{
-  display:flex;
-  animation:marquee 12s linear infinite;
-}
-.running-track span{
-  padding-right:50px;
-  font-size:12px;
-}
-@keyframes marquee{
-  0%{transform:translateX(0)}
-  100%{transform:translateX(-50%)}
-}
-
-/* CATEGORY */
 .category{
-  display:flex;
-  gap:6px;
-  padding:8px;
-  background:#fff;
-  position:sticky;
-  top:0;
-}
-.category button{
-  border:none;
-  padding:6px 10px;
-  border-radius:6px;
-  background:#eee;
-}
-.category .active{
-  background:#00bcd4;
-  color:#fff;
+  display:flex;gap:6px;padding:8px;background:#fff;
+  position:sticky;top:0;z-index:10
 }
 
-/* PRODUK */
+.category button{
+  border:none;padding:6px 10px;border-radius:6px;
+  background:#eee;font-size:12px;cursor:pointer
+}
+
+.category button.active{background:#00bcd4;color:#fff}
+
 .container{
   padding:10px;
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
   max-width:600px;
   margin:auto;
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:10px;
 }
 
 .card{
   background:#fff;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
   padding:10px;
   border-radius:10px;
   box-shadow:0 2px 8px rgba(0,0,0,0.1);
-}
-.card img{
+  position:relative;
+}.card img{
   width:100%;
   height:120px;
   object-fit:cover;
   border-radius:8px;
+  cursor:pointer;
 }
 
 .qty{
   display:flex;
   justify-content:space-between;
+  align-items:center;
   margin-top:5px;
 }
+
 .qty button{
+  padding:4px 10px;
+  border:none;
   background:#00bcd4;
   color:#fff;
-  border:none;
   border-radius:6px;
 }
 
-/* CART */
+.card b{
+  font-size:13px;
+  min-height:32px;
+}
+
+.discount{
+  position:absolute;top:5px;right:5px;
+  background:red;color:#fff;font-size:10px;
+  padding:3px 6px;border-radius:5px
+}
+
+.habis{
+  position:absolute;top:5px;left:5px;
+  background:black;color:#fff;font-size:10px;
+  padding:3px 6px;border-radius:5px
+}
+
+.price-old{font-size:12px;color:#999;text-decoration:line-through}
+.price-new{color:#e91e63;font-weight:bold}
+
+.qty{display:flex;align-items:center;gap:6px}
+
+#cart{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;padding:10px;
+  display:flex;justify-content:space-between;
+  box-shadow:0 -2px 10px rgba(0,0,0,0.2)
+}
+
+#wa{
+  background:#25D366;color:#fff;
+  padding:10px;border-radius:6px;
+  text-decoration:none
+}
+
+#zoom{
+  position:fixed;inset:0;background:rgba(0,0,0,0.9);
+  display:none;justify-content:center;align-items:center
+}
+
+#zoom img{width:100%;height:100%;object-fit:contain}
+  /* FLOATING CART */
 #cart{
   position:fixed;
   bottom:10px;
@@ -100,56 +116,57 @@ header{
   padding:10px;
   border-radius:12px;
   box-shadow:0 5px 20px rgba(0,0,0,0.2);
+
   display:flex;
   justify-content:space-between;
-}
-#cart.hide{display:none}
-
-/* ZOOM */
-#zoom{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.9);
-  display:none;
   align-items:center;
-  justify-content:center;
-}
-#zoom img{width:100%;height:100%;object-fit:contain}
 
-/* INSTALL BUTTON */
-#installBtn{
-  position:fixed;
-  bottom:80px;
-  right:15px;
+  transition:0.3s;
+  z-index:999;
+}
+
+/* HIDE STATE */
+#cart.hide{
+  transform:translateY(120%);
+  opacity:0;
+  pointer-events:none;
+}
+  header{
   background:#00bcd4;
   color:#fff;
-  border:none;
+  text-align:center;
   padding:10px;
-  border-radius:20px;
-  display:none;
+  position:relative;
+  overflow:hidden;
+}
+/* teks berjalan */
+.running-wrap{
+  overflow:hidden;
+  white-space:nowrap;
+  margin-top:4px;
 }
 
-/* POPUP */
-#installPopup{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.6);
-  display:none;
-  align-items:center;
-  justify-content:center;
+.running-track{
+  display:flex;
+  width:max-content;
+  animation:marquee 12s linear infinite;
 }
-.popupBox{
-  background:#fff;
-  padding:20px;
-  border-radius:10px;
-  text-align:center;
-  position:relative;
+
+.running-track span{
+  white-space:nowrap;
+  font-size:12px;
+  opacity:0.9;
+  padding-right:50px;
 }
-.popupBox span{
-  position:absolute;
-  top:5px;
-  right:10px;
-  cursor:pointer;
+
+/* animasi jalan terus tanpa putus */
+@keyframes marquee{
+  0%{
+    transform:translateX(0);
+  }
+  100%{
+    transform:translateX(-50%);
+  }
 }
 </style>
 </head>
@@ -157,153 +174,225 @@ header{
 <body>
 
 <header>
-  <b>Duta Terang LED</b>
+  <b>Duta Terang LED</b><br>
   <div class="running-wrap">
-    <div class="running-track">
-      <span>COD • Seluruh Indonesia ⚡ Fast Response • </span>
-      <span>Order via WA • Shopee • Tokopedia • </span>
-    </div>
+  <div class="running-track">
+      <span>COD • Seluruh Indonesia ⚡ Fast Response • Produk berkualitas • Respon Cepat 24 Jam • </span>
+    <span>COD • Seluruh Indonesia ⚡ order bisa shopee, tiktok, tokopedia • Produk bagus • Respon Cepat 24 Jam • </span>
   </div>
+</div>
 </header>
 
-<div class="category" id="category"></div>
+<div class="category">
+  <button class="active" onclick="filter('all',this)">Semua</button>
+  <button onclick="filter('led',this)">LED</button>
+  <button onclick="filter('alat',this)">Alat</button>
+  <button onclick="filter('casing',this)">Casing</button>
+</div>
 
 <div class="container" id="list"></div>
 
 <div id="cart" class="hide">
-  <button onclick="resetCart()">Reset</button>
+
+  <!-- KIRI: RESET SAJA -->
   <div>
-    Total: Rp <span id="total">0</span><br>
-    <a id="wa">Checkout WA</a>
+    <button onclick="resetCart()" style="
+      background:#e91e63;
+      color:#fff;
+      border:none;
+      padding:8px 12px;
+      border-radius:8px;
+      font-size:12px;
+      cursor:pointer;
+    ">
+      Reset
+    </button>
   </div>
+
+  <!-- KANAN: VERTIKAL -->
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+
+    <div style="font-weight:bold;color:#00bcd4;">
+      Total: Rp <span id="total">0</span>
+    </div>
+
+    <small id="summary" style="color:#666;max-width:180px;text-align:right;">
+      Belum ada order
+    </small>
+
+    <a id="wa" style="
+      background:#25D366;
+      color:#fff;
+      padding:8px 12px;
+      border-radius:8px;
+      text-decoration:none;
+      font-size:12px;
+      margin-top:4px;
+    ">
+      Checkout WA
+    </a>
+
+  </div>
+
 </div>
+
 
 <div id="zoom" onclick="this.style.display='none'">
   <img id="zoomImg">
 </div>
 
-<!-- POPUP -->
-<div id="installPopup">
-  <div class="popupBox">
-    <span onclick="closePopup()">✖</span>
-    <h3>Install App</h3>
-    <p>Biar belanja lebih cepat 🚀</p>
-    <button onclick="installApp()">Install</button>
-  </div>
-</div>
-
-<button id="installBtn" onclick="installApp()">⬇ Install</button>
-
 <script>
+
 const API_URL = "https://script.google.com/macros/s/AKfycbyhgdk0elMuqM4-00OIR8zbUqp-k80RnbuYyPDDqGHsEk7aSCg60kgT5HTYL_hIVSDc/exec";
 
-let produk=[],order={},total=0;
+let produk = [];
+let order = {};
+let total = 0;
 
-/* LOAD */
+/* MAP KATEGORI */
+function mapKategori(k){
+  if(!k) return "lain";
+  return String(k).toLowerCase();
+}
+
+/* LOAD DATA */
 async function load(){
   const res = await fetch(API_URL);
   produk = await res.json();
-
-  renderKategori(); // ⬅️ TAMBAH INI
   render();
 }
 
-/* RENDER */
+/* FORMAT RUPIAH */
+function rupiah(n){
+  return "Rp " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,".");
+}
+
+/* RENDER PRODUK */
 function render(){
-  let html="";
 
-  produk.forEach(p=>{
+  let html = "";
 
-    let harga = p.harga;
+  produk.forEach(p => {
 
-    // ⬇️ TAMBAH INI
-    let kategori = (p.kategori || "lain").toString().toLowerCase().trim();
+    if(!p || !p.nama || !p.harga) return;
 
-    html+=`
+    let kategori = mapKategori(p.kategori);
+    let hargaDiskon = p.harga - (p.harga * (p.diskon || 0) / 100);
+    let habis = Number(p.stok) <= 0;
+
+    let img = (p.gambar && p.gambar.startsWith("http"))
+      ? p.gambar
+      : "https://via.placeholder.com/100";
+
+    html += `
     <div class="card" data-cat="${kategori}">
-      <img src="${p.gambar}" onclick="zoom(this.src)">
-      <b>${p.nama}</b>
-      Rp ${harga}
-      <div class="qty">
-        <button onclick="minus('${p.id}')">-</button>
-        <span id="${p.id}">0</span>
-        <button onclick="plus('${p.id}',${harga},'${p.nama}')">+</button>
+      ${p.diskon>0?`<div class="discount">-${p.diskon}%</div>`:""}
+      ${habis?`<div class="habis">HABIS</div>`:""}
+
+      <img src="${img}" onclick="zoom(this.src)">
+
+      <div>
+        <b>${p.nama}</b><br>
+
+        ${p.diskon>0?
+          `<span class="price-old">${rupiah(p.harga)}</span><br>
+           <span class="price-new">${rupiah(hargaDiskon)}</span>` :
+          `<span class="price-new">${rupiah(p.harga)}</span>`
+        }
+
+        <div class="qty">
+          <button onclick="minus('${p.id}')" ${habis?'disabled':''}>-</button>
+          <span id="${p.id}">0</span>
+          <button onclick="plus('${p.id}',${hargaDiskon},'${p.nama}',${p.stok})" ${habis?'disabled':''}>+</button>
+        </div>
       </div>
     </div>`;
   });
 
-  list.innerHTML=html;
+  document.getElementById("list").innerHTML = html;
 }
-function renderKategori(){
 
-  let kategoriSet = new Set();
+/* PLUS */
+function plus(id, price, name, stok){
 
-  produk.forEach(p=>{
-    let k = (p.kategori || "lain").toLowerCase();
-    kategoriSet.add(k);
-  });
+  if(!order[id]){
+    order[id] = {qty:0,name,price};
+  }
 
-  let html = `<button class="active" onclick="filter('all',this)">Semua</button>`;
+  if(order[id].qty >= stok) return;
 
-  kategoriSet.forEach(k=>{
-    html += `<button onclick="filter('${k}',this)">${k.toUpperCase()}</button>`;
-  });
-
-  document.getElementById("category").innerHTML = html;
-}
-/* CART */
-function plus(id,harga,nama){
-  if(!order[id]) order[id]={qty:0,nama,harga};
   order[id].qty++;
-  document.getElementById(id).innerText=order[id].qty;
-  total+=harga;
+  document.getElementById(id).innerText = order[id].qty;
+
+  total += price;
   update();
 }
 
+/* MINUS */
 function minus(id){
-  if(order[id]&&order[id].qty>0){
+
+  if(order[id] && order[id].qty > 0){
     order[id].qty--;
-    document.getElementById(id).innerText=order[id].qty;
-    total-=order[id].harga;
+    document.getElementById(id).innerText = order[id].qty;
+
+    total -= order[id].price;
     update();
   }
 }
 
+/* UPDATE CART */
 function update(){
-  totalEl.innerText=total;
-  cart.classList.remove("hide");
 
-  let text="Order:%0A";
+  document.getElementById("total").innerText = total;
+
+  const cart = document.getElementById("cart");
+
+  let hasItem = false;
+
+  let text = "🛒 ORDER DUTA TERANG LED%0A%0A";
+  let summary = "";
+  let itemCount = 0;
+
   for(let k in order){
-    if(order[k].qty>0){
-      text+=order[k].nama+" x"+order[k].qty+"%0A";
+    if(order[k].qty > 0){
+      hasItem = true;
+
+      let line = order[k].name+" x"+order[k].qty;
+
+      text += line + "%0A";
+      summary += line + ", ";
+
+      itemCount += order[k].qty;
     }
   }
-  wa.href="https://wa.me/6288224166270?text="+text;
-}
 
-function resetCart(){
-  order={};total=0;
-  document.querySelectorAll(".qty span").forEach(e=>e.innerText=0);
-  cart.classList.add("hide");
-}
+  text += "%0A--------------------%0A";
+  text += "Item : "+itemCount+" pcs%0A";
+  text += "Total: Rp "+total+"%0A";
+  text += "--------------------%0A%0A";
+  text += "Terima kasih sudah order 🙏";
 
-/* ZOOM */
-function zoom(src){
-  zoomImg.src=src;
-  zoom.style.display="flex";
+  document.getElementById("summary").innerText =
+    summary || "Belum ada order";
+
+  document.getElementById("wa").href =
+    "https://wa.me/6288224166270?text="+text;
+
+  if(hasItem){
+    cart.classList.remove("hide");
+  }else{
+    cart.classList.add("hide");
+  }
 }
 
 /* FILTER */
 function filter(cat,btn){
 
-  // filter produk
   document.querySelectorAll(".card").forEach(c=>{
     let cc = c.dataset.cat;
-    c.style.display = (cat==="all" || cc===cat) ? "block" : "none";
+    c.style.display = (cat==="all" || cc===cat) ? "flex" : "none";
   });
 
-  // aktifkan tombol
   document.querySelectorAll(".category button").forEach(b=>{
     b.classList.remove("active");
   });
@@ -311,39 +400,24 @@ function filter(cat,btn){
   btn.classList.add("active");
 }
 
-/* ================= PWA ================= */
-let deferredPrompt;
-
-window.addEventListener("beforeinstallprompt",(e)=>{
-  e.preventDefault();
-  deferredPrompt=e;
-
-  installBtn.style.display="block";
-
-  setTimeout(()=>{
-    installPopup.style.display="flex";
-  },3000);
-});
-
-function installApp(){
-  if(!deferredPrompt) return;
-  deferredPrompt.prompt();
-}
-
-function closePopup(){
-  installPopup.style.display="none";
-}
-
-installPopup.addEventListener("click",(e)=>{
-  if(e.target.id==="installPopup") closePopup();
-});
-
-/* SW */
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
+/* ZOOM */
+function zoom(src){
+  document.getElementById("zoomImg").src = src;
+  document.getElementById("zoom").style.display="flex";
 }
 
 load();
+function resetCart(){
+
+  order = {};
+  total = 0;
+
+  document.querySelectorAll(".qty span").forEach(el=>{
+    el.innerText = "0";
+  });
+
+  update();
+}
 </script>
 
 </body>
