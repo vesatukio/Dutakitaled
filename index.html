@@ -119,7 +119,7 @@ header{
 /* INSTALL BUTTON */
 #installBtn{
   position:fixed;
-  bottom:80px;
+  bottom:140px; /* dinaikkan supaya tidak nutup cart */
   right:15px;
   background:#00bcd4;
   color:#fff;
@@ -127,6 +127,7 @@ header{
   padding:10px;
   border-radius:20px;
   display:none;
+  z-index:999;
 }
 
 /* POPUP */
@@ -310,15 +311,23 @@ function plus(id,harga,nama){
 
   order[id].qty++;
 
+  total += harga; // 🔥 PENTING
+
+  document.getElementById(id).innerText = order[id].qty;
+
   update();
 }
-
 function minus(id){
 
-  if(order[id]){
+  if(order[id] && order[id].qty > 0){
+
     order[id].qty--;
 
-    if(order[id].qty < 0){
+    total -= order[id].harga; // 🔥 PENTING
+
+    document.getElementById(id).innerText = order[id].qty;
+
+    if(order[id].qty <= 0){
       order[id].qty = 0;
     }
   }
@@ -328,7 +337,7 @@ function minus(id){
 function update(){
 
   // total
-  document.getElementById("total").innerText = rupiah(total);
+  document.getElementById("total").innerText = rupiah(total || 0);
 
   let text = "🛒 ORDER DUTA TERANG LED%0A%0A";
   let summary = "";
