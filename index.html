@@ -303,39 +303,72 @@ function renderKategori(){
 }
 /* CART */
 function plus(id,harga,nama){
-  if(!order[id]) order[id]={qty:0,nama,harga};
+
+  if(!order[id]){
+    order[id] = {qty:0,nama,harga};
+  }
+
   order[id].qty++;
-  document.getElementById(id).innerText=order[id].qty;
-  total+=harga;
+
   update();
 }
 
 function minus(id){
-  if(order[id]&&order[id].qty>0){
+
+  if(order[id]){
     order[id].qty--;
-    document.getElementById(id).innerText=order[id].qty;
-    total-=order[id].harga;
-    update();
-  }
-}
 
-function update(){
-  totalEl.innerText=total;
-  cart.classList.remove("hide");
-
-  let text="Order:%0A";
-  for(let k in order){
-    if(order[k].qty>0){
-      text+=order[k].nama+" x"+order[k].qty+"%0A";
+    if(order[id].qty < 0){
+      order[id].qty = 0;
     }
   }
-  wa.href="https://wa.me/6288224166270?text="+text;
+
+  update();
+}
+function update(){
+
+  // total
+  document.getElementById("total").innerText = rupiah(total);
+
+  let text = "🛒 ORDER DUTA TERANG LED%0A%0A";
+  let summary = "";
+  let count = 0;
+  let hasItem = false;
+
+  for(let k in order){
+    if(order[k].qty > 0){
+      hasItem = true;
+
+      let line = order[k].nama + " x" + order[k].qty;
+
+      text += line + "%0A";
+      summary += line + "\n";
+
+      count += order[k].qty;
+    }
+  }
+
+  // ringkasan
+  document.getElementById("summary").innerText =
+    summary || "Belum ada order";
+
+  // jumlah item
+  document.getElementById("count").innerText =
+    count + " item";
+
+  // WA link
+  document.getElementById("wa").href =
+    "https://wa.me/6288224166270?text=" +
+    encodeURIComponent(text);
+
+  // show/hide cart
+  document.getElementById("cart").classList.toggle("hide", !hasItem);
 }
 
 function resetCart(){
   order={};total=0;
   document.querySelectorAll(".qty span").forEach(e=>e.innerText=0);
-  cart.classList.add("hide");
+  update();
 }
 
 /* ZOOM */
