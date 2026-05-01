@@ -3,7 +3,7 @@
   "short_name": "DT LED",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#00bcd4",
+  "background_color": "#ffffff",
   "theme_color": "#00bcd4",
   "orientation": "portrait",
   "icons": [
