@@ -104,23 +104,7 @@ header{
   justify-content:space-between;
 }
 #cart.hide{display:none}
-.card{
-  position:relative; /* 🔥 WAJIB supaya badge nempel di card */
-}
 
-/* BADGE DISKON POJOK KANAN ATAS */
-.badge{
-  position:absolute;
-  top:8px;
-  right:8px;
-  background:#e91e63;
-  color:#fff;
-  font-size:11px;
-  padding:3px 6px;
-  border-radius:6px;
-  font-weight:bold;
-  z-index:2;
-}
 /* ZOOM */
 #zoom{
   position:fixed;
@@ -135,18 +119,16 @@ header{
 /* INSTALL BUTTON */
 #installBtn{
   position:fixed;
-  bottom:90px; /* tetap di atas cart */
-  left:15px;   /* pindah ke kiri */
-  right:auto;  /* matikan kanan */
+  bottom:80px;
+  right:15px;
   background:#00bcd4;
   color:#fff;
   border:none;
   padding:10px;
   border-radius:20px;
   display:none;
-  z-index:999;
-  transition:0.3s;
 }
+
 /* POPUP */
 #installPopup{
   position:fixed;
@@ -169,12 +151,6 @@ header{
   right:10px;
   cursor:pointer;
 }
-  .harga{
-  display:block;
-  color:#e91e63;
-  font-weight:bold;
-  margin-top:2px;
-}
 </style>
 </head>
 
@@ -195,52 +171,11 @@ header{
 <div class="container" id="list"></div>
 
 <div id="cart" class="hide">
-
-  <!-- KIRI -->
+  <button onclick="resetCart()">Reset</button>
   <div>
-    <button onclick="resetCart()" style="
-      background:#f44336;
-      color:#fff;
-      border:none;
-      padding:8px 12px;
-      border-radius:8px;
-      font-size:12px;
-      cursor:pointer;
-    ">
-      Reset
-    </button>
+    Total: Rp <span id="total">0</span><br>
+    <a id="wa">Checkout WA</a>
   </div>
-
-  <!-- KANAN -->
-  <div style="text-align:right">
-
-    <div style="font-weight:bold;color:#00bcd4;">
-      Total: Rp <span id="total">0</span>
-    </div>
-
-    <small id="summary" style="color:#666;display:block;">
-      Belum ada order
-    </small>
-
-    <small id="count" style="color:#333;font-weight:bold;display:block;">
-      0 item
-    </small>
-
-    <a id="wa" style="
-      display:inline-block;
-      margin-top:6px;
-      background:#25D366;
-      color:#fff;
-      padding:6px 10px;
-      border-radius:6px;
-      text-decoration:none;
-      font-size:12px;
-    ">
-      Checkout WA
-    </a>
-
-  </div>
-
 </div>
 
 <div id="zoom" onclick="this.style.display='none'">
@@ -287,39 +222,8 @@ function render(){
     html+=`
     <div class="card" data-cat="${kategori}">
       <img src="${p.gambar}" onclick="zoom(this.src)">
-      <b>${p.nama}</b><br>
-<span class="harga">${rupiah(harga)}</span>
-html+=`
-<div class="card" data-cat="${kategori}" style="position:relative;">
-
-  ${p.diskon > 0 ? `
-    <div class="badge" style="
-      position:absolute;
-      top:8px;
-      right:8px;
-      background:#e91e63;
-      color:#fff;
-      font-size:11px;
-      padding:3px 6px;
-      border-radius:6px;
-      font-weight:bold;
-    ">
-      -${Math.round((p.diskon / p.harga) * 100)}%
-    </div>
-  ` : ""}
-
-  <img src="${p.gambar}" onclick="zoom(this.src)">
-
-  <b>${p.nama}</b><br>
-
-  <span class="harga">
-    ${p.diskon > 0 
-      ? `<del style="color:#999;font-size:12px;">${rupiah(p.harga)}</del><br>
-         ${rupiah(p.harga - p.diskon)}`
-      : rupiah(p.harga)
-    }
-  </span>
-      
+      <b>${p.nama}</b>
+      Rp ${harga}
       <div class="qty">
         <button onclick="minus('${p.id}')">-</button>
         <span id="${p.id}">0</span>
@@ -329,9 +233,6 @@ html+=`
   });
 
   list.innerHTML=html;
-}
-  function rupiah(n){
-  return "Rp " + Number(n).toLocaleString("id-ID");
 }
 function renderKategori(){
 
@@ -352,87 +253,39 @@ function renderKategori(){
 }
 /* CART */
 function plus(id,harga,nama){
-
-  if(!order[id]){
-    order[id] = {qty:0,nama,harga};
-  }
-
+  if(!order[id]) order[id]={qty:0,nama,harga};
   order[id].qty++;
-
-  total += harga; // 🔥 PENTING
-
-  document.getElementById(id).innerText = order[id].qty;
-
+  document.getElementById(id).innerText=order[id].qty;
+  total+=harga;
   update();
 }
+
 function minus(id){
-
-  if(order[id] && order[id].qty > 0){
-
+  if(order[id]&&order[id].qty>0){
     order[id].qty--;
-
-    total -= order[id].harga; // 🔥 PENTING
-
-    document.getElementById(id).innerText = order[id].qty;
-
-    if(order[id].qty <= 0){
-      order[id].qty = 0;
-    }
+    document.getElementById(id).innerText=order[id].qty;
+    total-=order[id].harga;
+    update();
   }
-
-  update();
 }
+
 function update(){
-  let text = "🛒 ORDER DUTA TERANG LED%0A%0A";
-  let summary = "";
-  let count = 0;
-  let hasItem = false;
+  totalEl.innerText=total;
+  cart.classList.remove("hide");
 
-  total = 0;
-
+  let text="Order:%0A";
   for(let k in order){
-    if(order[k].qty > 0){
-      hasItem = true;
-
-      total += order[k].qty * order[k].harga;
-
-      let line = order[k].nama + " x" + order[k].qty;
-
-      text += line + "%0A";
-      summary += line + "\n";
-
-      count += order[k].qty;
+    if(order[k].qty>0){
+      text+=order[k].nama+" x"+order[k].qty+"%0A";
     }
   }
-
-  // TOTAL
-  document.getElementById("total").innerText = rupiah(total);
-
-  // RINGKASAN
-  document.getElementById("summary").innerText =
-    summary || "Belum ada order";
-
-  // JUMLAH ITEM
-  document.getElementById("count").innerText =
-    count + " item";
-
-  // WA LINK
-  document.getElementById("wa").href =
-    "https://wa.me/6288224166270?text=" +
-    encodeURIComponent(text);
-
-  // CART SHOW/HIDE
-  document.getElementById("cart")
-    .classList.toggle("hide", !hasItem);
-
-  // INSTALL BUTTON NGIKUT CART
-  document.getElementById("installBtn").style.bottom =
-    hasItem ? "110px" : "90px";
+  wa.href="https://wa.me/6288224166270?text="+text;
 }
+
 function resetCart(){
   order={};total=0;
   document.querySelectorAll(".qty span").forEach(e=>e.innerText=0);
-  update();
+  cart.classList.add("hide");
 }
 
 /* ZOOM */
