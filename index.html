@@ -166,10 +166,7 @@ header{
   </div>
 </header>
 
-<div class="category">
-  <button class="active" onclick="filter('all',this)">Semua</button>
-  <button onclick="filter('led',this)">LED</button>
-</div>
+<div class="category" id="category"></div>
 
 <div class="container" id="list"></div>
 
@@ -204,8 +201,10 @@ let produk=[],order={},total=0;
 
 /* LOAD */
 async function load(){
-  let res=await fetch(API_URL);
-  produk=await res.json();
+  const res = await fetch(API_URL);
+  produk = await res.json();
+
+  renderKategori(); // ⬅️ TAMBAH INI
   render();
 }
 
@@ -228,7 +227,23 @@ function render(){
   });
   list.innerHTML=html;
 }
+function renderKategori(){
 
+  let kategoriSet = new Set();
+
+  produk.forEach(p=>{
+    let k = (p.kategori || "lain").toLowerCase();
+    kategoriSet.add(k);
+  });
+
+  let html = `<button class="active" onclick="filter('all',this)">Semua</button>`;
+
+  kategoriSet.forEach(k=>{
+    html += `<button onclick="filter('${k}',this)">${k.toUpperCase()}</button>`;
+  });
+
+  document.getElementById("category").innerHTML = html;
+}
 /* CART */
 function plus(id,harga,nama){
   if(!order[id]) order[id]={qty:0,nama,harga};
