@@ -168,41 +168,55 @@
     function rupiah(n) { return "Rp " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
 
     function render() {
-        let htmlProduk = "";
-        let setKategori = new Set();
+    let htmlProduk = "";
+    let setKategori = new Set();
+    
+    produk.forEach(p => {
+        if (!p.nama) return;
+        let kat = p.kategori ? p.kategori.trim() : "Lainnya";
+        setKategori.add(kat);
         
-        produk.forEach(p => {
-            if (!p.nama) return;
-            let kat = p.kategori ? p.kategori.trim() : "Lainnya";
-            setKategori.add(kat);
-            
-            let hargaDiskon = p.harga - (p.harga * (p.diskon || 0) / 100);
-            let habis = Number(p.stok) <= 0;
-            let imageSrc = p.gambar && p.gambar.trim() !== "" ? p.gambar : 'https://via.placeholder.com/150?text=No+Image';
+        // LOGIKA DISKON
+        let diskonPersen = Number(p.diskon) || 0;
+        let hargaDiskon = p.harga - (p.harga * diskonPersen / 100);
+        let habis = Number(p.stok) <= 0;
+        let imageSrc = p.gambar && p.gambar.trim() !== "" ? p.gambar : 'https://via.placeholder.com/150?text=No+Image';
 
-            htmlProduk += `
-            <div class="card" data-cat="${kat.toLowerCase()}">
-                ${habis ? `<div style="position:absolute; background:rgba(0,0,0,0.6); color:#fff; width:100%; top:40%; text-align:center; font-size:12px; font-weight:bold; padding:6px 0; z-index:2;">STOK HABIS</div>` : ""}
-                <img src="${imageSrc}" 
-                     alt="${p.nama}" 
-                     loading="lazy" 
-                     onclick="zoomImg('${imageSrc}')"
-                     onerror="this.onerror=null;this.src='https://via.placeholder.com/150?text=Error+Image';">
-                <div class="card-info">
-                    <b>${p.nama}</b>
-                    <span class="price-new">${rupiah(hargaDiskon)}</span>
-                    <div class="qty">
-                        <button onclick="changeQty('${p.id}', -1, ${hargaDiskon}, '${p.nama}')">−</button>
-                        <span id="qty-${p.id}">0</span>
-                        <button onclick="changeQty('${p.id}', 1, ${hargaDiskon}, '${p.nama}', ${p.stok})" ${habis ? 'disabled' : ''}>+</button>
-                    </div>
+        htmlProduk += `
+        <div class="card" data-cat="${kat.toLowerCase()}">
+            ${habis ? `<div style="position:absolute; background:rgba(0,0,0,0.6); color:#fff; width:100%; top:40%; text-align:center; font-size:12px; font-weight:bold; padding:6px 0; z-index:2;">STOK HABIS</div>` : ""}
+            
+            <!-- Label Diskon di Pojok Gambar -->
+            ${diskonPersen > 0 ? `<div style="position:absolute; top:5px; right:5px; background:var(--pink); color:#fff; font-size:10px; padding:2px 6px; border-radius:10px; z-index:1; font-weight:bold;">-${diskonPersen}%</div>` : ""}
+
+            <img src="${imageSrc}" 
+                 alt="${p.nama}" 
+                 loading="lazy" 
+                 onclick="zoomImg('${imageSrc}')"
+                 onerror="this.onerror=null;this.src='https://via.placeholder.com/150?text=Error+Image';">
+            
+            <div class="card-info">
+                <b>${p.nama}</b>
+                
+                <!-- Tampilan Harga: Jika ada diskon, tampilkan harga coret -->
+                ${diskonPersen > 0 ? 
+                    `<small style="text-decoration:line-through; color:#888; font-size:11px;">${rupiah(p.harga)}</small>` : 
+                    `<small style="color:transparent; font-size:11px;">-</small>`
+                }
+                <span class="price-new">${rupiah(hargaDiskon)}</span>
+                
+                <div class="qty">
+                    <button onclick="changeQty('${p.id}', -1, ${hargaDiskon}, '${p.nama}')">−</button>
+                    <span id="qty-${p.id}">0</span>
+                    <button onclick="changeQty('${p.id}', 1, ${hargaDiskon}, '${p.nama}', ${p.stok})" ${habis ? 'disabled' : ''}>+</button>
                 </div>
-            </div>`;
-        });
-        
-        document.getElementById("list").innerHTML = htmlProduk;
-        renderCatButtons(setKategori);
-    }
+            </div>
+        </div>`;
+    });
+    
+    document.getElementById("list").innerHTML = htmlProduk;
+    renderCatButtons(setKategori);
+}
 
     function renderCatButtons(kategoriSet) {
         const bar = document.getElementById("cat-bar");
