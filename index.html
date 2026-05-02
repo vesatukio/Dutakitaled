@@ -78,6 +78,18 @@
             background: rgba(0,0,0,0.9); cursor: zoom-out; align-items: center; justify-content: center;
         }
         .modal-content { max-width: 95%; max-height: 85%; border-radius: 5px; }
+        .badge-diskon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: var(--danger);
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+    z-index: 10;
+}
     </style>
 </head>
 <body>
@@ -146,7 +158,11 @@
 
             htmlProduk += `
             <div class="card" data-cat="${kat.toLowerCase()}">
+                <!-- Badge Diskon Muncul di Sini -->
+                ${diskonPersen > 0 ? `<div class="badge-diskon">-${diskonPersen}%</div>` : ''}
+                
                 <img src="${imageSrc}" onclick="zoomImg('${imageSrc}')" alt="${p.nama}">
+                
                 <div class="card-info">
                     <b>${p.nama}</b>
                     <div style="margin-top: auto; display: flex; flex-direction: column;">
@@ -157,7 +173,7 @@
                         <span class="price-new">${rupiah(hargaDiskon)}</span>
                     </div>
                     <div class="qty">
-                        <button onclick="changeQty('${p.id}', -1, ${hargaDiskon}, '${p.nama}')">−</button>
+                        <button onclick="changeQty('${id}', -1, ${hargaDiskon}, '${p.nama}')">−</button>
                         <span id="qty-${p.id}">0</span>
                         <button onclick="changeQty('${p.id}', 1, ${hargaDiskon}, '${p.nama}', ${p.stok})" ${habis ? 'disabled' : ''}>+</button>
                     </div>
