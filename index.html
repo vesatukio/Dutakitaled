@@ -24,37 +24,43 @@
         .running-track span { padding-right: 50px; font-size: 11px; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* Tombol Install Melayang di Kanan Tengah */
-        #installBtn {
+        /* MODAL INSTALL TENGAH (PROMO) */
+        #installModal {
+            display: none; position: fixed; z-index: 20000; left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); align-items: center; justify-content: center;
+        }
+        .promo-box {
+            background: #fff; width: 85%; max-width: 350px; padding: 25px; border-radius: 20px;
+            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .promo-box h2 { color: var(--primary); margin-top: 0; }
+        .promo-box p { color: #555; line-height: 1.5; margin-bottom: 20px; }
+        .btn-main { background: var(--primary); color: #fff; border: none; padding: 12px 25px; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; font-size: 16px; margin-bottom: 10px; }
+        .btn-later { background: none; border: none; color: #888; cursor: pointer; font-size: 14px; }
+
+        /* TOMBOL MELAYANG (KANAN TENGAH) */
+        #installFloat {
             display: none; position: fixed; right: 0; top: 50%; transform: translateY(-50%);
-            background: var(--primary); color: white; border: none; padding: 10px 12px;
-            border-radius: 20px 0 0 20px; font-size: 12px; font-weight: bold; z-index: 9999;
-            box-shadow: -2px 2px 10px rgba(0,0,0,0.2); cursor: pointer;
+            background: var(--primary); color: white; border: none; padding: 12px 8px;
+            border-radius: 15px 0 0 15px; font-size: 11px; font-weight: bold; z-index: 9999;
+            box-shadow: -2px 2px 10px rgba(0,0,0,0.2); writing-mode: vertical-rl; text-orientation: mixed;
         }
 
         /* Grid Produk */
         .container { padding: 8px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-width: 800px; margin: auto; }
         .card { background: #fff; border-radius: 10px; padding: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; position: relative; }
-        .card img { width: 100%; height: 120px; object-fit: contain; background: #f9f9f9; border-radius: 8px; cursor: zoom-in; }
+        .card img { width: 100%; height: 120px; object-fit: contain; background: #f9f9f9; border-radius: 8px; }
         
-        .card-info { margin-top: 6px; flex-grow: 1; }
-        .card-info b { font-size: 13px; color: #333; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 32px; }
-
-        /* Harga */
         .price-old { text-decoration: line-through; color: blue; font-size: 14px; font-weight: bold; display: block; }
         .price-new { color: var(--pink); font-weight: bold; font-size: 14px; display: block; }
-        
+
         /* Keranjang */
         #cart { position: fixed; bottom: 12px; left: 12px; right: 12px; background: #fff; padding: 12px; border-radius: 12px; box-shadow: 0 -4px 20px rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; z-index: 1000; transition: 0.3s; }
         #cart.hide { transform: translateY(150%); }
 
-        /* Modal Zoom (Tengah Besar) */
         .modal-zoom { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; }
-        .modal-zoom img { max-width: 95%; max-height: 85%; object-fit: contain; border-radius: 10px; }
-        
-        .badge-diskon { position: absolute; top: 5px; right: 5px; background: var(--danger); color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
-        .qty { display: flex; justify-content: space-between; align-items: center; background: #f1f3f4; border-radius: 6px; padding: 2px; margin-top: 8px; }
-        .qty button { width: 30px; height: 30px; border: none; background: var(--primary); color: #fff; border-radius: 4px; font-size: 18px; }
+        .modal-zoom img { max-width: 95%; max-height: 85%; }
+        .qty button { width: 30px; height: 30px; border: none; background: var(--primary); color: #fff; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -69,8 +75,18 @@
     </div>
 </header>
 
-<!-- Tombol Install Melayang -->
-<button id="installBtn" onclick="installApp()">📲 Install</button>
+<!-- Tahap 1: Modal Promo Tengah -->
+<div id="installModal">
+    <div class="promo-box">
+        <h2>Pasang Aplikasi? 📲</h2>
+        <p>Buka katalog <b>Duta Terang</b> lebih cepat langsung dari layar HP tanpa ribet ketik alamat lagi!</p>
+        <button class="btn-main" onclick="triggerInstall()">PASANG SEKARANG</button>
+        <button class="btn-later" onclick="closePromo()">Nanti Saja</button>
+    </div>
+</div>
+
+<!-- Tahap 2: Tombol Melayang Kanan -->
+<button id="installFloat" onclick="triggerInstall()">📲 PASANG APLIKASI</button>
 
 <div class="category" id="cat-bar">
     <button class="active" onclick="filter('all', this)">Semua</button>
@@ -97,22 +113,29 @@
     let totalHarga = 0;
     let deferredPrompt;
 
-    // Logika Tombol Install
+    // Logika PWA
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        // Tampilkan tombol install kecil di kanan setelah 3 detik
+        // Tampilkan promo tengah setelah 3 detik
         setTimeout(() => {
-            document.getElementById('installBtn').style.display = 'block';
+            document.getElementById('installModal').style.display = 'flex';
         }, 3000);
     });
 
-    async function installApp() {
+    function closePromo() {
+        document.getElementById('installModal').style.display = 'none';
+        // Setelah promo ditutup, tampilkan tombol melayang di kanan
+        document.getElementById('installFloat').style.display = 'block';
+    }
+
+    async function triggerInstall() {
         if (deferredPrompt) {
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
             if (outcome === 'accepted') {
-                document.getElementById('installBtn').style.display = 'none';
+                document.getElementById('installModal').style.display = 'none';
+                document.getElementById('installFloat').style.display = 'none';
             }
             deferredPrompt = null;
         }
