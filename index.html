@@ -19,6 +19,7 @@
         
         header { background: var(--primary); color: #fff; text-align: center; padding: 12px; position: relative; }
         header b { font-size: 1.1rem; }
+        
         .running-wrap { overflow: hidden; white-space: nowrap; margin-top: 5px; background: rgba(0,0,0,0.1); padding: 4px 0; }
         .running-track { display: flex; width: max-content; animation: marquee 20s linear infinite; }
         .running-track span { padding-right: 50px; font-size: 11px; }
@@ -30,29 +31,24 @@
         .category button.active { background: var(--primary); color: #fff; }
 
         .container { padding: 8px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-width: 800px; margin: auto; }
-        .card { background: #fff; border-radius: 10px; padding: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; height: 100%; }
+        .card { background: #fff; border-radius: 10px; padding: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 100%; box-sizing: border-box; }
+        
         .card img { 
-            width: 100%; 
-            height: 120px; 
-            object-fit: contain; 
-            background: #f9f9f9; 
-            border-radius: 8px; 
-            cursor: zoom-in;
+            width: 100%; height: 120px; object-fit: contain; 
+            background: #f9f9f9; border-radius: 8px; cursor: zoom-in;
         }
 
         .card-info { margin-top: 6px; flex-grow: 1; display: flex; flex-direction: column; }
         .card-info b { 
-    font-size: 13px; color: #333; line-height: 1.1; 
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; 
-    overflow: hidden; height: 28px; /* Dikurangi sedikit agar lebih pas */
-    margin-bottom: 0; /* Pastikan 0 */
-}
+            font-size: 13px; color: #333; line-height: 1.1; 
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; 
+            overflow: hidden; height: 28px; margin-bottom: 0;
+        }
 
-.price-new { 
-    color: var(--pink); font-weight: 700; font-size: 14px; 
-    margin-top: -3px; /* Menarik harga baru ke atas */
-    line-height: 1; 
-}
+        .price-new { 
+            color: var(--pink); font-weight: 700; font-size: 14px; 
+            margin-top: -3px; line-height: 1; 
+        }
         
         .qty { display: flex; justify-content: space-between; align-items: center; background: #f1f3f4; border-radius: 6px; padding: 2px; margin-top: 6px; }
         .qty button { width: 28px; height: 28px; border: none; background: var(--primary); color: #fff; border-radius: 4px; font-size: 18px; cursor: pointer; }
@@ -67,37 +63,21 @@
         }
         #cart.hide { transform: translateY(150%); }
         #summary { font-size: 12px; font-weight: 500; color: #444; white-space: pre-line; text-align: right; margin-bottom: 5px; max-height: 80px; overflow-y: auto; }
-
         #total { font-size: 17px; font-weight: 800; }
-        #btn-reset { background: var(--danger); border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; color: #fff; }
         #btn-wa { background: var(--wa); color: #fff; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px; display: inline-block; }
 
-        /* PWA POPUP */
+        /* MODAL & POPUP */
         #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9998; display: none; }
         #installContainer {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 80%; max-width: 300px; background: #fff; padding: 20px; border-radius: 15px;
             z-index: 9999; text-align: center; display: none;
         }
-        #btnDoInstall { background: var(--primary); color: #fff; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: bold; margin-top: 10px; cursor: pointer; }
-        .close-popup { position: absolute; top: 8px; right: 8px; border: none; background: none; font-size: 16px; color: #aaa; cursor: pointer; }
-        .btn-later { background: #eee; color: #666; border: none; padding: 10px; border-radius: 10px; width: 100%; margin-top: 8px; font-weight: bold; cursor: pointer; }
-
-        #miniInstallBtn {
-            position: fixed; bottom: 85px; left: 15px; background: var(--primary); color: white; 
-            width: 50px; height: 50px; border-radius: 50%; display: none; align-items: center; 
-            justify-content: center; font-size: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
-            z-index: 9997; cursor: pointer; animation: bounce 2s infinite;
-        }
-        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
-
-        /* ZOOM MODAL */
         .modal-zoom {
             display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.9); cursor: zoom-out; align-items: center; justify-content: center;
         }
-        .modal-content { max-width: 95%; max-height: 85%; border-radius: 5px; animation: zoomAnim 0.3s ease-out; }
-        @keyframes zoomAnim { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-content { max-width: 95%; max-height: 85%; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -119,22 +99,12 @@
 <div class="container" id="list">Memuat produk...</div>
 
 <div id="cart" class="hide">
-    <div><button id="btn-reset" onclick="resetCart()">🗑️ Hapus</button></div>
+    <button onclick="resetCart()" style="background:var(--danger); border:none; padding:8px; border-radius:8px; color:#fff; font-size:11px;">🗑️ Hapus</button>
     <div style="text-align: right;">
         <div id="summary"></div>
         <div style="color:var(--primary); margin-bottom: 5px;">Total: <span id="total">0</span></div>
         <a id="btn-wa" href="#">Kirim Pesanan</a>
     </div>
-</div>
-
-<div id="miniInstallBtn" onclick="showPopup()">📲</div>
-<div id="overlay" onclick="minimizePopup()"></div>
-<div id="installContainer">
-    <button class="close-popup" onclick="minimizePopup()">✕</button>
-    <h3>Duta Terang LED</h3>
-    <p>Dapatkan akses lebih cepat dengan menginstal aplikasi.</p>
-    <button id="btnDoInstall">📲 Pasang Sekarang</button>
-    <button class="btn-later" onclick="minimizePopup()">Nanti Saja</button>
 </div>
 
 <div id="zoomModal" class="modal-zoom" onclick="this.style.display='none'">
@@ -155,7 +125,6 @@
             loadFromLocal();
         } catch (e) { 
             document.getElementById("list").innerText = "Gagal memuat data."; 
-            loadFromLocal();
         }
     }
 
@@ -176,29 +145,24 @@
             let imageSrc = p.gambar && p.gambar.trim() !== "" ? p.gambar : 'https://via.placeholder.com/150?text=No+Image';
 
             htmlProduk += `
-            // Ganti blok .card-info di dalam fungsi render()
-htmlProduk += `
-<div class="card" data-cat="${kat.toLowerCase()}">
-    ... (bagian gambar) ...
-    
-    <div class="card-info">
-        <b>${p.nama}</b>
-        
-        <div style="margin-top: auto; display: flex; flex-direction: column;">
-            ${diskonPersen > 0 ? 
-                `<span style="text-decoration:line-through; color:#999; font-size:11px; line-height:1; margin-bottom: 1px;">${rupiah(p.harga)}</span>` : 
-                `<div style="height:12px;"></div>` 
-            }
-            <span class="price-new">${rupiah(hargaDiskon)}</span>
-        </div>
-
-        <div class="qty">
-            <button onclick="changeQty('${p.id}', -1, ${hargaDiskon}, '${p.nama}')">−</button>
-            <span id="qty-${p.id}">0</span>
-            <button onclick="changeQty('${p.id}', 1, ${hargaDiskon}, '${p.nama}', ${p.stok})" ${habis ? 'disabled' : ''}>+</button>
-        </div>
-    </div>
-</div>`;
+            <div class="card" data-cat="${kat.toLowerCase()}">
+                <img src="${imageSrc}" onclick="zoomImg('${imageSrc}')" alt="${p.nama}">
+                <div class="card-info">
+                    <b>${p.nama}</b>
+                    <div style="margin-top: auto; display: flex; flex-direction: column;">
+                        ${diskonPersen > 0 ? 
+                            `<span style="text-decoration:line-through; color:#999; font-size:11px; line-height:1; margin-bottom: 1px;">${rupiah(p.harga)}</span>` : 
+                            `<div style="height:12px;"></div>` 
+                        }
+                        <span class="price-new">${rupiah(hargaDiskon)}</span>
+                    </div>
+                    <div class="qty">
+                        <button onclick="changeQty('${p.id}', -1, ${hargaDiskon}, '${p.nama}')">−</button>
+                        <span id="qty-${p.id}">0</span>
+                        <button onclick="changeQty('${p.id}', 1, ${hargaDiskon}, '${p.nama}', ${p.stok})" ${habis ? 'disabled' : ''}>+</button>
+                    </div>
+                </div>
+            </div>`;
         });
         
         document.getElementById("list").innerHTML = htmlProduk;
@@ -250,7 +214,7 @@ htmlProduk += `
     }
 
     function resetCart() {
-        if(confirm("Hapus pesanan?")) {
+        if(confirm("Hapus semua pesanan?")) {
             order = {}; total = 0;
             localStorage.removeItem("duta_terang_cart");
             document.querySelectorAll("[id^='qty-']").forEach(el => el.innerText = "0");
@@ -272,35 +236,12 @@ htmlProduk += `
     }
 
     function filter(cat, btn) {
-        document.querySelectorAll(".card").forEach(c => { c.style.display = (cat === 'all' || c.dataset.cat === cat) ? 'flex' : 'none'; });
+        document.querySelectorAll(".card").forEach(c => { 
+            c.style.display = (cat === 'all' || c.dataset.cat === cat) ? 'flex' : 'none'; 
+        });
         document.querySelectorAll(".category button").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
     }
-
-    let defPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault(); defPrompt = e;
-        setTimeout(() => document.getElementById("miniInstallBtn").style.display = "flex", 3000);
-    });
-
-    function showPopup() {
-        document.getElementById("installContainer").style.display = "block";
-        document.getElementById("overlay").style.display = "block";
-    }
-
-    function minimizePopup() {
-        document.getElementById("installContainer").style.display = "none";
-        document.getElementById("overlay").style.display = "none";
-        document.getElementById("miniInstallBtn").style.display = "flex";
-    }
-
-    document.getElementById('btnDoInstall').addEventListener('click', async () => {
-        if (defPrompt) {
-            defPrompt.prompt();
-            defPrompt = null;
-            minimizePopup();
-        }
-    });
 
     load();
 </script>
