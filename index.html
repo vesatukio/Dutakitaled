@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Duta Terang LED</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00bcd4">
+
     <style>
         :root { 
             --primary: #00bcd4; 
@@ -11,32 +14,63 @@
             --wa: #25D366; 
             --danger: #ff4d4d;
         }
-        body { margin: 0; font-family: sans-serif; background: #f5f6f8; padding-bottom: 140px; }
-        header { background: var(--primary); color: #fff; text-align: center; padding: 12px; }
-        .category { display: flex; gap: 8px; padding: 10px; background: #fff; position: sticky; top: 0; z-index: 100; overflow-x: auto; border-bottom: 1px solid #eee; }
-        .category button { border: none; padding: 6px 15px; border-radius: 20px; background: #f0f0f0; cursor: pointer; white-space: nowrap; font-size: 12px; font-weight: bold; }
-        .category button.active { background: var(--primary); color: #fff; }
-        .container { padding: 8px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-width: 800px; margin: auto; }
-        .card { background: #fff; border-radius: 10px; padding: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; }
-        .card img { width: 100%; height: 120px; object-fit: contain; background: #f9f9f9; border-radius: 8px; }
-        .card-info { margin-top: 6px; flex-grow: 1; }
-        .card-info b { font-size: 13px; color: #333; display: block; height: 32px; overflow: hidden; }
         
-        /* HARGA SESUAI PERMINTAAN */
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f5f6f8; padding-bottom: 160px; }
+        
+        /* Header */
+        header { background: var(--primary); color: #fff; text-align: center; padding: 12px; }
+        .running-wrap { overflow: hidden; white-space: nowrap; margin-top: 5px; background: rgba(0,0,0,0.1); padding: 4px 0; }
+        .running-track { display: flex; width: max-content; animation: marquee 20s linear infinite; }
+        .running-track span { padding-right: 50px; font-size: 11px; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* Tombol Install Melayang di Kanan Tengah */
+        #installBtn {
+            display: none; position: fixed; right: 0; top: 50%; transform: translateY(-50%);
+            background: var(--primary); color: white; border: none; padding: 10px 12px;
+            border-radius: 20px 0 0 20px; font-size: 12px; font-weight: bold; z-index: 9999;
+            box-shadow: -2px 2px 10px rgba(0,0,0,0.2); cursor: pointer;
+        }
+
+        /* Grid Produk */
+        .container { padding: 8px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-width: 800px; margin: auto; }
+        .card { background: #fff; border-radius: 10px; padding: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; position: relative; }
+        .card img { width: 100%; height: 120px; object-fit: contain; background: #f9f9f9; border-radius: 8px; cursor: zoom-in; }
+        
+        .card-info { margin-top: 6px; flex-grow: 1; }
+        .card-info b { font-size: 13px; color: #333; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 32px; }
+
+        /* Harga */
         .price-old { text-decoration: line-through; color: blue; font-size: 14px; font-weight: bold; display: block; }
         .price-new { color: var(--pink); font-weight: bold; font-size: 14px; display: block; }
         
-        .qty { display: flex; justify-content: space-between; align-items: center; background: #f1f3f4; border-radius: 6px; padding: 2px; margin-top: 8px; }
-        .qty button { width: 30px; height: 30px; border: none; background: var(--primary); color: #fff; border-radius: 4px; font-size: 18px; cursor: pointer; }
-        #cart { position: fixed; bottom: 12px; left: 12px; right: 12px; background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 -4px 20px rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-        #cart.hide { display: none; }
-        #btn-wa { background: var(--wa); color: #fff; text-decoration: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; }
+        /* Keranjang */
+        #cart { position: fixed; bottom: 12px; left: 12px; right: 12px; background: #fff; padding: 12px; border-radius: 12px; box-shadow: 0 -4px 20px rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; z-index: 1000; transition: 0.3s; }
+        #cart.hide { transform: translateY(150%); }
+
+        /* Modal Zoom (Tengah Besar) */
+        .modal-zoom { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; }
+        .modal-zoom img { max-width: 95%; max-height: 85%; object-fit: contain; border-radius: 10px; }
+        
         .badge-diskon { position: absolute; top: 5px; right: 5px; background: var(--danger); color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+        .qty { display: flex; justify-content: space-between; align-items: center; background: #f1f3f4; border-radius: 6px; padding: 2px; margin-top: 8px; }
+        .qty button { width: 30px; height: 30px; border: none; background: var(--primary); color: #fff; border-radius: 4px; font-size: 18px; }
     </style>
 </head>
 <body>
 
-<header><b>DUTA TERANG LED</b></header>
+<header>
+    <b>DUTA TERANG LED</b>
+    <div class="running-wrap">
+        <div class="running-track">
+            <span>⚡ COD Seluruh Indonesia • Respon Cepat 24 Jam • Produk Berkualitas • Garansi Resmi • </span>
+            <span>⚡ COD Seluruh Indonesia • Respon Cepat 24 Jam • Produk Berkualitas • Garansi Resmi • </span>
+        </div>
+    </div>
+</header>
+
+<!-- Tombol Install Melayang -->
+<button id="installBtn" onclick="installApp()">📲 Install</button>
 
 <div class="category" id="cat-bar">
     <button class="active" onclick="filter('all', this)">Semua</button>
@@ -45,11 +79,15 @@
 <div class="container" id="list">Memuat produk...</div>
 
 <div id="cart" class="hide">
-    <div id="total-area">
-        <div style="font-size: 12px;">Total Pesanan:</div>
-        <b id="total" style="font-size: 18px; color: var(--primary);">0</b>
+    <button onclick="resetCart()" style="background:var(--danger); border:none; padding:8px; border-radius:8px; color:#fff;">🗑️ Hapus</button>
+    <div style="text-align: right;">
+        <div id="total" style="font-size:18px; font-weight:800; color:var(--primary);">0</div>
+        <a id="btn-wa" href="#" style="background:var(--wa); color:#fff; text-decoration:none; padding:8px 15px; border-radius:8px; font-weight:bold; display:inline-block; margin-top:5px;">Kirim WA</a>
     </div>
-    <a id="btn-wa" href="#">Kirim WA</a>
+</div>
+
+<div id="zoomModal" class="modal-zoom" onclick="this.style.display='none'">
+    <img id="imgZoom">
 </div>
 
 <script>
@@ -57,12 +95,35 @@
     let produk = [];
     let order = {};
     let totalHarga = 0;
+    let deferredPrompt;
+
+    // Logika Tombol Install
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // Tampilkan tombol install kecil di kanan setelah 3 detik
+        setTimeout(() => {
+            document.getElementById('installBtn').style.display = 'block';
+        }, 3000);
+    });
+
+    async function installApp() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                document.getElementById('installBtn').style.display = 'none';
+            }
+            deferredPrompt = null;
+        }
+    }
 
     async function load() {
         try {
             const res = await fetch(API_URL);
             produk = await res.json();
             render();
+            loadFromLocal();
         } catch (e) { 
             document.getElementById("list").innerText = "Gagal memuat data."; 
         }
@@ -76,41 +137,47 @@
         produk.forEach(p => {
             if (!p.nama) return;
             kategori.add(p.kategori || "Lainnya");
-            let diskon = Number(p.diskon) || 0;
-            let hargaFix = p.harga - (p.harga * diskon / 100);
+            let disc = Number(p.diskon) || 0;
+            let hrgFix = p.harga - (p.harga * disc / 100);
             
             html += `
             <div class="card" data-cat="${(p.kategori || 'Lainnya').toLowerCase()}">
-                ${diskon > 0 ? `<div class="badge-diskon">-${diskon}%</div>` : ''}
-                <img src="${p.gambar || 'https://via.placeholder.com/150'}">
+                ${disc > 0 ? `<div class="badge-diskon">-${disc}%</div>` : ''}
+                <img src="${p.gambar || 'https://via.placeholder.com/150'}" onclick="zoomImg('${p.gambar}')">
                 <div class="card-info">
                     <b>${p.nama}</b>
                     <div style="margin: 5px 0;">
-                        ${diskon > 0 ? `<span class="price-old">${rupiah(p.harga)}</span>` : '<div style="height:16px"></div>'}
-                        <span class="price-new">${rupiah(hargaFix)}</span>
+                        ${disc > 0 ? `<span class="price-old">${rupiah(p.harga)}</span>` : '<div style="height:19px"></div>'}
+                        <span class="price-new">${rupiah(hrgFix)}</span>
                     </div>
                     <div class="qty">
-                        <button onclick="changeQty('${p.id}', -1, ${hargaFix}, '${p.nama}')">-</button>
+                        <button onclick="changeQty('${p.id}', -1, ${hrgFix}, '${p.nama}')">-</button>
                         <span id="qty-${p.id}">0</span>
-                        <button onclick="changeQty('${p.id}', 1, ${hargaFix}, '${p.nama}')">+</button>
+                        <button onclick="changeQty('${p.id}', 1, ${hrgFix}, '${p.nama}')">+</button>
                     </div>
                 </div>
             </div>`;
         });
         document.getElementById("list").innerHTML = html;
-        
+        renderCatButtons(kategori);
+    }
+
+    function renderCatButtons(kategoriSet) {
         let catHtml = '<button class="active" onclick="filter(\'all\', this)">Semua</button>';
-        kategori.forEach(k => {
-            catHtml += `<button onclick="filter('${k.toLowerCase()}', this)">${k}</button>`;
-        });
+        kategoriSet.forEach(k => { catHtml += `<button onclick="filter('${k.toLowerCase()}', this)">${k}</button>`; });
         document.getElementById("cat-bar").innerHTML = catHtml;
+    }
+
+    function zoomImg(src) {
+        if(!src) return;
+        document.getElementById("imgZoom").src = src;
+        document.getElementById("zoomModal").style.display = "flex";
     }
 
     function changeQty(id, delta, price, name) {
         if (!order[id]) order[id] = { qty: 0, name, price };
         order[id].qty += delta;
         if (order[id].qty < 0) order[id].qty = 0;
-        
         document.getElementById(`qty-${id}`).innerText = order[id].qty;
         updateCart();
     }
@@ -119,7 +186,6 @@
         totalHarga = 0;
         let waText = "Halo Duta Terang, saya mau pesan:%0A";
         let adaBarang = false;
-
         for (let id in order) {
             if (order[id].qty > 0) {
                 adaBarang = true;
@@ -127,12 +193,33 @@
                 waText += `- ${order[id].name} (x${order[id].qty})%0A`;
             }
         }
-
         document.getElementById("total").innerText = rupiah(totalHarga);
         document.getElementById("btn-wa").href = "https://wa.me/6288224166270?text=" + waText + "%0A*Total: " + rupiah(totalHarga) + "*";
-        
         if (adaBarang) document.getElementById("cart").classList.remove("hide");
         else document.getElementById("cart").classList.add("hide");
+        localStorage.setItem("duta_terang_cart", JSON.stringify({ order, totalHarga }));
+    }
+
+    function resetCart() {
+        if(confirm("Hapus semua pesanan?")) {
+            order = {}; totalHarga = 0;
+            localStorage.removeItem("duta_terang_cart");
+            document.querySelectorAll("[id^='qty-']").forEach(el => el.innerText = "0");
+            updateCart();
+        }
+    }
+
+    function loadFromLocal() {
+        const saved = localStorage.getItem("duta_terang_cart");
+        if (saved) {
+            const data = JSON.parse(saved);
+            order = data.order;
+            updateCart();
+            for (let id in order) {
+                const el = document.getElementById(`qty-${id}`);
+                if (el) el.innerText = order[id].qty;
+            }
+        }
     }
 
     function filter(cat, btn) {
