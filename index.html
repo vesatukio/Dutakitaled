@@ -79,7 +79,10 @@
     animation: zoomIn 0.2s ease;
 }
 @keyframes zoomIn { from {transform: scale(0.8); opacity: 0;} to {transform: scale(1); opacity: 1;} }
-    
+   .card {
+    /* Tambahkan ini ke dalam .card yang sudah ada */
+    transition: opacity 0.3s ease;
+} 
     </style>
 </head>
 <body>
@@ -139,14 +142,33 @@
     }
 
     async function load() {
-        try {
-            const res = await fetch(API_URL);
-            produk = await res.json();
-            render();
-            loadFromLocal();
-        } catch (e) { document.getElementById("list").innerText = "Gagal memuat."; }
+    // 1. Cek apakah ada data produk lama di memori (Cache)
+    const cachedProduk = localStorage.getItem("duta_terang_cache");
+    if (cachedProduk) {
+        produk = JSON.parse(cachedProduk);
+        render(); // Langsung tampilkan produk lama dulu
+        loadFromLocal(); // Muat jumlah keranjang
     }
 
+    try {
+        // 2. Ambil data terbaru dari Google Sheets di latar belakang
+        const res = await fetch(API_URL);
+        const dataTerbaru = await res.json();
+        
+        // 3. Jika data terbaru beda dengan cache, update tampilannya
+        if (JSON.stringify(dataTerbaru) !== cachedProduk) {
+            produk = dataTerbaru;
+            localStorage.setItem("duta_terang_cache", JSON.stringify(produk));
+            render();
+            loadFromLocal();
+        }
+    } catch (e) {
+        console.log("Gagal sinkronisasi data terbaru");
+        if (!cachedProduk) {
+            document.getElementById("list").innerText = "Gagal memuat. Periksa koneksi.";
+        }
+    }
+}
     function rupiah(n) { return "Rp " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
 
     function render() {
