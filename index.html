@@ -69,6 +69,17 @@
         }
         #total { font-size: 16px; font-weight: 900; color: var(--primary); margin-bottom: 5px; }
         #btn-wa { background: var(--wa); color: #fff; text-decoration: none; padding: 8px 15px; border-radius: 8px; font-size: 14px; font-weight: bold; }
+   /* CSS untuk Zoom */
+#zoomModal {
+    display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9); align-items: center; justify-content: center; cursor: zoom-out;
+}
+#img-zoomed {
+    max-width: 90%; max-height: 80%; border-radius: 10px;
+    animation: zoomIn 0.2s ease;
+}
+@keyframes zoomIn { from {transform: scale(0.8); opacity: 0;} to {transform: scale(1); opacity: 1;} }
+    
     </style>
 </head>
 <body>
@@ -150,7 +161,7 @@
             html += `
             <div class="card" data-cat="${(p.kategori || 'Lainnya').toLowerCase()}">
                 ${disc > 0 ? `<div style="position:absolute; top:5px; right:5px; background:var(--danger); color:white; font-size:9px; padding:1px 4px; border-radius:4px;">-${disc}%</div>` : ''}
-                <img src="${p.gambar || 'https://via.placeholder.com/150'}">
+                <img src="${p.gambar || 'https://via.placeholder.com/150'}" onclick="openZoom('${p.gambar || 'https://via.placeholder.com/150'}')">
                 <div style="margin-top:6px; flex-grow:1;">
                     <b style="font-size:12px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; height:30px; line-height:1.2;">${p.nama}</b>
                     <div style="margin:4px 0;">
@@ -236,6 +247,18 @@
     }
 
     load();
+
+    // Fungsi untuk membuka zoom
+function openZoom(imgUrl) {
+    if(!imgUrl || imgUrl === 'undefined') return;
+    document.getElementById("img-zoomed").src = imgUrl;
+    document.getElementById("zoomModal").style.display = "flex";
+    document.body.style.overflow = "hidden"; // Supaya layar utama tidak bisa discroll saat zoom
+}
 </script>
+    <!-- Elemen untuk menampilkan gambar besar -->
+<div id="zoomModal" onclick="this.style.display='none'; document.body.style.overflow='auto';">
+    <img id="img-zoomed" src="">
+</div>
 </body>
 </html>
