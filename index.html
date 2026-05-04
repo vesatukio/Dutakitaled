@@ -16,7 +16,6 @@
         }
         
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f5f6f8; padding-bottom: 180px; }
-        
         header { background: var(--primary); color: #fff; text-align: center; padding: 12px; font-size: 16px; }
 
         /* MODAL POPUP AWAL */
@@ -43,17 +42,17 @@
         .category button { border: 1px solid #ddd; padding: 6px 14px; border-radius: 20px; background: #fff; color: #555; font-size: 12px; white-space: nowrap; }
         .category button.active { background: var(--primary) !important; color: #fff !important; border-color: var(--primary) !important; }
 
-        /* PRODUK (KEMBALI KE 2 KOLOM RAPI) */
+        /* PRODUK */
         .container { padding: 8px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-width: 600px; margin: auto; }
-        .card { background: #fff; border-radius: 10px; padding: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; position: relative; }
+        .card { background: #fff; border-radius: 10px; padding: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; position: relative; transition: opacity 0.3s ease; }
         .card img { width: 100%; height: 110px; object-fit: contain; background: #f9f9f9; border-radius: 8px; }
         .price-old { text-decoration: line-through; color: blue; font-size: 12px; font-weight: bold; }
         .price-new { color: var(--pink); font-weight: bold; font-size: 14px; }
         
         .qty { display: flex; justify-content: space-between; align-items: center; background: #f1f3f4; border-radius: 6px; padding: 2px; margin-top: 8px; }
-        .qty button { width: 28px; height: 28px; border: none; background: var(--primary); color: #fff; border-radius: 4px; font-size: 16px; }
+        .qty button { width: 28px; height: 28px; border: none; background: var(--primary); color: #fff; border-radius: 4px; font-size: 16px; cursor: pointer; }
 
-        /* KERANJANG RINGKAS */
+        /* KERANJANG */
         #cart { 
             position: fixed; bottom: 10px; left: 10px; right: 10px; 
             background: #fff; padding: 12px; border-radius: 12px; 
@@ -61,7 +60,6 @@
             z-index: 1000; display: flex; align-items: flex-end; gap: 10px;
         }
         #cart.hide { display: none; }
-        
         .cart-right { flex-grow: 1; display: flex; flex-direction: column; align-items: flex-end; }
         #cart-list { 
             width: 100%; max-height: 80px; overflow-y: auto; font-size: 11px; 
@@ -69,46 +67,23 @@
         }
         #total { font-size: 16px; font-weight: 900; color: var(--primary); margin-bottom: 5px; }
         #btn-wa { background: var(--wa); color: #fff; text-decoration: none; padding: 8px 15px; border-radius: 8px; font-size: 14px; font-weight: bold; }
-   /* CSS untuk Zoom */
-#zoomModal {
-    display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9); align-items: center; justify-content: center; cursor: zoom-out;
-}
-#img-zoomed {
-    max-width: 90%; max-height: 80%; border-radius: 10px;
-    animation: zoomIn 0.2s ease;
-}
-@keyframes zoomIn { from {transform: scale(0.8); opacity: 0;} to {transform: scale(1); opacity: 1;} }
-   .card {
-    /* Tambahkan ini ke dalam .card yang sudah ada */
-    transition: opacity 0.3s ease;
-} 
-        /* Style untuk teks berjalan */
-.promo-running {
-    background: #fff3cd; /* Warna kuning soft */
-    color: #856404;    /* Warna teks cokelat tua agar mudah dibaca */
-    font-size: 13px;
-    padding: 5px 0;
-    font-weight: bold;
-    border-bottom: 1px solid #ffeeba;
-}
-.promo-running {
-    background: #fff3cd; 
-    color: #856404; 
-    padding: 5px; 
-    font-size: 13px; 
-    font-weight: bold;
-    border-bottom: 1px solid #ffeeba;
-}
-#jam-sekarang { color: #d9534f; } /* Warna merah untuk jam/tanggal */
-        
+
+        /* ZOOM */
+        #zoomModal {
+            display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); align-items: center; justify-content: center; cursor: zoom-out;
+        }
+        #img-zoomed { max-width: 90%; max-height: 80%; border-radius: 10px; animation: zoomIn 0.2s ease; }
+        @keyframes zoomIn { from {transform: scale(0.8); opacity: 0;} to {transform: scale(1); opacity: 1;} }
+
+        .promo-running { background: #fff3cd; color: #856404; padding: 5px; font-size: 13px; font-weight: bold; border-bottom: 1px solid #ffeeba; }
+        #jam-sekarang { color: #d9534f; }
     </style>
 </head>
 <body>
 
 <header><b>DUTA TERANG LED</b></header>
 
-<!-- Teks Berjalan -->
 <div class="promo-running">
     <marquee behavior="scroll" direction="left" scrollamount="5">
         <span id="jam-sekarang"></span> | ✨ Duta Terang LED: Solusi Lampu Hemat & Berkualitas | ✅ Melayani Pengiriman Seluruh Indonesia | 🤝 Transaksi Aman Bisa COD | 💡 Terang Lampunya, Hemat Biayanya!
@@ -143,6 +118,10 @@
     </div>
 </div>
 
+<div id="zoomModal" onclick="this.style.display='none'; document.body.style.overflow='auto';">
+    <img id="img-zoomed" src="">
+</div>
+
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyhgdk0elMuqM4-00OIR8zbUqp-k80RnbuYyPDDqGHsEk7aSCg60kgT5HTYL_hIVSDc/exec";
     let produk = [];
@@ -160,84 +139,69 @@
         document.getElementById('installFloat').style.display = 'block';
     }
 
-    async function triggerInstall() {
+    function triggerInstall() {
         if (deferredPrompt) {
             deferredPrompt.prompt();
             deferredPrompt = null;
         }
     }
 
-    async function load() {
-    // 1. Cek apakah ada data produk lama di memori (Cache)
-    const cachedProduk = localStorage.getItem("duta_terang_cache");
-    if (cachedProduk) {
-        produk = JSON.parse(cachedProduk);
-        render(); // Langsung tampilkan produk lama dulu
-        loadFromLocal(); // Muat jumlah keranjang
-    }
+    function rupiah(n) { return "Rp " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
 
-    try {
-        // 2. Ambil data terbaru dari Google Sheets di latar belakang
-        const res = await fetch(API_URL);
-        const dataTerbaru = await res.json();
-        
-        // 3. Jika data terbaru beda dengan cache, update tampilannya
-        if (JSON.stringify(dataTerbaru) !== cachedProduk) {
-            produk = dataTerbaru;
-            localStorage.setItem("duta_terang_cache", JSON.stringify(produk));
+    async function load() {
+        const cachedProduk = localStorage.getItem("duta_terang_cache");
+        if (cachedProduk) {
+            produk = JSON.parse(cachedProduk);
             render();
             loadFromLocal();
         }
-    } catch (e) {
-        console.log("Gagal sinkronisasi data terbaru");
-        if (!cachedProduk) {
-            document.getElementById("list").innerText = "Gagal memuat. Periksa koneksi.";
+
+        try {
+            const res = await fetch(API_URL);
+            const dataTerbaru = await res.json();
+            if (JSON.stringify(dataTerbaru) !== cachedProduk) {
+                produk = dataTerbaru;
+                localStorage.setItem("duta_terang_cache", JSON.stringify(produk));
+                render();
+                loadFromLocal();
+            }
+        } catch (e) {
+            if (!cachedProduk) document.getElementById("list").innerText = "Gagal memuat. Periksa koneksi.";
         }
     }
-}
-    function rupiah(n) { return "Rp " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
 
     function render() {
-    let html = "";
-    let kategori = new Set();
-    produk.forEach(p => {
-        if (!p.nama) return;
-        kategori.add(p.kategori || "Lainnya");
-        
-        let disc = Number(p.diskon) || 0;
-        let hrgFix = p.harga - (p.harga * disc / 100);
-        
-        // --- LOGIKA STOK KOSONG ---
-        // Asumsi di Google Sheets ada kolom bernama 'stok'
-        let isHabis = (p.stok !== undefined && p.stok <= 0); 
-        let styleHabis = isHabis ? 'style="opacity: 0.5; filter: grayscale(1);"' : '';
-        let btnDisabled = isHabis ? 'disabled style="background:#ccc; cursor:not-allowed;"' : '';
-        // --------------------------
+        let html = "";
+        let kategori = new Set();
+        produk.forEach(p => {
+            if (!p.nama) return;
+            kategori.add(p.kategori || "Lainnya");
+            
+            let disc = Number(p.diskon) || 0;
+            let hrgFix = p.harga - (p.harga * disc / 100);
+            
+            let isHabis = (p.stok !== undefined && p.stok <= 0); 
+            let styleHabis = isHabis ? 'style="opacity: 0.5; filter: grayscale(1);"' : '';
+            let btnDisabled = isHabis ? 'disabled style="background:#ccc; cursor:not-allowed;"' : '';
 
-        html += `
-        <div class="card" data-cat="${(p.kategori || 'Lainnya').toLowerCase()}" ${styleHabis}>
-            ${isHabis ? `<div style="position:absolute; top:40%; left:0; width:100%; background:rgba(255,0,0,0.8); color:white; text-align:center; z-index:10; transform:rotate(-15deg); font-weight:bold; padding:5px 0;">HABIS</div>` : ''}
-            ${disc > 0 && !isHabis ? `<div style="position:absolute; top:5px; right:5px; background:var(--danger); color:white; font-size:9px; padding:1px 4px; border-radius:4px;">-${disc}%</div>` : ''}
-            
-            <img src="${p.gambar || 'https://via.placeholder.com/150'}" onclick="${isHabis ? '' : `openZoom('${p.gambar}')`}">
-            
-            <div style="margin-top:6px; flex-grow:1;">
-                <b style="font-size:12px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; height:30px; line-height:1.2;">${p.nama}</b>
-                <div style="margin:4px 0;">
-                    ${disc > 0 ? `<span class="price-old">${rupiah(p.harga)}</span>` : '<div style="height:15px"></div>'}
-                    <span class="price-new">${rupiah(hrgFix)}</span>
+            html += `
+            <div class="card" data-cat="${(p.kategori || 'Lainnya').toLowerCase()}" ${styleHabis}>
+                ${isHabis ? `<div style="position:absolute; top:5px; left:5px; background:var(--danger); color:white; font-size:9px; padding:2px 6px; border-radius:4px; z-index:10; font-weight:bold;">HABIS</div>` : ''}
+                ${disc > 0 && !isHabis ? `<div style="position:absolute; top:5px; right:5px; background:var(--danger); color:white; font-size:9px; padding:1px 4px; border-radius:4px;">-${disc}%</div>` : ''}
+                <img src="${p.gambar || 'https://via.placeholder.com/150'}" onclick="${isHabis ? '' : `openZoom('${p.gambar}')`}">
+                <div style="margin-top:6px; flex-grow:1;">
+                    <b style="font-size:12px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; height:30px; line-height:1.2;">${p.nama}</b>
+                    <div style="margin:4px 0;">
+                        ${disc > 0 ? `<span class="price-old">${rupiah(p.harga)}</span>` : '<div style="height:15px"></div>'}
+                        <span class="price-new">${rupiah(hrgFix)}</span>
+                    </div>
+                    <div class="qty">
+                        <button ${btnDisabled} onclick="changeQty('${p.id}', -1, ${hrgFix}, '${p.nama}')">-</button>
+                        <span id="qty-${p.id}" style="font-size:13px">0</span>
+                        <button ${btnDisabled} onclick="changeQty('${p.id}', 1, ${hrgFix}, '${p.nama}')">+</button>
+                    </div>
                 </div>
-                
-                <div class="qty">
-                    <button ${btnDisabled} onclick="changeQty('${p.id}', -1, ${hrgFix}, '${p.nama}')">-</button>
-                    <span id="qty-${p.id}" style="font-size:13px">0</span>
-                    <button ${btnDisabled} onclick="changeQty('${p.id}', 1, ${hrgFix}, '${p.nama}')">+</button>
-                </div>
-            </div>
-        </div>`;
-    });
-    // ... sisa kode cat-bar tetap sama
-}
+            </div>`;
         });
         document.getElementById("list").innerHTML = html;
         
@@ -247,19 +211,20 @@
     }
 
     function changeQty(id, delta, price, name) {
-    // Cari data produk berdasarkan ID untuk cek stok
-    const item = produk.find(p => p.id == id);
-    if (item && item.stok <= 0 && delta > 0) {
-        alert("Maaf, stok barang ini sedang kosong.");
-        return;
-    }
+        const item = produk.find(p => String(p.id) === String(id));
+        if (item && item.stok <= 0 && delta > 0) {
+            alert("Maaf, stok barang ini sedang kosong.");
+            return;
+        }
 
-    if (!order[id]) order[id] = { qty: 0, name, price };
-    order[id].qty += delta;
-    if (order[id].qty < 0) order[id].qty = 0;
-    document.getElementById(`qty-${id}`).innerText = order[id].qty;
-    updateCart();
-}
+        if (!order[id]) order[id] = { qty: 0, name, price };
+        order[id].qty += delta;
+        if (order[id].qty < 0) order[id].qty = 0;
+        
+        const el = document.getElementById(`qty-${id}`);
+        if(el) el.innerText = order[id].qty;
+        updateCart();
+    }
 
     function updateCart() {
         let totalHarga = 0;
@@ -316,29 +281,22 @@
         }
     }
 
-    load();
-
-    // Fungsi untuk membuka zoom
-function openZoom(imgUrl) {
-    if(!imgUrl || imgUrl === 'undefined') return;
-    document.getElementById("img-zoomed").src = imgUrl;
-    document.getElementById("zoomModal").style.display = "flex";
-    document.body.style.overflow = "hidden"; // Supaya layar utama tidak bisa discroll saat zoom
-}
+    function openZoom(imgUrl) {
+        if(!imgUrl || imgUrl === 'undefined') return;
+        document.getElementById("img-zoomed").src = imgUrl;
+        document.getElementById("zoomModal").style.display = "flex";
+        document.body.style.overflow = "hidden";
+    }
 
     function updateWaktu() {
-    const sekarang = new Date();
-    const opsi = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-    // Mengubah waktu menjadi format: Senin, 4 Mei 2026 06.40
-    document.getElementById("jam-sekarang").innerText = sekarang.toLocaleDateString('id-ID', opsi).replace('.', ':');
-}
+        const sekarang = new Date();
+        const opsi = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        document.getElementById("jam-sekarang").innerText = sekarang.toLocaleDateString('id-ID', opsi).replace('.', ':');
+    }
 
-// Jalankan fungsi
-updateWaktu();
+    setInterval(updateWaktu, 60000);
+    updateWaktu();
+    load();
 </script>
-    <!-- Elemen untuk menampilkan gambar besar -->
-<div id="zoomModal" onclick="this.style.display='none'; document.body.style.overflow='auto';">
-    <img id="img-zoomed" src="">
-</div>
 </body>
 </html>
