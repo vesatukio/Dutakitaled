@@ -37,13 +37,50 @@
             writing-mode: vertical-rl;
         }
 
-        /* KATEGORI */
-        .category { display: flex; gap: 8px; padding: 10px; background: #fff; position: sticky; top: 0; z-index: 100; overflow-x: auto; border-bottom: 1px solid #eee; }
-        .category button { border: 1px solid #ddd; padding: 6px 14px; border-radius: 20px; background: #fff; color: #555; font-size: 12px; white-space: nowrap; }
-        .category button.active { background: var(--primary) !important; color: #fff !important; border-color: var(--primary) !important; }
+        /* KATEGORI - Perbaikan agar bisa digeser di HP */
+.category { 
+    display: flex; 
+    gap: 8px; 
+    padding: 12px 10px; 
+    background: #fff; 
+    position: sticky; 
+    top: 0; 
+    z-index: 100; 
+    overflow-x: auto; /* Mengizinkan geser horizontal */
+    white-space: nowrap; /* Mencegah tombol turun ke baris baru */
+    border-bottom: 1px solid #eee;
+    scrollbar-width: none; /* Menghilangkan scrollbar di Firefox */
+    -ms-overflow-style: none; /* Menghilangkan scrollbar di IE/Edge */
+}
 
-        /* PRODUK */
-        .container { padding: 8px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-width: 600px; margin: auto; }
+/* Menghilangkan scrollbar di Chrome, Safari, dan Opera */
+.category::-webkit-scrollbar {
+    display: none;
+}
+
+.category button { 
+    flex: 0 0 auto; /* Mencegah tombol menyusut (gepeng) */
+    border: 1px solid #ddd; 
+    padding: 8px 16px; 
+    border-radius: 20px; 
+    background: #fff; 
+    color: #555; 
+    font-size: 13px; 
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+        /* PRODUK - Dioptimalkan untuk 2 Kolom di HP */
+.container { 
+    padding: 10px 8px; /* Tambah padding atas sedikit agar tidak nempel kategori */
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 10px; /* Jarak antar kartu sedikit diperlebar agar lebih lega */
+    max-width: 600px; 
+    margin: auto; 
+    align-items: stretch; /* Memastikan tinggi kartu sama rata */
+}
         .card { background: #fff; border-radius: 10px; padding: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; position: relative; transition: opacity 0.3s ease; }
         .card img { width: 100%; height: 110px; object-fit: contain; background: #f9f9f9; border-radius: 8px; }
         .price-old { text-decoration: line-through; color: blue; font-size: 12px; font-weight: bold; }
