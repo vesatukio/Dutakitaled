@@ -6,76 +6,93 @@
     <title>Duta Terang LED</title>
     <style>
         :root { --primary: #00bcd4; --pink: #e91e63; --wa: #25D366; --danger: #ff4d4d; }
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f5f6f8; padding-bottom: 240px; }
-        header { background: var(--primary); color: #fff; padding: 12px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f5f6f8; padding-bottom: 250px; }
         
-        /* BADGE DISKON & HABIS */
-        .badge-disc { position: absolute; top: 5px; right: 5px; background: var(--danger); color: white; font-size: 9px; padding: 2px 5px; border-radius: 4px; z-index: 1; }
-        .badge-habis { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.7); color: #000; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; border-radius: 10px; z-index: 2; }
+        /* HEADER */
+        header { background: var(--primary); color: #fff; padding: 12px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .user-stat { font-size: 10px; background: rgba(0,0,0,0.15); padding: 4px 8px; border-radius: 20px; }
 
         /* KATEGORI */
         .category { display: flex; gap: 8px; padding: 10px; background: #fff; overflow-x: auto; border-bottom: 1px solid #eee; }
-        .category button { border: 1px solid #ddd; padding: 5px 12px; border-radius: 15px; background: #fff; font-size: 11px; white-space: nowrap; }
+        .category button { border: 1px solid #ddd; padding: 6px 12px; border-radius: 20px; background: #fff; font-size: 11px; white-space: nowrap; cursor: pointer; }
         .category button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
-        /* PRODUK */
+        /* GRID PRODUK */
         .container { padding: 8px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
         .card { background: #fff; border-radius: 10px; padding: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; }
-        .card img { width: 100%; height: 100px; object-fit: contain; border-radius: 8px; }
+        .card img { width: 100%; height: 110px; object-fit: contain; border-radius: 8px; cursor: zoom-in; background: #f9f9f9; }
         
+        /* BADGE */
+        .badge-disc { position: absolute; top: 5px; right: 5px; background: var(--danger); color: white; font-size: 9px; padding: 2px 5px; border-radius: 4px; font-weight: bold; }
+        .badge-habis { position: absolute; inset: 0; background: rgba(255,255,255,0.7); color: red; display: flex; align-items: center; justify-content: center; font-weight: 900; border-radius: 10px; z-index: 5; }
+
         .qty { display: flex; justify-content: space-between; align-items: center; background: #f1f3f4; border-radius: 6px; margin-top: 8px; }
-        .qty button { width: 28px; height: 28px; border: none; background: var(--primary); color: #fff; border-radius: 4px; }
+        .qty button { width: 30px; height: 30px; border: none; background: var(--primary); color: #fff; border-radius: 4px; font-weight: bold; }
 
-        /* FORM & KERANJANG RINGKAS */
-        #cart { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 10px; border-radius: 15px 15px 0 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 1001; }
-        .form-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 8px; }
-        .form-mini input, .form-mini select { padding: 6px; border: 1px solid #ddd; border-radius: 5px; font-size: 11px; outline: none; }
-        .full-width { grid-column: span 2; }
+        /* ZOOM MODAL */
+        #zoomModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; align-items: center; justify-content: center; }
+        #zoomModal img { max-width: 90%; max-height: 80%; border-radius: 10px; }
 
-        .cart-bottom { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #eee; padding-top: 8px; }
-        #btn-wa { background: var(--wa); color: white; text-decoration: none; padding: 8px 15px; border-radius: 6px; font-size: 13px; font-weight: bold; }
+        /* KERANJANG BARU (LAYOUT SPLIT) */
+        #cart { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 12px; border-top: 2px solid var(--primary); box-shadow: 0 -5px 15px rgba(0,0,0,0.1); display: flex; gap: 12px; z-index: 2000; }
+        .hide { display: none !important; }
+
+        /* Sisi Kiri: Form Alamat */
+        .cart-left { flex: 1.5; display: flex; flex-direction: column; gap: 5px; }
+        .cart-left input, .cart-left select { width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 11px; box-sizing: border-box; }
+        .grid-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
         
-        .hide { display: none; }
+        /* Sisi Kanan: Ringkasan & Tombol WA */
+        .cart-right { flex: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; border-left: 1px dashed #ddd; padding-left: 10px; }
+        #total { font-size: 15px; font-weight: 900; color: var(--pink); margin-bottom: 5px; }
+        #cart-list-text { font-size: 9px; color: #777; text-align: right; max-height: 40px; overflow-y: auto; margin-bottom: 8px; }
+        
+        #btn-wa { background: var(--wa); color: #fff; text-decoration: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 13px; font-weight: bold; text-align: center; }
+        .btn-reset { background: var(--danger); border: none; color: #fff; padding: 5px; border-radius: 4px; cursor: pointer; font-size: 10px; width: fit-content; }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-size: 14px; font-weight: bold;">DUTA TERANG LED</div>
-    <div style="font-size: 10px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 10px;">
-        📲 <span id="user-count">1.2k</span> Terpasang
-    </div>
+    <div>DUTA TERANG LED</div>
+    <div class="user-stat">📲 <span id="install-info">1.284</span> terpasang</div>
 </header>
 
-<div class="category" id="cat-bar"></div>
+<div id="cat-bar" class="category"></div>
 
-<div class="container" id="list">Memuat...</div>
+<div id="list" class="container">Memuat...</div>
 
+<!-- MODAL ZOOM -->
+<div id="zoomModal" onclick="this.style.display='none'">
+    <img id="imgZoom" src="">
+</div>
+
+<!-- PANEL KERANJANG -->
 <div id="cart" class="hide">
-    <!-- FORM ALAMAT SANGAT RINGKAS -->
-    <div class="form-mini">
-        <input type="text" id="f_nama" class="full-width" placeholder="Nama Pemesan">
-        <input type="text" id="f_almt" class="full-width" placeholder="Alamat (Jl / No / Patokan)">
-        <input type="text" id="f_rtrw" placeholder="RT/RW">
-        <input type="text" id="f_desa" placeholder="Desa">
-        <input type="text" id="f_kec" placeholder="Kecamatan">
-        <input type="text" id="f_kab" placeholder="Kab/Kota">
-        <input type="text" id="f_prov" placeholder="Provinsi">
+    <!-- KIRI: FORM ALAMAT -->
+    <div class="cart-left">
+        <button class="btn-reset" onclick="resetCart()">🗑️ Hapus Semua</button>
+        <input type="text" id="f_nama" placeholder="Nama Pemesan">
+        <input type="text" id="f_alamat" placeholder="Alamat (Jl / No / Patokan)">
+        <div class="grid-mini">
+            <input type="text" id="f_rtrw" placeholder="RT/RW">
+            <input type="text" id="f_desa" placeholder="Desa">
+            <input type="text" id="f_kec" placeholder="Kecamatan">
+            <input type="text" id="f_kab" placeholder="Kab/Kota">
+        </div>
         <select id="f_bayar">
-            <option value="COD">Bayar COD</option>
-            <option value="Transfer">Transfer</option>
+            <option value="COD">Metode: COD</option>
+            <option value="Transfer">Metode: Transfer</option>
         </select>
     </div>
 
-    <div class="cart-bottom">
-        <button onclick="resetCart()" style="background:var(--danger); border:none; padding:8px; border-radius:5px; color:#fff; cursor:pointer;">🗑️</button>
-        
-        <div style="text-align: right; flex-grow: 1; margin-right: 15px;">
-            <div id="cart-summary" style="font-size: 10px; color: #666; max-height: 30px; overflow: hidden;"></div>
-            <div id="total" style="font-size: 16px; font-weight: 900; color: var(--pink);">Rp 0</div>
+    <!-- KANAN: RINGKASAN & ORDER -->
+    <div class="cart-right">
+        <div style="width: 100%; text-align: right;">
+            <div id="cart-list-text"></div>
+            <div id="total">Rp 0</div>
         </div>
-
-        <a id="btn-wa" href="javascript:void(0)" onclick="kirimWA()">ORDER WA</a>
+        <a id="btn-wa" href="javascript:void(0)" onclick="kirimWA()">PESAN WA</a>
     </div>
 </div>
 
@@ -89,6 +106,7 @@
             const res = await fetch(API_URL);
             produk = await res.json();
             render();
+            autoFillForm();
         } catch (e) { document.getElementById("list").innerText = "Gagal memuat."; }
     }
 
@@ -105,12 +123,12 @@
             <div class="card" data-cat="${(p.kategori || 'Lainnya').toLowerCase()}">
                 ${isHabis ? '<div class="badge-habis">HABIS</div>' : ''}
                 ${disc > 0 ? `<div class="badge-disc">-${disc}%</div>` : ''}
-                <img src="${p.gambar || 'https://via.placeholder.com/150'}">
-                <b style="font-size:11px; margin-top:5px; height:28px; overflow:hidden;">${p.nama}</b>
-                <span style="color:var(--pink); font-weight:bold; font-size:13px;">Rp ${hrgFix.toLocaleString('id-ID')}</span>
+                <img src="${p.gambar || 'https://via.placeholder.com/150'}" onclick="openZoom('${p.gambar}')">
+                <b style="font-size:11px; margin-top:5px; height:28px; overflow:hidden; line-height:1.2;">${p.nama}</b>
+                <span style="color:var(--pink); font-weight:bold; font-size:13px; margin-top:2px;">Rp ${hrgFix.toLocaleString('id-ID')}</span>
                 <div class="qty">
                     <button onclick="changeQty('${p.id}', -1, ${hrgFix}, '${p.nama}')" ${isHabis?'disabled':''}>-</button>
-                    <span id="qty-${p.id}" style="font-size:12px;">0</span>
+                    <span id="qty-${p.id}" style="font-size:12px; font-weight:bold;">0</span>
                     <button onclick="changeQty('${p.id}', 1, ${hrgFix}, '${p.nama}')" ${isHabis?'disabled':''}>+</button>
                 </div>
             </div>`;
@@ -120,6 +138,12 @@
         let catHtml = '<button class="active" onclick="filter(\'all\', this)">Semua</button>';
         kategori.forEach(k => catHtml += `<button onclick="filter('${k.toLowerCase()}', this)">${k}</button>`);
         document.getElementById("cat-bar").innerHTML = catHtml;
+    }
+
+    function openZoom(url) {
+        if(!url) return;
+        document.getElementById("imgZoom").src = url;
+        document.getElementById("zoomModal").style.display = 'flex';
     }
 
     function changeQty(id, delta, price, name) {
@@ -138,19 +162,28 @@
             summary += `${order[id].name} (x${order[id].qty}), `;
         }
         document.getElementById("total").innerText = "Rp " + total.toLocaleString('id-ID');
-        document.getElementById("cart-summary").innerText = summary.slice(0, -2);
+        document.getElementById("cart-list-text").innerText = summary.slice(0, -2);
         document.getElementById("cart").classList.toggle("hide", total === 0);
     }
 
     function kirimWA() {
         const n = document.getElementById("f_nama").value;
-        const a = document.getElementById("f_almt").value;
-        if(!n || !a) return alert("Nama & Alamat wajib diisi!");
+        const a = document.getElementById("f_alamat").value;
+        if(!n || !a) return alert("Isi Nama & Alamat dulu bos!");
 
-        let m = `*PESANAN DUTA TERANG*\n\n`;
-        for(let id in order) m += `• ${order[id].name} (x${order[id].qty})\n`;
-        m += `\n*Total: ${document.getElementById("total").innerText}*\n\n`;
-        m += `👤 *Penerima:* ${n}\n📍 *Alamat:* ${a}\n🏠 *RT/RW:* ${document.getElementById("f_rtrw").value}, *Desa:* ${document.getElementById("f_desa").value}\n🏘️ *Kec:* ${document.getElementById("f_kec").value}, *Kab:* ${document.getElementById("f_kab").value}\n💳 *Bayar:* ${document.getElementById("f_bayar").value}`;
+        let m = `*ORDER DUTA TERANG LED*\n`;
+        m += `----------------------------\n`;
+        for(let id in order) m += `✅ ${order[id].name} (x${order[id].qty})\n`;
+        m += `----------------------------\n`;
+        m += `*Total: ${document.getElementById("total").innerText}*\n\n`;
+        m += `*DATA PEMESAN:*\n`;
+        m += `👤 Nama: ${n}\n`;
+        m += `📍 Alamat: ${a}\n`;
+        m += `🏠 RT/RW: ${document.getElementById("f_rtrw").value}\n`;
+        m += `🏘️ Desa: ${document.getElementById("f_desa").value}\n`;
+        m += `🏙️ Kec/Kab: ${document.getElementById("f_kec").value} / ${document.getElementById("f_kab").value}\n`;
+        m += `💳 Pembayaran: ${document.getElementById("f_bayar").value}\n\n`;
+        m += `_Mohon segera diproses, terima kasih!_`;
 
         window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(m)}`);
     }
@@ -162,9 +195,19 @@
     }
 
     function resetCart() {
+        if(!confirm("Hapus semua pesanan?")) return;
         order = {};
         document.querySelectorAll("[id^='qty-']").forEach(e => e.innerText = "0");
         updateCart();
+    }
+
+    function autoFillForm() {
+        const ids = ['f_nama','f_alamat','f_rtrw','f_desa','f_kec','f_kab'];
+        ids.forEach(id => {
+            const saved = localStorage.getItem(id);
+            if(saved) document.getElementById(id).value = saved;
+            document.getElementById(id).addEventListener('input', e => localStorage.setItem(id, e.target.value));
+        });
     }
 
     load();
