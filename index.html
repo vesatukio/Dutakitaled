@@ -10,10 +10,52 @@
         body { margin: 0; font-family: 'Segoe UI', Roboto, sans-serif; background: #f5f6f8; padding-bottom: 220px; }
         
         /* HEADER */
-        .top-nav { position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: #fff; }
-        header { background: var(--primary); color: #fff; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
-        .promo-running { background: #fff3cd; color: #856404; font-size: 11px; padding: 4px 0; font-weight: bold; border-bottom: 1px solid #ffeeba; }
-        
+        .top-nav { 
+    position: sticky; 
+    top: 0; 
+    /* Naikkan sedikit z-index untuk memastikan berada di atas semua elemen kartu */
+    z-index: 9999; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15); 
+    background: #fff; 
+    /* Mencegah konten di bawahnya terlihat saat transisi scroll */
+    width: 100%;
+}
+
+header { 
+    background: var(--primary); 
+    color: #fff; 
+    padding: 12px 15px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+
+.promo-running { 
+    background: #fff3cd; 
+    color: #856404; 
+    font-size: 11px; 
+    padding: 4px 0; 
+    font-weight: bold; 
+    border-bottom: 1px solid #ffeeba;
+    /* Memastikan marquee berjalan lancar */
+    overflow: hidden;
+}
+
+/* Tambahan agar scroll kategori lebih mulus di mobile */
+#cat-bar {
+    display: flex; 
+    gap: 8px; 
+    padding: 10px; 
+    background: #fff; 
+    overflow-x: auto; 
+    border-bottom: 1px solid #eee;
+    -webkit-overflow-scrolling: touch; /* Scroll halus di iPhone */
+}
+
+/* Sembunyikan scrollbar agar terlihat seperti aplikasi profesional */
+#cat-bar::-webkit-scrollbar {
+    display: none;
+}
         /* GRID PRODUK */
         .container { padding: 10px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .card { background: #fff; border-radius: 10px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; }
@@ -59,17 +101,24 @@
 </head>
 <body>
 
+<!-- NAVIGASI TETAP DI ATAS -->
 <div class="top-nav">
     <header>
         <div style="font-weight: 900; font-size: 16px;">DUTA TERANG LED</div>
         <div style="font-size: 10px; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 20px;">📲 1.284 Terpasang</div>
     </header>
+    
     <div class="promo-running">
         <marquee scrollamount="5">📢 INFO: Sparepart LED Berkualitas | Ready Stok LED AC 5W-50W | Bisa COD (Bayar di Tempat)</marquee>
     </div>
-    <div id="cat-bar" style="display:flex; gap:8px; padding:10px; background:#fff; overflow-x:auto; border-bottom:1px solid #eee;"></div>
+    
+    <div id="cat-bar" style="display:flex; gap:8px; padding:10px; background:#fff; overflow-x:auto; border-bottom:1px solid #eee;">
+        <!-- Tombol kategori muncul di sini -->
+    </div>
+</div> <!-- PENUTUP TOP-NAV PINDAH KE SINI -->
+
+<!-- DAFTAR PRODUK (DI LUAR TOP-NAV) -->
 <div id="list" class="container">Memuat Produk...</div>
-</div>
 
 <!-- TOMBOL INSTALL KECIL (KANAN) -->
 <button id="btn-install-float" onclick="actionInstall()">
