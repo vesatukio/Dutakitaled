@@ -67,6 +67,8 @@
     <div class="promo-running">
         <marquee scrollamount="5">📢 INFO: Sparepart LED Berkualitas | Ready Stok LED AC 5W-50W | Bisa COD (Bayar di Tempat)</marquee>
     </div>
+    <div id="cat-bar" style="display:flex; gap:8px; padding:10px; background:#fff; overflow-x:auto; border-bottom:1px solid #eee;"></div>
+<div id="list" class="container">Memuat Produk...</div>
 </div>
 
 <!-- TOMBOL INSTALL KECIL (KANAN) -->
@@ -74,8 +76,7 @@
     <span>📲</span><span style="writing-mode: vertical-rl;">INSTALL</span>
 </button>
 
-<div id="cat-bar" style="display:flex; gap:8px; padding:10px; background:#fff; overflow-x:auto; border-bottom:1px solid #eee;"></div>
-<div id="list" class="container">Memuat Produk...</div>
+
 
 <div id="zoomModal" onclick="this.style.display='none'"><img id="imgZoom" src="" style="max-width:90%; max-height:80%; border-radius:10px;"></div>
 
@@ -258,13 +259,27 @@
     }
 
     function filter(cat, btn) {
+        // 1. Filter Produk
         document.querySelectorAll(".card").forEach(c => {
-            c.style.display = (cat === 'all' || c.getAttribute('data-category') === cat) ? 'flex' : 'none';
+            // Kita gunakan .toLowerCase() agar pencocokan kategori lebih akurat
+            const productCat = (c.getAttribute('data-category') || '').toLowerCase();
+            c.style.display = (cat === 'all' || productCat === cat.toLowerCase()) ? 'flex' : 'none';
         });
-        document.querySelectorAll("#cat-bar button").forEach(b => { b.style.background = '#fff'; b.style.color = '#666'; b.style.borderColor = '#ddd'; });
-        btn.style.background = 'var(--primary)'; btn.style.color = '#fff'; btn.style.borderColor = 'var(--primary)';
-    }
 
+        // 2. Reset Semua Tombol Kategori ke tampilan standar (putih/abu)
+        document.querySelectorAll("#cat-bar button").forEach(b => { 
+            b.style.background = '#fff'; 
+            b.style.color = '#666'; 
+            b.style.borderColor = '#ddd';
+            b.style.fontWeight = 'normal';
+        });
+
+        // 3. Highlight Tombol yang Aktif (Biru Duta Terang)
+        btn.style.background = 'var(--primary)'; 
+        btn.style.color = '#fff'; 
+        btn.style.borderColor = 'var(--primary)';
+        btn.style.fontWeight = 'bold';
+    }
     function openZoom(url) { 
         if(!url || url.includes('placeholder')) return;
         document.getElementById("imgZoom").src = url; 
