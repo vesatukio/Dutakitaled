@@ -62,6 +62,46 @@
 
         .hide { display: none !important; }
         #zoomModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 40000; align-items: center; justify-content: center; }
+    /* BACKGROUND MODAL */
+.modal { 
+    position: fixed; inset: 0; background: rgba(0,0,0,0.8); 
+    display: none; align-items: center; justify-content: center; z-index: 9999; 
+    padding: 20px; 
+}
+
+/* KOTAK PUTIH TENGAH */
+.promo-box { 
+    background: white; padding: 25px; border-radius: 20px; 
+    text-align: center; max-width: 320px; width: 100%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    animation: popUp 0.3s ease-out;
+}
+
+@keyframes popUp {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* KOTAK PROMO DI DALAM */
+.voucher-promo {
+    background: #fff0f4; 
+    border: 2px dashed #e91e63; 
+    padding: 12px; 
+    border-radius: 12px; 
+    margin: 15px 0;
+}
+
+.btn-install-big { 
+    background: #e91e63; color: white; border: none; 
+    padding: 12px; border-radius: 10px; width: 100%; 
+    font-weight: bold; cursor: pointer; font-size: 14px;
+}
+
+.btn-later { 
+    background: none; border: none; color: #999; 
+    margin-top: 15px; font-size: 12px; cursor: pointer; 
+}
+    
     </style>
 </head>
 <body>
@@ -222,6 +262,49 @@
         document.getElementById("imgZoom").src = url; 
         document.getElementById("zoomModal").style.display = 'flex'; 
     }
+
+    // Jalankan saat web selesai loading
+window.onload = () => {
+    // Cek localStorage agar tidak muncul terus-terusan
+    if(!localStorage.getItem('promo_v5_duta')) {
+        setTimeout(() => { 
+            document.getElementById('installModal').style.display = 'flex'; 
+        }, 1000); // Muncul setelah 1 detik
+    }
+    // Jika ada fungsi load produk Anda, panggil di sini
+    if(typeof load === 'function') load(); 
+};
+
+function closeModal() {
+    document.getElementById('installModal').style.display = 'none';
+    localStorage.setItem('promo_v5_duta', 'true');
+}
+
+function actionInstall() {
+    alert('Klik Titik Tiga (⋮) di pojok browser, lalu pilih "Instal Aplikasi" atau "Tambahkan ke Layar Utama"');
+    closeModal();
+}
 </script>
+    <div id="installModal" class="modal">
+    <div class="promo-box">
+        <div style="font-size: 50px;">🔥</div>
+        <h3 style="margin:5px 0; font-weight:900; color:#222;">PROMO KHUSUS!</h3>
+        
+        <div class="voucher-promo">
+            <p style="color: #e91e63; font-weight: 800; margin: 0; font-size: 15px;">
+                DISKON & FREE ONGKIR
+            </p>
+            <p style="color: #333; font-size: 12px; margin: 8px 0 0; line-height: 1.4;">
+                Minimal order <b>100 biji</b><br>
+                (Bisa Campur Semua Produk)
+            </p>
+        </div>
+        
+        <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Pasang aplikasi di layar utama HP agar belanja lebih cepat!</p>
+        
+        <button class="btn-install-big" onclick="actionInstall()">📲 PASANG SEKARANG</button>
+        <button class="btn-later" onclick="closeModal()">Nanti Saja</button>
+    </div>
+</div>
 </body>
 </html>
