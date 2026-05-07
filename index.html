@@ -284,6 +284,44 @@ function actionInstall() {
     alert('Klik Titik Tiga (⋮) di pojok browser, lalu pilih "Instal Aplikasi" atau "Tambahkan ke Layar Utama"');
     closeModal();
 }
+    let deferredPrompt;
+
+// Menangkap sinyal instalasi dari browser
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e; // Simpan sinyalnya
+});
+
+window.onload = () => {
+    if(!localStorage.getItem('promo_v5_duta')) {
+        setTimeout(() => { 
+            document.getElementById('installModal').style.display = 'flex'; 
+        }, 1000);
+    }
+    if(typeof load === 'function') load(); 
+};
+
+function closeModal() {
+    document.getElementById('installModal').style.display = 'none';
+    localStorage.setItem('promo_v5_duta', 'true');
+}
+
+// FUNGSI INSTALL LANGSUNG (PRAKTIS)
+async function actionInstall() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt(); // Munculkan kotak install resmi browser
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            console.log('User menginstall aplikasi');
+        }
+        deferredPrompt = null;
+        closeModal();
+    } else {
+        // Jika browser tidak mendukung pemicu otomatis atau sudah terinstal
+        alert('Aplikasi sudah terpasang atau gunakan menu browser untuk menambah manual.');
+        closeModal();
+    }
+}
 </script>
     <div id="installModal" class="modal">
     <div class="promo-box">
@@ -300,9 +338,9 @@ function actionInstall() {
             </p>
         </div>
         
-        <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Pasang aplikasi di layar utama HP agar belanja lebih cepat!</p>
+        <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Dapatkan akses cepat ke <b>Duta Terang LED</b> langsung dari beranda HP Anda.</p>
         
-        <button class="btn-install-big" onclick="actionInstall()">📲 PASANG SEKARANG</button>
+        <button class="btn-install-big" onclick="actionInstall()">📲 INSTALL SEKARANG</button>
         <button class="btn-later" onclick="closeModal()">Nanti Saja</button>
     </div>
 </div>
