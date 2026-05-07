@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Duta Terang LED</title>
+    <link rel="manifest" href="manifest.json">
     <style>
         :root { --primary: #00bcd4; --pink: #e91e63; --wa: #25D366; --danger: #ff4d4d; --blue-old: #2196F3; }
         body { margin: 0; font-family: 'Segoe UI', Roboto, sans-serif; background: #f5f6f8; padding-bottom: 220px; }
@@ -17,7 +18,6 @@
         .container { padding: 10px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .card { background: #fff; border-radius: 10px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; }
         .card img { width: 100%; height: 110px; object-fit: contain; border-radius: 5px; background: #fafafa; }
-        
         .product-name { font-size: 12px; font-weight: bold; margin-top: 8px; line-height: 1.2; color: #222; min-height: 30px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .price-new { color: var(--pink); font-weight: 800; font-size: 14px; margin-top: 4px; display: block; }
         
@@ -26,82 +26,35 @@
         .qty-wrapper button { width: 30px; height: 100%; border: none; background: var(--primary); color: white; font-weight: bold; font-size: 16px; }
         .qty-wrapper span { font-size: 12px; font-weight: bold; flex-grow: 1; text-align: center; }
 
-        /* TOMBOL INSTALL MELAYANG (KANAN TENGAH) */
+        /* TOMBOL INSTALL MELAYANG (KANAN) */
         #btn-install-float { 
             position: fixed; right: 0; top: 50%; transform: translateY(-50%); 
             background: var(--pink); color: white; border: none; padding: 10px 8px; 
             border-radius: 10px 0 0 10px; font-size: 11px; font-weight: bold; 
             z-index: 5000; box-shadow: -2px 2px 10px rgba(0,0,0,0.2); 
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-            cursor: pointer;
+            display: none; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
         }
 
-        /* PANEL KERANJANG RAMPING */
-        #cart { 
-            position: fixed; bottom: 0; left: 0; right: 0; background: #fff; 
-            padding: 8px 12px; border-top: 3px solid var(--primary); 
-            display: flex; gap: 10px; z-index: 2000; 
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.1); 
-            max-height: 190px; overflow-y: auto; 
-        }
+        /* MODAL POPUP */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+        .promo-box { background: white; padding: 25px; border-radius: 20px; text-align: center; max-width: 320px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: popUp 0.3s ease-out; }
+        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .voucher-promo { background: #fff0f4; border: 2px dashed var(--pink); padding: 12px; border-radius: 12px; margin: 15px 0; }
+        .btn-install-big { background: var(--pink); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .btn-later { background: none; border: none; color: #999; margin-top: 15px; font-size: 12px; cursor: pointer; }
 
+        /* PANEL KERANJANG */
+        #cart { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 8px 12px; border-top: 3px solid var(--primary); display: flex; gap: 10px; z-index: 2000; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); max-height: 190px; overflow-y: auto; }
         .cart-left { flex: 1.3; display: flex; flex-direction: column; gap: 4px; }
         .cart-left label { font-size: 9px; font-weight: bold; color: #999; text-transform: uppercase; }
-        .cart-left input, .cart-left select, .cart-left textarea { 
-            padding: 5px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; background: #fafafa;
-        }
-        
-        /* UKURAN FONT DISAMAKAN DENGAN PRODUK */
+        .cart-left input, .cart-left select, .cart-left textarea { padding: 5px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; background: #fafafa; }
         .cart-btn-small { font-size: 11px; padding: 4px; border: 1px solid #ddd; background: #fff; border-radius: 4px; cursor: pointer; flex: 1; }
         .cart-right { flex: 1; display: flex; flex-direction: column; border-left: 1px dashed #ddd; padding-left: 10px; }
-        
         #total { font-size: 14px; font-weight: 800; color: var(--pink); margin-bottom: 2px; }
         #cart-list-render { font-size: 11px; color: #666; max-height: 50px; overflow-y: auto; margin-bottom: 5px; line-height: 1.2; }
-        
         #btn-wa { background: var(--wa); color: #fff; border: none; padding: 8px; border-radius: 5px; font-size: 12px; font-weight: bold; cursor: pointer; }
-
         .hide { display: none !important; }
         #zoomModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 40000; align-items: center; justify-content: center; }
-    /* BACKGROUND MODAL */
-.modal { 
-    position: fixed; inset: 0; background: rgba(0,0,0,0.8); 
-    display: none; align-items: center; justify-content: center; z-index: 9999; 
-    padding: 20px; 
-}
-
-/* KOTAK PUTIH TENGAH */
-.promo-box { 
-    background: white; padding: 25px; border-radius: 20px; 
-    text-align: center; max-width: 320px; width: 100%;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    animation: popUp 0.3s ease-out;
-}
-
-@keyframes popUp {
-    from { transform: scale(0.8); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-}
-
-/* KOTAK PROMO DI DALAM */
-.voucher-promo {
-    background: #fff0f4; 
-    border: 2px dashed #e91e63; 
-    padding: 12px; 
-    border-radius: 12px; 
-    margin: 15px 0;
-}
-
-.btn-install-big { 
-    background: #e91e63; color: white; border: none; 
-    padding: 12px; border-radius: 10px; width: 100%; 
-    font-weight: bold; cursor: pointer; font-size: 14px;
-}
-
-.btn-later { 
-    background: none; border: none; color: #999; 
-    margin-top: 15px; font-size: 12px; cursor: pointer; 
-}
-    
     </style>
 </head>
 <body>
@@ -116,15 +69,30 @@
     </div>
 </div>
 
-<!-- TOMBOL INSTALL MELAYANG -->
-<button id="btn-install-float" onclick="alert('Tekan ikon Titik Tiga (⋮) lalu pilih Instal Aplikasi')">
-    <span>📲</span><span style="writing-mode: vertical-rl;">PASANG</span>
+<!-- TOMBOL INSTALL KECIL (KANAN) -->
+<button id="btn-install-float" onclick="actionInstall()">
+    <span>📲</span><span style="writing-mode: vertical-rl;">INSTALL</span>
 </button>
 
 <div id="cat-bar" style="display:flex; gap:8px; padding:10px; background:#fff; overflow-x:auto; border-bottom:1px solid #eee;"></div>
 <div id="list" class="container">Memuat Produk...</div>
 
 <div id="zoomModal" onclick="this.style.display='none'"><img id="imgZoom" src="" style="max-width:90%; max-height:80%; border-radius:10px;"></div>
+
+<!-- POPUP PROMO AWAL -->
+<div id="installModal" class="modal">
+    <div class="promo-box">
+        <div style="font-size: 50px;">🔥</div>
+        <h3 style="margin:5px 0; font-weight:900; color:#222;">PROMO KHUSUS!</h3>
+        <div class="voucher-promo">
+            <p style="color: var(--pink); font-weight: 800; margin: 0; font-size: 15px;">DISKON & FREE ONGKIR</p>
+            <p style="color: #333; font-size: 12px; margin: 8px 0 0; line-height: 1.4;">Minimal order <b>100 biji</b><br>(Bisa Campur Semua Produk)</p>
+        </div>
+        <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Dapatkan akses cepat ke <b>Duta Terang LED</b> langsung dari beranda HP Anda.</p>
+        <button class="btn-install-big" onclick="actionInstall()">📲 INSTALL SEKARANG</button>
+        <button class="btn-later" onclick="closeModal()">Nanti Saja</button>
+    </div>
+</div>
 
 <!-- PANEL KERANJANG -->
 <div id="cart" class="hide">
@@ -142,7 +110,6 @@
             <option value="Transfer">Transfer Bank</option>
         </select>
     </div>
-
     <div class="cart-right">
         <div style="font-size: 11px; color: #888; font-weight: bold;">RINGKASAN:</div>
         <div id="cart-list-render"></div>
@@ -155,10 +122,41 @@
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyhgdk0elMuqM4-00OIR8zbUqp-k80RnbuYyPDDqGHsEk7aSCg60kgT5HTYL_hIVSDc/exec";
     const WA_NUMBER = "6288224166270";
-    let produk = [], order = {};
+    let produk = [], order = {}, deferredPrompt;
 
-    window.onload = () => { load(); };
+    // Logika Instalasi PWA
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('btn-install-float').style.display = 'flex';
+    });
 
+    window.onload = () => { 
+        load(); 
+        if(!localStorage.getItem('promo_v6_duta')) {
+            setTimeout(() => { document.getElementById('installModal').style.display = 'flex'; }, 1500);
+        }
+    };
+
+    function closeModal() {
+        document.getElementById('installModal').style.display = 'none';
+        localStorage.setItem('promo_v6_duta', 'true');
+    }
+
+    async function actionInstall() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            closeModal();
+            if (outcome === 'accepted') document.getElementById('btn-install-float').style.display = 'none';
+        } else {
+            alert('Aplikasi sudah terpasang atau gunakan menu browser untuk menambah manual.');
+            closeModal();
+        }
+    }
+
+    // Logika Produk & Katalog
     async function load() {
         try {
             const res = await fetch(API_URL);
@@ -176,7 +174,6 @@
             const disc = Number(p.diskon) || 0;
             const hrgFix = p.harga - (p.harga * disc / 100);
             const isHabis = p.stok <= 0;
-
             html += `
             <div class="card" data-category="${(p.kategori||'').toLowerCase()}">
                 ${isHabis ? '<div style="position:absolute; inset:0; background:rgba(255,255,255,0.7); color:red; display:flex; align-items:center; justify-content:center; font-weight:900; z-index:5; border-radius:10px;">HABIS</div>' : ''}
@@ -191,7 +188,6 @@
             </div>`;
         });
         document.getElementById("list").innerHTML = html;
-        
         let catHtml = '<button onclick="filter(\'all\', this)" style="border:1px solid var(--primary); padding:6px 12px; border-radius:20px; background:var(--primary); color:#fff; font-size:11px; white-space:nowrap; font-weight:bold;">Semua</button>';
         kategori.forEach(k => {
             catHtml += `<button onclick="filter('${k.toLowerCase()}', this)" style="border:1px solid #ddd; padding:6px 12px; border-radius:20px; background:#fff; font-size:11px; white-space:nowrap; margin-left:5px; color:#666;">${k}</button>`;
@@ -219,7 +215,7 @@
     }
 
     function autoFillForm() {
-        ['f_nama', 'f_wa', 'f_alamat'].forEach(id => {
+        ['f_nama', 'f_alamat'].forEach(id => {
             const saved = localStorage.getItem(id);
             if (saved && document.getElementById(id)) document.getElementById(id).value = saved;
             document.getElementById(id)?.addEventListener('input', (e) => localStorage.setItem(id, e.target.value));
@@ -228,7 +224,7 @@
 
     function hapusIdentitas() {
         if(confirm("Hapus data pengiriman?")) {
-            ['f_nama', 'f_wa', 'f_alamat'].forEach(id => { localStorage.removeItem(id); document.getElementById(id).value = ""; });
+            ['f_nama', 'f_alamat'].forEach(id => { localStorage.removeItem(id); document.getElementById(id).value = ""; });
         }
     }
 
@@ -244,7 +240,6 @@
         const a = document.getElementById("f_alamat").value;
         const b = document.getElementById("f_bayar").value;
         if(!n || !a) return alert("Lengkapi Nama & Alamat!");
-
         let m = `*PESANAN DUTA TERANG LED*\n--------------------------\n${document.getElementById("cart-list-render").innerText}--------------------------\n*Total: ${document.getElementById("total").innerText}*\n\n👤 Nama: ${n}\n📍 Alamat: ${a}\n💳 Bayar: ${b}`;
         window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(m)}`);
     }
@@ -262,87 +257,6 @@
         document.getElementById("imgZoom").src = url; 
         document.getElementById("zoomModal").style.display = 'flex'; 
     }
-
-    // Jalankan saat web selesai loading
-window.onload = () => {
-    // Cek localStorage agar tidak muncul terus-terusan
-    if(!localStorage.getItem('promo_v5_duta')) {
-        setTimeout(() => { 
-            document.getElementById('installModal').style.display = 'flex'; 
-        }, 1000); // Muncul setelah 1 detik
-    }
-    // Jika ada fungsi load produk Anda, panggil di sini
-    if(typeof load === 'function') load(); 
-};
-
-function closeModal() {
-    document.getElementById('installModal').style.display = 'none';
-    localStorage.setItem('promo_v5_duta', 'true');
-}
-
-function actionInstall() {
-    alert('Klik Titik Tiga (⋮) di pojok browser, lalu pilih "Instal Aplikasi" atau "Tambahkan ke Layar Utama"');
-    closeModal();
-}
-    let deferredPrompt;
-
-// Menangkap sinyal instalasi dari browser
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e; // Simpan sinyalnya
-});
-
-window.onload = () => {
-    if(!localStorage.getItem('promo_v5_duta')) {
-        setTimeout(() => { 
-            document.getElementById('installModal').style.display = 'flex'; 
-        }, 1000);
-    }
-    if(typeof load === 'function') load(); 
-};
-
-function closeModal() {
-    document.getElementById('installModal').style.display = 'none';
-    localStorage.setItem('promo_v5_duta', 'true');
-}
-
-// FUNGSI INSTALL LANGSUNG (PRAKTIS)
-async function actionInstall() {
-    if (deferredPrompt) {
-        deferredPrompt.prompt(); // Munculkan kotak install resmi browser
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-            console.log('User menginstall aplikasi');
-        }
-        deferredPrompt = null;
-        closeModal();
-    } else {
-        // Jika browser tidak mendukung pemicu otomatis atau sudah terinstal
-        alert('Aplikasi sudah terpasang atau gunakan menu browser untuk menambah manual.');
-        closeModal();
-    }
-}
 </script>
-    <div id="installModal" class="modal">
-    <div class="promo-box">
-        <div style="font-size: 50px;">🔥</div>
-        <h3 style="margin:5px 0; font-weight:900; color:#222;">PROMO KHUSUS!</h3>
-        
-        <div class="voucher-promo">
-            <p style="color: #e91e63; font-weight: 800; margin: 0; font-size: 15px;">
-                DISKON & FREE ONGKIR
-            </p>
-            <p style="color: #333; font-size: 12px; margin: 8px 0 0; line-height: 1.4;">
-                Minimal order <b>100 biji</b><br>
-                (Bisa Campur Semua Produk)
-            </p>
-        </div>
-        
-        <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Dapatkan akses cepat ke <b>Duta Terang LED</b> langsung dari beranda HP Anda.</p>
-        
-        <button class="btn-install-big" onclick="actionInstall()">📲 INSTALL SEKARANG</button>
-        <button class="btn-later" onclick="closeModal()">Nanti Saja</button>
-    </div>
-</div>
 </body>
 </html>
