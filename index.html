@@ -112,7 +112,7 @@ header {
         <marquee scrollamount="5">📢 INFO: Sparepart LED Berkualitas | Ready Stok LED AC 5W-50W | Bisa COD (Bayar di Tempat)</marquee>
     </div>
     
-    <div id="cat-bar" style="display:flex; gap:8px; padding:10px; background:#fff; overflow-x:auto; border-bottom:1px solid #eee;">
+    <div id="cat-bar" style="display:flex; gap:4px; padding:8px; background:#fff; overflow-x:auto; border-bottom:1px solid #eee;">
         <!-- Tombol kategori muncul di sini -->
     </div>
 </div> <!-- PENUTUP TOP-NAV PINDAH KE SINI -->
@@ -252,9 +252,9 @@ header {
         });
         document.getElementById("list").innerHTML = html;
         
-        let catHtml = '<button onclick="filter(\'all\', this)" style="border:1px solid var(--primary); padding:6px 12px; border-radius:20px; background:var(--primary); color:#fff; font-size:11px; white-space:nowrap; font-weight:bold;">Semua</button>';
+        let catHtml = '<button onclick="filter(\'all\', this)" style="border:1px solid var(--primary); padding:4px 8px; border-radius:15px; background:var(--primary); color:#fff; font-size:11px; white-space:nowrap; font-weight:bold;">Semua</button>';
         kategori.forEach(k => {
-            catHtml += `<button onclick="filter('${k.toLowerCase()}', this)" style="border:1px solid #ddd; padding:6px 12px; border-radius:20px; background:#fff; font-size:11px; white-space:nowrap; margin-left:5px; color:#666;">${k}</button>`;
+            catHtml += `<button onclick="filter('${k.toLowerCase()}', this)" style="border:1px solid #ddd; padding:4px 8px; border-radius:15px; background:#fff; font-size:11px; white-space:nowrap; margin-left:5px; color:#666;">${k}</button>`;
         });
         document.getElementById("cat-bar").innerHTML = catHtml;
     }
