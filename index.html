@@ -6,100 +6,116 @@
     <title>Duta Terang LED</title>
     <style>
         :root { --primary: #00bcd4; --pink: #e91e63; --wa: #25D366; --danger: #ff4d4d; --blue-old: #2196F3; }
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f5f6f8; padding-bottom: 280px; }
+        body { margin: 0; font-family: 'Segoe UI', Roboto, sans-serif; background: #f5f6f8; padding-bottom: 300px; }
         
-        /* HEADER & STICKY MARQUEE */
-        .top-nav { position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        header { background: var(--primary); color: #fff; padding: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .promo-running { background: #fff3cd; color: #856404; font-size: 11px; padding: 5px 0; font-weight: bold; border-bottom: 1px solid #ffeeba; }
+        /* HEADER & NAVIGATION */
+        .top-nav { position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        header { background: var(--primary); color: #fff; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .promo-running { background: #fff3cd; color: #856404; font-size: 12px; padding: 6px 0; font-weight: bold; border-bottom: 1px solid #ffeeba; }
         
-        /* MODAL POPUP INSTALL */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 30000; align-items: center; justify-content: center; }
-        .promo-box { background: #fff; width: 85%; max-width: 320px; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .btn-install { background: var(--pink); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-bottom: 10px; font-size: 14px; }
-
         /* GRID PRODUK */
-        .container { padding: 8px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 5px; }
-        .card { background: #fff; border-radius: 12px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; }
-        .card img { width: 100%; height: 115px; object-fit: contain; border-radius: 8px; cursor: zoom-in; background: #fcfcfc; }
+        .container { padding: 10px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .card { background: #fff; border-radius: 12px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); position: relative; display: flex; flex-direction: column; }
+        .card img { width: 100%; height: 120px; object-fit: contain; border-radius: 8px; cursor: zoom-in; background: #fafafa; }
         
-        /* HARGA & DISKON */
-        .price-row { display: flex; flex-direction: column; margin-top: 5px; }
-        .price-old { font-size: 10px; color: var(--blue-old); text-decoration: line-through; font-weight: bold; }
-        .price-new { color: var(--pink); font-weight: 900; font-size: 14px; }
+        /* MERAPATKAN JARAK TEKS */
+        .product-name { font-size: 13px; font-weight: bold; margin-top: 8px; line-height: 1.2; color: #222; min-height: 32px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .price-row { margin-top: 2px; } /* Jarak ke nama barang dirapatkan */
+        .price-old { font-size: 11px; color: var(--blue-old); text-decoration: line-through; font-weight: bold; display: block; line-height: 1; margin-bottom: 2px; }
+        .price-new { color: var(--pink); font-weight: 900; font-size: 16px; display: block; line-height: 1; }
         
         /* TOMBOL QTY */
-        .qty-wrapper { display: flex; align-items: center; justify-content: space-between; background: #f1f3f4; border-radius: 8px; margin-top: 10px; overflow: hidden; height: 34px; }
-        .qty-wrapper button { width: 38px; height: 100%; border: none; background: var(--primary); color: white; font-weight: bold; font-size: 20px; cursor: pointer; }
+        .qty-wrapper { display: flex; align-items: center; justify-content: space-between; background: #eee; border-radius: 6px; margin-top: 10px; overflow: hidden; height: 30px; }
+        .qty-wrapper button { width: 32px; height: 100%; border: none; background: var(--primary); color: white; font-weight: bold; font-size: 18px; cursor: pointer; }
         .qty-wrapper span { font-size: 14px; font-weight: bold; color: #333; flex-grow: 1; text-align: center; }
 
-        .badge-disc { position: absolute; top: 8px; right: 8px; background: var(--danger); color: white; font-size: 10px; padding: 2px 6px; border-radius: 5px; font-weight: bold; z-index: 10; }
+        .badge-disc { position: absolute; top: 8px; right: 8px; background: var(--danger); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; z-index: 10; }
 
-        /* KERANJANG */
-        #cart { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 12px; border-top: 3px solid var(--primary); display: flex; gap: 12px; z-index: 2000; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); }
-        .cart-left { flex: 1.4; display: flex; flex-direction: column; gap: 5px; }
-        .cart-left input, .cart-left select { width: 100%; padding: 7px; border: 1px solid #ddd; border-radius: 6px; font-size: 11px; outline: none; }
+        /* PANEL KERANJANG */
+        #cart { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 15px; border-top: 4px solid var(--primary); display: flex; gap: 15px; z-index: 2000; box-shadow: 0 -5px 20px rgba(0,0,0,0.15); }
+        .cart-left { flex: 1.3; display: flex; flex-direction: column; gap: 6px; }
+        .cart-left label { font-size: 10px; font-weight: bold; color: #777; margin-bottom: -4px; margin-left: 2px; }
+        .cart-left input, .cart-left select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 12px; outline: none; }
         
-        .cart-right { flex: 1; display: flex; flex-direction: column; border-left: 1px dashed #ddd; padding-left: 10px; }
-        #total { font-size: 17px; font-weight: 900; color: var(--pink); text-align: right; }
-        #cart-list-render { font-family: 'Courier New', monospace; font-size: 10px; color: #555; white-space: pre; overflow-y: auto; max-height: 90px; margin: 5px 0; }
+        .cart-right { flex: 1; display: flex; flex-direction: column; border-left: 1px dashed #ddd; padding-left: 12px; }
+        #total { font-size: 18px; font-weight: 900; color: var(--pink); text-align: right; }
+        #cart-list-render { font-family: 'Courier New', monospace; font-size: 11px; color: #444; white-space: pre; overflow-y: auto; max-height: 100px; margin: 8px 0; border-top: 1px solid #eee; padding-top: 5px; }
         
         #btn-wa { background: var(--wa); color: #fff; text-decoration: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; text-align: center; border: none; cursor: pointer; }
-        #zoomModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 40000; align-items: center; justify-content: center; }
+        
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 30000; align-items: center; justify-content: center; }
+        .promo-box { background: #fff; width: 85%; max-width: 320px; padding: 25px; border-radius: 20px; text-align: center; }
         .hide { display: none !important; }
+        #zoomModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 40000; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
 <div class="top-nav">
     <header>
-        <div style="font-weight: 900; letter-spacing: 1px;">DUTA TERANG LED</div>
-        <div style="font-size: 10px; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 20px;">📲 1.284 User</div>
+        <div style="font-weight: 900; font-size: 18px;">DUTA TERANG LED</div>
+        <div style="font-size: 11px; background: rgba(0,0,0,0.2); padding: 5px 12px; border-radius: 20px;">📲 1.284 Terpasang</div>
     </header>
     <div class="promo-running">
         <marquee behavior="scroll" direction="left" scrollamount="6">
-            ✨ STOK TERUPDATE: Sparepart LED AC 5W-50W Ready! 🚚 Kirim Seluruh Indonesia 💳 Bisa COD / Bayar di Tempat.
+            📢 INFO: Sparepart LED Berkualitas | Ready Stok LED AC 5W-50W | Pengiriman Seluruh Indonesia | Bisa COD (Bayar di Tempat)
         </marquee>
     </div>
 </div>
 
-<!-- POPUP INSTALL & PROMO -->
+<!-- POPUP INSTALL -->
 <div id="installModal" class="modal">
     <div class="promo-box">
-        <div style="font-size: 40px; margin-bottom: 10px;">💡</div>
-        <h3 style="margin:0; color:var(--primary); font-size: 18px;">Instal Duta Terang</h3>
-        <p style="font-size:12px; color: #666; line-height: 1.5;">Instal aplikasi untuk akses lebih cepat dan info stok sparepart LED terbaru!</p>
-        <button class="btn-install" onclick="alert('Klik Titik Tiga (⋮) lalu pilih Instal Aplikasi')">📲 INSTAL SEKARANG</button>
-        <button onclick="closeModal()" style="background:none; border:none; color:#999; font-size:12px; cursor:pointer;">Nanti Saja</button>
+        <div style="font-size: 45px;">🏪</div>
+        <h3 style="margin:10px 0 5px; color:var(--primary);">Duta Terang LED</h3>
+        <p style="font-size:13px; color: #555; line-height: 1.4;">Simpan aplikasi ini di layar utama agar belanja lebih mudah!</p>
+        <button onclick="alert('Tekan ikon Titik Tiga (⋮) lalu pilih Instal Aplikasi')" style="background: var(--pink); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin: 15px 0 10px;">📲 PASANG SEKARANG</button>
+        <button onclick="closeModal()" style="background:none; border:none; color:#999; font-size:13px; cursor:pointer;">Lain kali</button>
     </div>
 </div>
 
-<div id="cat-bar" style="display:flex; gap:8px; padding:12px; background:#fff; overflow-x:auto; border-bottom:1px solid #eee;"></div>
+<div id="cat-bar" style="display:flex; gap:10px; padding:12px; background:#fff; overflow-x:auto; border-bottom:1px solid #eee;"></div>
 
 <div id="list" class="container">Memuat Produk...</div>
 
 <div id="zoomModal" onclick="this.style.display='none'"><img id="imgZoom" src="" style="max-width:90%; max-height:80%; border-radius:10px;"></div>
 
+<!-- PANEL KERANJANG -->
 <div id="cart" class="hide">
     <div class="cart-left">
-        <button onclick="resetCart()" style="background:#eee; border:none; color:#666; padding:4px 10px; border-radius:5px; font-size:10px; width:fit-content; font-weight:bold;">🗑️ Kosongkan</button>
-        <input type="text" id="f_nama" placeholder="Nama Lengkap">
-        <input type="number" id="f_wa" placeholder="No. WhatsApp">
-        <input type="text" id="f_alamat" placeholder="Alamat (Jl/No/Patokan)">
+        <button onclick="resetCart()" style="background:#f8f9fa; border:1px solid #ddd; color:#d9534f; padding:4px 8px; border-radius:5px; font-size:10px; width:fit-content; font-weight:bold; margin-bottom:2px;">🗑️ KOSONGKAN</button>
+        
+        <label>NAMA PENERIMA</label>
+        <input type="text" id="f_nama" placeholder="Nama anda">
+        
+        <label>NOMOR WHATSAPP</label>
+        <input type="number" id="f_wa" placeholder="08xxxxxxx">
+        
+        <label>ALAMAT LENGKAP</label>
+        <input type="text" id="f_alamat" placeholder="Jl. No. Patokan">
+        
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
-            <input type="text" id="f_rtrw" placeholder="RT/RW">
-            <input type="text" id="f_desa" placeholder="Desa">
+            <div>
+                <label>RT/RW</label>
+                <input type="text" id="f_rtrw" placeholder="00/00">
+            </div>
+            <div>
+                <label>DESA</label>
+                <input type="text" id="f_desa" placeholder="Nama Desa">
+            </div>
         </div>
+        
+        <label>METODE PEMBAYARAN</label>
         <select id="f_bayar">
-            <option value="COD">Metode: COD (Bayar di Tempat)</option>
-            <option value="Transfer">Metode: Transfer Bank</option>
+            <option value="COD">COD (Bayar di Tempat)</option>
+            <option value="Transfer">Transfer Bank</option>
         </select>
     </div>
 
     <div class="cart-right">
         <div id="total">Rp 0</div>
         <div id="cart-list-render"></div>
-        <button id="btn-wa" onclick="prosesPemesanan()">PESAN SEKARANG</button>
+        <button id="btn-wa" onclick="prosesPemesanan()">ORDER VIA WA</button>
     </div>
 </div>
 
@@ -109,7 +125,7 @@
     let produk = [], order = {};
 
     window.onload = () => {
-        if(!localStorage.getItem('install_popup_v2')) {
+        if(!localStorage.getItem('promo_seen_v4')) {
             setTimeout(() => { document.getElementById('installModal').style.display = 'flex'; }, 2000);
         }
         load();
@@ -117,7 +133,7 @@
 
     function closeModal() {
         document.getElementById('installModal').style.display = 'none';
-        localStorage.setItem('install_popup_v2', 'true');
+        localStorage.setItem('promo_seen_v4', 'true');
     }
 
     async function load() {
@@ -141,12 +157,12 @@
 
             html += `
             <div class="card">
-                ${isHabis ? '<div style="position:absolute; inset:0; background:rgba(255,255,255,0.7); color:red; display:flex; align-items:center; justify-content:center; font-weight:900; z-index:5; border-radius:12px;">HABIS</div>' : ''}
-                ${disc > 0 ? `<div class="badge-disc">HEMAT ${disc}%</div>` : ''}
+                ${isHabis ? '<div style="position:absolute; inset:0; background:rgba(255,255,255,0.7); color:red; display:flex; align-items:center; justify-content:center; font-weight:900; z-index:5; border-radius:12px; font-size:20px;">HABIS</div>' : ''}
+                ${disc > 0 ? `<div class="badge-disc">-${disc}%</div>` : ''}
                 <img src="${p.gambar || 'https://via.placeholder.com/150'}" onclick="openZoom('${p.gambar}')">
-                <b style="font-size:11px; margin-top:8px; height:28px; overflow:hidden; line-height:1.3; color:#333;">${p.nama}</b>
+                <div class="product-name">${p.nama}</div>
                 <div class="price-row">
-                    ${disc > 0 ? `<span class="price-old">Rp ${priceOld.toLocaleString('id-ID')}</span>` : '<span style="height:12px"></span>'}
+                    ${disc > 0 ? `<span class="price-old">Rp ${priceOld.toLocaleString('id-ID')}</span>` : ''}
                     <span class="price-new">Rp ${hrgFix.toLocaleString('id-ID')}</span>
                 </div>
                 <div class="qty-wrapper">
@@ -158,8 +174,8 @@
         });
         document.getElementById("list").innerHTML = html;
         
-        let catHtml = '<button onclick="filter(\'all\', this)" style="border:1px solid #00bcd4; padding:7px 15px; border-radius:20px; background:#00bcd4; color:#fff; font-size:11px; white-space:nowrap; font-weight:bold;">Semua</button>';
-        kategori.forEach(k => catHtml += `<button onclick="filter('${k.toLowerCase()}', this)" style="border:1px solid #ddd; padding:7px 15px; border-radius:20px; background:#fff; font-size:11px; white-space:nowrap; margin-left:6px; color:#666;">${k}</button>`);
+        let catHtml = '<button onclick="filter(\'all\', this)" style="border:1px solid #00bcd4; padding:8px 16px; border-radius:20px; background:#00bcd4; color:#fff; font-size:12px; white-space:nowrap; font-weight:bold;">Semua</button>';
+        kategori.forEach(k => catHtml += `<button onclick="filter('${k.toLowerCase()}', this)" style="border:1px solid #ddd; padding:8px 16px; border-radius:20px; background:#fff; font-size:12px; white-space:nowrap; margin-left:8px; color:#444;">${k}</button>`);
         document.getElementById("cat-bar").innerHTML = catHtml;
     }
 
@@ -187,7 +203,7 @@
         const n = document.getElementById("f_nama").value;
         const w = document.getElementById("f_wa").value;
         const a = document.getElementById("f_alamat").value;
-        if(!n || !w || !a) return alert("Mohon lengkapi data pengiriman!");
+        if(!n || !w || !a) return alert("Silakan lengkapi Data Pengiriman bos!");
 
         const dataSheet = {
             nama: n, whatsapp: w,
@@ -199,28 +215,29 @@
 
         fetch(API_URL, { method: "POST", body: JSON.stringify(dataSheet) }).catch(err => {});
 
-        let m = `*ORDER DUTA TERANG*\n`;
+        let m = `*PESANAN DUTA TERANG LED*\n`;
         m += `--------------------------\n`;
         for(let id in order) m += `• ${order[id].name.substring(0,20)} (x${order[id].qty})\n`;
         m += `--------------------------\n`;
         m += `*Total: ${dataSheet.total}*\n\n`;
-        m += `Penerima: ${n}\nWA: ${w}\nAlamat: ${dataSheet.alamat}\nBayar via: ${dataSheet.pembayaran}`;
+        m += `👤 Nama: ${n}\n📱 WA: ${w}\n📍 Alamat: ${dataSheet.alamat}\n💳 Bayar: ${dataSheet.pembayaran}\n\n_Mohon segera diproses, Terimakasih!_`;
         
         window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(m)}`);
     }
 
     function filter(cat, btn) {
         document.querySelectorAll(".card").forEach(c => {
-            const product = produk.find(p => p.nama === c.querySelector('b').innerText);
-            if(cat === 'all' || (product && product.kategori.toLowerCase() === cat)) c.style.display = 'flex';
+            const prodName = c.querySelector('.product-name').innerText;
+            const pObj = produk.find(p => p.nama === prodName);
+            if(cat === 'all' || (pObj && pObj.kategori.toLowerCase() === cat)) c.style.display = 'flex';
             else c.style.display = 'none';
         });
-        document.querySelectorAll("#cat-bar button").forEach(b => { b.style.background = '#fff'; b.style.color = '#666'; b.style.borderColor = '#ddd'; });
+        document.querySelectorAll("#cat-bar button").forEach(b => { b.style.background = '#fff'; b.style.color = '#444'; b.style.borderColor = '#ddd'; });
         btn.style.background = '#00bcd4'; btn.style.color = '#fff'; btn.style.borderColor = '#00bcd4';
     }
 
     function openZoom(url) { document.getElementById("imgZoom").src = url; document.getElementById("zoomModal").style.display = 'flex'; }
-    function resetCart() { order = {}; updateCart(); document.querySelectorAll("[id^='qty-']").forEach(e => e.innerText = "0"); }
+    function resetCart() { if(confirm("Hapus semua pesanan?")) { order = {}; updateCart(); document.querySelectorAll("[id^='qty-']").forEach(e => e.innerText = "0"); } }
     function autoFillForm() {
         ['f_nama','f_wa','f_alamat','f_rtrw','f_desa'].forEach(id => {
             document.getElementById(id).value = localStorage.getItem(id) || '';
