@@ -83,27 +83,20 @@
 <!-- PANEL KERANJANG -->
 <div id="cart" class="hide">
     <div class="cart-left">
-        <button onclick="resetCart()" style="background:#f8f9fa; border:1px solid #ddd; color:#d9534f; padding:4px 8px; border-radius:5px; font-size:10px; width:fit-content; font-weight:bold; margin-bottom:2px;">🗑️ KOSONGKAN</button>
+        <!-- Tombol Aksi -->
+        <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px;">
+            <button onclick="resetCart()" style="background:#f8f9fa; border:1px solid #ddd; color:#d9534f; padding:6px; border-radius:5px; font-size:10px; font-weight:bold; width:100%;">🗑️ KOSONGKAN KERANJANG</button>
+            <button onclick="hapusIdentitas()" style="background:#fff; border:1px solid #ddd; color:#555; padding:6px; border-radius:5px; font-size:10px; font-weight:bold; width:100%;">❌ HAPUS NAMA & ALAMAT</button>
+        </div>
         
         <label>NAMA PENERIMA</label>
-        <input type="text" id="f_nama" placeholder="Nama anda">
+        <input type="text" id="f_nama" placeholder="Nama lengkap Anda">
         
         <label>NOMOR WHATSAPP</label>
-        <input type="number" id="f_wa" placeholder="08xxxxxxx">
+        <input type="number" id="f_wa" placeholder="08xxxxxxxxxx">
         
         <label>ALAMAT LENGKAP</label>
-        <input type="text" id="f_alamat" placeholder="Jl. No. Patokan">
-        
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
-            <div>
-                <label>RT/RW</label>
-                <input type="text" id="f_rtrw" placeholder="00/00">
-            </div>
-            <div>
-                <label>DESA</label>
-                <input type="text" id="f_desa" placeholder="Nama Desa">
-            </div>
-        </div>
+        <textarea id="f_alamat" placeholder="Dukuh, RT, RW, Desa, Kec, Kab, Prop, Kodepos" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 12px; outline: none; height: 70px; font-family: inherit; resize: none;"></textarea>
         
         <label>METODE PEMBAYARAN</label>
         <select id="f_bayar">
@@ -118,7 +111,6 @@
         <button id="btn-wa" onclick="prosesPemesanan()">ORDER VIA WA</button>
     </div>
 </div>
-
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyhgdk0elMuqM4-00OIR8zbUqp-k80RnbuYyPDDqGHsEk7aSCg60kgT5HTYL_hIVSDc/exec";
     const WA_NUMBER = "6288224166270";
@@ -200,30 +192,33 @@
     }
 
     async function prosesPemesanan() {
-        const n = document.getElementById("f_nama").value;
-        const w = document.getElementById("f_wa").value;
-        const a = document.getElementById("f_alamat").value;
-        if(!n || !w || !a) return alert("Silakan lengkapi Data Pengiriman bos!");
+    const n = document.getElementById("f_nama").value;
+    const w = document.getElementById("f_wa").value;
+    const a = document.getElementById("f_alamat").value;
+    const b = document.getElementById("f_bayar").value;
 
-        const dataSheet = {
-            nama: n, whatsapp: w,
-            alamat: `${a}, RT/RW: ${document.getElementById("f_rtrw").value}, Desa: ${document.getElementById("f_desa").value}`,
-            total: document.getElementById("total").innerText,
-            pesanan: document.getElementById("cart-list-render").innerText,
-            pembayaran: document.getElementById("f_bayar").value
-        };
+    if(!n || !w || !a) return alert("Silakan lengkapi Nama & Alamat bos!");
 
-        fetch(API_URL, { method: "POST", body: JSON.stringify(dataSheet) }).catch(err => {});
+    const dataSheet = {
+        nama: n, whatsapp: w, alamat: a,
+        total: document.getElementById("total").innerText,
+        pesanan: document.getElementById("cart-list-render").innerText,
+        pembayaran: b
+    };
 
-        let m = `*PESANAN DUTA TERANG LED*\n`;
-        m += `--------------------------\n`;
-        for(let id in order) m += `• ${order[id].name.substring(0,20)} (x${order[id].qty})\n`;
-        m += `--------------------------\n`;
-        m += `*Total: ${dataSheet.total}*\n\n`;
-        m += `👤 Nama: ${n}\n📱 WA: ${w}\n📍 Alamat: ${dataSheet.alamat}\n💳 Bayar: ${dataSheet.pembayaran}\n\n_Mohon segera diproses, Terimakasih!_`;
-        
-        window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(m)}`);
-    }
+    // Kirim ke Google Sheets
+    fetch(API_URL, { method: "POST", body: JSON.stringify(dataSheet) }).catch(err => {});
+
+    // Kirim ke WhatsApp
+    let m = `*PESANAN DUTA TERANG LED*\n`;
+    m += `--------------------------\n`;
+    for(let id in order) m += `• ${order[id].name.substring(0,20)} (x${order[id].qty})\n`;
+    m += `--------------------------\n`;
+    m += `*Total: ${dataSheet.total}*\n\n`;
+    m += `👤 Nama: ${n}\n📱 WA: ${w}\n📍 Alamat: ${a}\n💳 Bayar: ${b}`;
+    
+    window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(m)}`);
+}
 
     function filter(cat, btn) {
         document.querySelectorAll(".card").forEach(c => {
