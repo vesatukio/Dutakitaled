@@ -54,7 +54,13 @@
         .cart-left { flex: 1.2; display: flex; flex-direction: column; gap: 5px; }
         .cart-left input, .cart-left textarea, .cart-left select { padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; width: 100%; }
         .cart-right { flex: 1; border-left: 1px dashed #ddd; padding-left: 10px; display: flex; flex-direction: column; }
-        #cart-list-render { font-size: 11px; color: #666; overflow-y: auto; flex-grow: 1; margin-bottom: 5px; }
+        #cart-list-render { 
+    font-size: 11px; 
+    color: #666; 
+    max-height: 60px; /* Batasi agar tidak merusak layout */
+    overflow-y: auto; 
+    white-space: pre-line; /* Penting agar enter terbaca */
+}
         #total { color: var(--pink); font-weight: 800; font-size: 15px; margin-bottom: 5px; }
         #btn-wa { background: var(--wa); color: white; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; }
 
@@ -260,15 +266,22 @@
     }
 
     function updateCart() {
-        let total = 0, renderText = "";
-        for (let id in order) {
-            total += (order[id].qty * order[id].price);
-            renderText += `• ${order[id].name} (${order[id].qty})\n`;
-        }
-        document.getElementById("total").innerText = "Rp " + total.toLocaleString('id-ID');
-        document.getElementById("cart-list-render").innerText = renderText;
-        document.getElementById("cart").classList.toggle("hide", total === 0);
+    let total = 0, renderText = "";
+    for (let id in order) {
+        total += (order[id].qty * order[id].price);
+        // Gunakan \n untuk baris baru di teks ringkasan
+        renderText += `• ${order[id].name} (${order[id].qty})\n`;
     }
+    
+    document.getElementById("total").innerText = "Rp " + total.toLocaleString('id-ID');
+    
+    // Gunakan innerText agar karakter \n (enter) terbaca sebagai baris baru
+    const displayRender = document.getElementById("cart-list-render");
+    displayRender.innerText = renderText; 
+    
+    // Munculkan atau sembunyikan panel keranjang
+    document.getElementById("cart").classList.toggle("hide", total === 0);
+}
 
     function autoFillForm() {
         ['f_nama', 'f_alamat'].forEach(id => {
@@ -291,18 +304,32 @@
         }
     }
 
-    function prosesPemesanan() {
-        const n = document.getElementById("f_nama").value;
-        const a = document.getElementById("f_alamat").value;
-        const b = document.getElementById("f_bayar").value;
-        if(!n || !a) return alert("Harap isi Nama dan Alamat pengiriman!");
-        
-        let items = "";
-        for(let id in order) items += `• ${order[id].name} x${order[id].qty}\n`;
-        
-        let m = `*PESANAN DUTA TERANG LED*\n--------------------------\n${items}--------------------------\n*Total: ${document.getElementById("total").innerText}*\n\n👤 Nama: ${n}\n📍 Alamat: ${a}\n💳 Bayar: ${b}`;
-        window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(m)}`);
+    async function prosesPemesanan() {
+    const n = document.getElementById("f_nama").value;
+    const a = document.getElementById("f_alamat").value;
+    const b = document.getElementById("f_bayar").value;
+    
+    if(!n || !a) return alert("Lengkapi Nama & Alamat!");
+    if(Object.keys(order).length === 0) return alert("Keranjang masih kosong!");
+
+    // Susun ringkasan barang langsung dari data 'order'
+    let ringkasanBarang = "";
+    for (let id in order) {
+        ringkasanBarang += `• ${order[id].name} (x${order[id].qty})\n`;
     }
+
+    let m = `*PESANAN DUTA TERANG LED*\n`;
+    m += `--------------------------\n`;
+    m += ringkasanBarang;
+    m += `--------------------------\n`;
+    m += `*Total: ${document.getElementById("total").innerText}*\n\n`;
+    m += `👤 Nama: ${n}\n`;
+    m += `📍 Alamat: ${a}\n`;
+    m += `💳 Bayar: ${b}`;
+
+    // Gunakan encodeURIComponent agar karakter spesial dan enter tidak rusak
+    window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(m)}`);
+}
 
     // --- UI INTERACTION ---
     function filter(cat, btn) {
