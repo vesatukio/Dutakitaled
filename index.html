@@ -65,12 +65,64 @@
         #btn-wa { background: var(--wa); color: white; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; }
 
         /* NAVIGASI BAWAH */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: #fff; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 9500; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #888; text-decoration: none; font-size: 10px; flex: 1; }
-        .nav-item.active { color: var(--primary); }
-        .qris-wrapper { position: relative; top: -15px; background: #fff; padding: 5px; border-radius: 50%; }
-        .btn-qris { width: 55px; height: 55px; background: linear-gradient(45deg, var(--primary), #00d2ff); border-radius: 50%; border: none; color: white; font-size: 24px; box-shadow: 0 4px 10px rgba(0,188,212,0.4); }
+        ./* BOTTOM NAVIGATION BAR */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: #fff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -2px 15px rgba(0,0,0,0.1);
+    z-index: 9500;
+    padding-bottom: env(safe-area-inset-bottom); /* Dukungan iPhone X+ */
+}
 
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #888;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 500;
+    flex: 1;
+    transition: 0.3s;
+}
+
+.nav-item.active { color: var(--primary); }
+
+.nav-item span:first-child {
+    font-size: 22px;
+    margin-bottom: 2px;
+}
+
+/* TOMBOL QRIS TENGAH */
+.qris-wrapper {
+    position: relative;
+    top: -20px; /* Membuat tombol menonjol ke atas */
+    background: #f5f6f8;
+    padding: 6px;
+    border-radius: 50%;
+}
+
+.btn-qris {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(45deg, var(--primary), #00d2ff);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 28px;
+    box-shadow: 0 4px 15px rgba(0,188,212,0.4);
+    border: 4px solid #fff;
+    cursor: pointer;
+}
         /* SCANNER & ZOOM */
         #camera-modal { position: fixed; inset: 0; background: #000; z-index: 20000; display: none; }
         #video-preview { width: 100%; height: 100%; object-fit: cover; }
@@ -161,18 +213,26 @@
 
 <!-- BOTTOM NAVIGATION -->
 <nav class="bottom-nav">
-    <a href="#" class="nav-item active"><span>🏠</span><span>Beranda</span></a>
-    <a href="https://wa.me/6288224166270" class="nav-item"><span>💬</span><span>Chat</span></a>
-    
+    <!-- HOME -->
+    <a href="#" class="nav-item active" onclick="location.reload()">
+        <span>🏠</span>
+        <span>Home</span>
+    </a>
+
+    <!-- SCAN QRIS (TENGAH) -->
     <div class="qris-wrapper">
-        <button class="btn-qris" onclick="startScanner()">📷</button>
-        <div style="text-align: center; font-size: 9px; font-weight: bold; margin-top: 3px; color: var(--primary);">QRIS</div>
+        <button class="btn-qris" onclick="startScanner()">
+            📷
+        </button>
+        <div style="text-align: center; font-size: 10px; font-weight: bold; margin-top: 4px; color: var(--primary);">SCAN</div>
     </div>
 
-    <a href="#" class="nav-item" onclick="alert('Promo khusus member segera hadir!')"><span>🎁</span><span>Promo</span></a>
-    <a href="#" class="nav-item" onclick="alert('Duta Terang LED v1.2 Build 2026')"><span>👤</span><span>Akun</span></a>
+    <!-- VIDEO / PANDUAN -->
+    <a href="#" class="nav-item" onclick="bukaPanduan()">
+        <span>🎥</span>
+        <span>Panduan</span>
+    </a>
 </nav>
-
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyhgdk0elMuqM4-00OIR8zbUqp-k80RnbuYyPDDqGHsEk7aSCg60kgT5HTYL_hIVSDc/exec";
     const WA_NUMBER = "6288224166270";
@@ -369,6 +429,67 @@
         if (streamPointer) streamPointer.getTracks().forEach(track => track.stop());
         document.getElementById('camera-modal').style.display = 'none';
     }
+    // Fungsi untuk update angka di ikon Home Screen
+function updateIconBadgeLuar(jumlah) {
+    if ('setAppBadge' in navigator) {
+        if (jumlah > 0) {
+            navigator.setAppBadge(jumlah).catch((error) => {
+                console.log("Badge tidak didukung di perangkat ini.");
+            });
+        } else {
+            navigator.clearAppBadge();
+        }
+    }
+}
+    function tampilkanBadge(teks) {
+    // 1. Update badge di dalam aplikasi (menu Promo)
+    const badge = document.getElementById('badge-promo');
+    badge.innerText = teks;
+    badge.style.display = 'block';
+
+    // 2. Update badge di ikon luar (Home Screen)
+    // Jika teks adalah "!", kita beri angka 1 sebagai tanda
+    const angkaBadge = (teks === "!") ? 1 : parseInt(teks);
+    updateIconBadgeLuar(angkaBadge);
+}
+
+function bukaPromo() {
+    const badge = document.getElementById('badge-promo');
+    
+    // Tampilkan info
+    alert("📢 INFO TERBARU:\n\n" + pesanPromoTerbaru);
+
+    // 3. Bersihkan semua badge (Luar dan Dalam)
+    badge.style.display = 'none';
+    updateIconBadgeLuar(0); // Menghapus angka di ikon luar
+
+    // Simpan status sudah dibaca
+    const temp = localStorage.getItem('temp_state');
+    if (temp) localStorage.setItem('duta_terang_state', temp);
+}
+    function bukaPanduan() {
+    // Anda bisa mengganti alert ini dengan modal atau link YouTube Anda
+    const modalPanduan = confirm("Buka video panduan perakitan LED di YouTube?");
+    if (modalPanduan) {
+        window.open("https://www.youtube.com/@ChannelAnda", "_blank"); 
+    }
+}
+
+// Pastikan fungsi startScanner tetap ada seperti sebelumnya
+async function startScanner() {
+    const modal = document.getElementById('camera-modal');
+    const video = document.getElementById('video-preview');
+    try {
+        modal.style.display = 'block';
+        streamPointer = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: "environment" } 
+        });
+        video.srcObject = streamPointer;
+    } catch (err) {
+        alert("Kamera tidak dapat diakses. Pastikan izin kamera aktif.");
+        modal.style.display = 'none';
+    }
+}
 </script>
 </body>
 </html>
