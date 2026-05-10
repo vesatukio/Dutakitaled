@@ -108,6 +108,106 @@ header {
         #btn-wa { background: var(--wa); color: #fff; border: none; padding: 8px; border-radius: 5px; font-size: 12px; font-weight: bold; cursor: pointer; }
         .hide { display: none !important; }
         #zoomModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 40000; align-items: center; justify-content: center; }
+   /* BOTTOM NAVIGATION BAR */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    background: #fff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    z-index: 5000;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #888;
+    text-decoration: none;
+    font-size: 10px;
+    flex: 1;
+}
+
+.nav-item.active { color: var(--primary); }
+
+.nav-item i { font-size: 20px; margin-bottom: 2px; }
+
+/* TOMBOL QRIS TENGAH */
+.qris-wrapper {
+    position: relative;
+    top: -20px;
+    background: #fff;
+    padding: 5px;
+    border-radius: 50%;
+}
+
+.btn-qris {
+    width: 55px;
+    height: 55px;
+    background: linear-gradient(45deg, var(--primary), #00d2ff);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    box-shadow: 0 4px 10px rgba(0,188,212,0.4);
+    border: none;
+}
+
+/* MODAL KAMERA QRIS */
+#camera-modal {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 10000;
+    display: none;
+    flex-direction: column;
+}
+
+#video-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.camera-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 40px 20px;
+    pointer-events: none;
+}
+
+.scan-box {
+    width: 250px;
+    height: 250px;
+    border: 2px solid var(--primary);
+    margin: auto;
+    position: relative;
+    box-shadow: 0 0 0 4000px rgba(0,0,0,0.5);
+}
+
+.close-camera {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50%;
+    font-weight: bold;
+    pointer-events: auto;
+}
+
     </style>
 </head>
 <body>
@@ -345,6 +445,76 @@ header {
         document.getElementById("imgZoom").src = url; 
         document.getElementById("zoomModal").style.display = 'flex'; 
     }
+    let streamPointer = null;
+
+async function startScanner() {
+    const modal = document.getElementById('camera-modal');
+    const video = document.getElementById('video-preview');
+
+    try {
+        modal.style.display = 'flex';
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: "environment" } 
+        });
+        video.srcObject = stream;
+        streamPointer = stream;
+    } catch (err) {
+        alert("Gagal mengakses kamera: " + err.message);
+        modal.style.display = 'none';
+    }
+}
+
+function stopScanner() {
+    const modal = document.getElementById('camera-modal');
+    if (streamPointer) {
+        streamPointer.getTracks().forEach(track => track.stop());
+    }
+    modal.style.display = 'none';
+}
+
+// Tambahan: Sesuaikan padding body agar tidak tertutup menu bawah
+document.body.style.paddingBottom = "80px";
+
 </script>
+    <!-- MODAL KAMERA SCANNER -->
+<div id="camera-modal">
+    <video id="video-preview" autoplay playsinline></video>
+    <div class="camera-overlay">
+        <button class="close-camera" onclick="stopScanner()">✕</button>
+        <div class="scan-box"></div>
+        <div style="color: white; text-align: center; font-size: 14px; pointer-events: none;">
+            Arahkan kamera ke kode QRIS Pembayaran
+        </div>
+    </div>
+</div>
+
+<!-- BOTTOM NAVIGATION -->
+<nav class="bottom-nav">
+    <a href="#" class="nav-item active">
+        <span>🏠</span>
+        <span>Beranda</span>
+    </a>
+    <a href="https://wa.me/6288224166270" class="nav-item">
+        <span>💬</span>
+        <span>Chat</span>
+    </a>
+    
+    <div class="qris-wrapper">
+        <button class="btn-qris" onclick="startScanner()">
+            📷
+        </button>
+        <div style="text-align: center; font-size: 9px; font-weight: bold; margin-top: 2px; color: var(--primary);">QRIS</div>
+    </div>
+
+    <a href="#" class="nav-item" onclick="alert('Fitur Promo Segera Hadir!')">
+        <span>🎁</span>
+        <span>Promo</span>
+    </a>
+    <a href="#" class="nav-item" onclick="alert('Duta Terang LED v1.0')">
+        <span>👤</span>
+        <span>Akun</span>
+    </a>
+</nav>
+
 </body>
 </html>
