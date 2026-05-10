@@ -50,79 +50,51 @@
         @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
         /* KERANJANG PANEL */
-        #cart { position: fixed; bottom: 65px; left: 0; right: 0; background: #fff; padding: 12px; border-top: 3px solid var(--primary); display: flex; gap: 10px; z-index: 8000; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); max-height: 220px; }
+        #cart { position: fixed; bottom: 75px; left: 0; right: 0; background: #fff; padding: 12px; border-top: 3px solid var(--primary); display: flex; gap: 10px; z-index: 8000; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); max-height: 220px; }
         .cart-left { flex: 1.2; display: flex; flex-direction: column; gap: 5px; }
         .cart-left input, .cart-left textarea, .cart-left select { padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; width: 100%; }
         .cart-right { flex: 1; border-left: 1px dashed #ddd; padding-left: 10px; display: flex; flex-direction: column; }
-        #cart-list-render { 
-    font-size: 11px; 
-    color: #666; 
-    max-height: 60px; /* Batasi agar tidak merusak layout */
-    overflow-y: auto; 
-    white-space: pre-line; /* Penting agar enter terbaca */
-}
+        #cart-list-render { font-size: 11px; color: #666; max-height: 60px; overflow-y: auto; white-space: pre-line; }
         #total { color: var(--pink); font-weight: 800; font-size: 15px; margin-bottom: 5px; }
         #btn-wa { background: var(--wa); color: white; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; }
 
-        /* NAVIGASI BAWAH */
-        ./* BOTTOM NAVIGATION BAR */
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 70px;
-    background: #fff;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    box-shadow: 0 -2px 15px rgba(0,0,0,0.1);
-    z-index: 9500;
-    padding-bottom: env(safe-area-inset-bottom); /* Dukungan iPhone X+ */
-}
+        /* BOTTOM NAVIGATION */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 70px;
+            background: #fff; display: flex; justify-content: space-around; align-items: center;
+            box-shadow: 0 -2px 15px rgba(0,0,0,0.1); z-index: 9500;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            color: #888; text-decoration: none; font-size: 11px; font-weight: 500;
+            flex: 1; transition: 0.3s; position: relative;
+        }
+        .nav-item.active { color: var(--primary); }
+        .nav-item span:first-child { font-size: 22px; margin-bottom: 2px; }
 
-.nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #888;
-    text-decoration: none;
-    font-size: 11px;
-    font-weight: 500;
-    flex: 1;
-    transition: 0.3s;
-}
+        /* BADGE NOTIFIKASI */
+        @keyframes pulse-red {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(233, 30, 99, 0.7); }
+            70% { transform: scale(1.2); box-shadow: 0 0 0 5px rgba(233, 30, 99, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(233, 30, 99, 0); }
+        }
+        .badge-notif {
+            position: absolute; top: -5px; right: 15px; background: var(--pink);
+            color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px;
+            font-weight: bold; display: none; border: 2px solid #fff;
+            animation: pulse-red 2s infinite;
+        }
 
-.nav-item.active { color: var(--primary); }
+        /* QRIS BUTTON */
+        .qris-wrapper { position: relative; top: -20px; background: #f5f6f8; padding: 6px; border-radius: 50%; }
+        .btn-qris {
+            width: 60px; height: 60px; background: linear-gradient(45deg, var(--primary), #00d2ff);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 28px; box-shadow: 0 4px 15px rgba(0,188,212,0.4);
+            border: 4px solid #fff; cursor: pointer;
+        }
 
-.nav-item span:first-child {
-    font-size: 22px;
-    margin-bottom: 2px;
-}
-
-/* TOMBOL QRIS TENGAH */
-.qris-wrapper {
-    position: relative;
-    top: -20px; /* Membuat tombol menonjol ke atas */
-    background: #f5f6f8;
-    padding: 6px;
-    border-radius: 50%;
-}
-
-.btn-qris {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(45deg, var(--primary), #00d2ff);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 28px;
-    box-shadow: 0 4px 15px rgba(0,188,212,0.4);
-    border: 4px solid #fff;
-    cursor: pointer;
-}
         /* SCANNER & ZOOM */
         #camera-modal { position: fixed; inset: 0; background: #000; z-index: 20000; display: none; }
         #video-preview { width: 100%; height: 100%; object-fit: cover; }
@@ -134,38 +106,30 @@
 </head>
 <body>
 
-<!-- TOP NAVIGATION -->
 <div class="top-nav">
     <header>
         <div style="font-weight: 900; font-size: 18px; letter-spacing: 1px;">DUTA TERANG LED</div>
         <div style="font-size: 11px; background: rgba(0,0,0,0.15); padding: 5px 12px; border-radius: 20px;">📲 1.284 Terpasang</div>
     </header>
-    
     <div class="promo-running">
         <marquee scrollamount="5">📢 INFO: Sparepart LED Berkualitas | Ready Stok LED AC 5W-50W | Bisa COD (Bayar di Tempat) | Garansi Terjamin</marquee>
     </div>
-    
-    <div id="cat-bar">
-        <!-- Kategori akan di-render di sini -->
-    </div>
+    <div id="cat-bar"></div>
 </div>
 
-<!-- MAIN CONTENT -->
 <div id="list" class="container">
     <p style="grid-column: span 2; text-align: center; padding: 50px; color: #888;">Menghubungkan ke server...</p>
 </div>
 
-<!-- FLOATING INSTALL BUTTON -->
 <button id="btn-install-float" onclick="actionInstall()">
     <span>📲</span><span style="writing-mode: vertical-rl; margin-top:5px; font-weight: bold;">INSTALL</span>
 </button>
 
-<!-- ZOOM MODAL -->
+<!-- MODALS -->
 <div id="zoomModal" class="modal" onclick="this.style.display='none'">
     <img id="imgZoom" src="" style="max-width:90%; max-height:80%; border-radius:10px; border: 5px solid white;">
 </div>
 
-<!-- WELCOME PROMO MODAL -->
 <div id="installModal" class="modal">
     <div class="promo-box">
         <div style="font-size: 60px; margin-bottom: 10px;">🔥</div>
@@ -183,11 +147,11 @@
 <div id="cart" class="hide">
     <div class="cart-left">
         <div style="display: flex; gap: 5px;">
-            <button onclick="resetCart()" style="flex:1; font-size:10px; padding:4px; cursor:pointer;">🗑️ Reset</button>
-            <button onclick="hapusIdentitas()" style="flex:1; font-size:10px; padding:4px; cursor:pointer;">❌ Hapus</button>
+            <button onclick="resetCart()" style="flex:1; font-size:10px; padding:4px;">🗑️ Reset</button>
+            <button onclick="hapusIdentitas()" style="flex:1; font-size:10px; padding:4px;">❌ Hapus</button>
         </div>
         <input type="text" id="f_nama" placeholder="Nama Penerima">
-        <textarea id="f_alamat" style="height:45px; resize:none;" placeholder="Alamat Lengkap (Desa, RT/RW)"></textarea>
+        <textarea id="f_alamat" style="height:45px; resize:none;" placeholder="Alamat Lengkap"></textarea>
         <select id="f_bayar">
             <option value="COD">Bayar COD (Ditempat)</option>
             <option value="Transfer">Transfer Bank</option>
@@ -195,56 +159,41 @@
     </div>
     <div class="cart-right">
         <div id="cart-list-render"></div>
-        <div style="font-size: 10px; color: #999;">TOTAL TAGIHAN:</div>
+        <div style="font-size: 10px; color: #999;">TOTAL:</div>
         <div id="total">Rp 0</div>
         <button id="btn-wa" onclick="prosesPemesanan()">ORDER WA</button>
     </div>
 </div>
 
-<!-- QRIS SCANNER MODAL -->
+<!-- SCANNER MODAL -->
 <div id="camera-modal">
     <video id="video-preview" autoplay playsinline></video>
     <div class="scan-box"></div>
-    <button onclick="stopScanner()" style="position: absolute; top: 25px; right: 25px; background: rgba(255,255,255,0.3); border:none; color:white; width:40px; height:40px; border-radius:50%; font-size:20px; font-weight:bold; cursor:pointer;">✕</button>
-    <div style="position:absolute; bottom:100px; width:100%; text-align:center; color:white; font-size:14px; padding:0 20px;">
-        Arahkan kamera ke kode QRIS Pembayaran
-    </div>
+    <button onclick="stopScanner()" style="position: absolute; top: 25px; right: 25px; background: rgba(255,255,255,0.3); border:none; color:white; width:40px; height:40px; border-radius:50%; font-size:20px;">✕</button>
 </div>
 
 <!-- BOTTOM NAVIGATION -->
 <nav class="bottom-nav">
-    <!-- HOME -->
     <a href="#" class="nav-item active" onclick="location.reload()">
-        <span>🏠</span>
-        <span>Home</span>
+        <span>🏠</span><span>Home</span>
     </a>
-
-    <!-- SCAN QRIS (TENGAH) -->
     <div class="qris-wrapper">
-        <button class="btn-qris" onclick="startScanner()">
-            📷
-        </button>
+        <button class="btn-qris" onclick="startScanner()">📷</button>
         <div style="text-align: center; font-size: 10px; font-weight: bold; margin-top: 4px; color: var(--primary);">SCAN</div>
     </div>
-
-    <!-- VIDEO / PANDUAN -->
-    <a href="#" class="nav-item" onclick="bukaPanduan()">
-        <span>🎥</span>
-        <span>Panduan</span>
+    <a href="#" class="nav-item" onclick="bukaPromo()">
+        <span id="badge-promo" class="badge-notif">0</span>
+        <span>🎥</span><span>Panduan</span>
     </a>
 </nav>
+
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyhgdk0elMuqM4-00OIR8zbUqp-k80RnbuYyPDDqGHsEk7aSCg60kgT5HTYL_hIVSDc/exec";
     const WA_NUMBER = "6288224166270";
     let produk = [], order = {}, deferredPrompt, streamPointer = null;
+    let pesanPromoTerbaru = "Cek video panduan kami di YouTube!";
 
-    // --- PWA LOGIC ---
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        document.getElementById('btn-install-float').style.display = 'flex';
-    });
-
+    // --- INITIAL LOAD ---
     window.onload = () => { 
         load(); 
         if(!sessionStorage.getItem('promo_per_sesi')) {
@@ -252,36 +201,56 @@
         }
     };
 
-    function closeModal() {
-        document.getElementById('installModal').style.display = 'none';
-        sessionStorage.setItem('promo_per_sesi', 'true');
-    }
-
-    async function actionInstall() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') document.getElementById('btn-install-float').style.display = 'none';
-            deferredPrompt = null;
-            closeModal();
-        } else {
-            alert('Gunakan menu browser (Titik 3) -> "Instal Aplikasi" atau "Tambahkan ke Layar Utama".');
-            closeModal();
-        }
-    }
-
-    // --- PRODUCT & CATALOG LOGIC ---
     async function load() {
         try {
             const res = await fetch(API_URL);
             produk = await res.json();
+            prosesUpdateSistem(produk); // Jalankan fitur badge
             render();
             autoFillForm();
         } catch (e) { 
-            document.getElementById("list").innerHTML = "<p style='text-align:center; padding:20px;'>Koneksi gagal. Silakan segarkan halaman.</p>"; 
+            document.getElementById("list").innerHTML = "<p style='text-align:center;'>Koneksi gagal.</p>"; 
         }
     }
 
+    // --- BADGE & NOTIF LOGIC ---
+    function prosesUpdateSistem(data) {
+        const memori = JSON.parse(localStorage.getItem('duta_terang_state')) || { totalHarga: 0, infoTeks: "" };
+        let currentTotal = 0, currentInfo = "";
+
+        data.forEach(p => {
+            currentTotal += Number(p.harga);
+            if (p.info && !currentInfo) currentInfo = p.info;
+        });
+
+        if (currentInfo !== memori.infoTeks || currentTotal !== memori.totalHarga) {
+            tampilkanBadge("!"); 
+        }
+        
+        pesanPromoTerbaru = currentInfo || "Tonton panduan merakit LED agar awet!";
+        localStorage.setItem('temp_state', JSON.stringify({ totalHarga: currentTotal, infoTeks: currentInfo }));
+    }
+
+    function tampilkanBadge(teks) {
+        const b = document.getElementById('badge-promo');
+        b.innerText = teks;
+        b.style.display = 'block';
+        if ('setAppBadge' in navigator) navigator.setAppBadge(1).catch(() => {});
+    }
+
+    function bukaPromo() {
+        alert("📢 INFO TERBARU:\n\n" + pesanPromoTerbaru);
+        document.getElementById('badge-promo').style.display = 'none';
+        if ('clearAppBadge' in navigator) navigator.clearAppBadge();
+        
+        const temp = localStorage.getItem('temp_state');
+        if (temp) localStorage.setItem('duta_terang_state', temp);
+
+        const modalPanduan = confirm("Buka video panduan perakitan LED di YouTube?");
+        if (modalPanduan) window.open("https://www.youtube.com/@ChannelAnda", "_blank"); 
+    }
+
+    // --- RENDER PRODUK ---
     function render() {
         let html = "", kategori = new Set();
         produk.forEach(p => {
@@ -295,7 +264,7 @@
             <div class="card" data-category="${(p.kategori||'').toLowerCase()}">
                 ${isHabis ? '<div style="position:absolute; inset:0; background:rgba(255,255,255,0.7); color:red; display:flex; align-items:center; justify-content:center; font-weight:900; z-index:10; border-radius:10px;">HABIS</div>' : ''}
                 ${disc > 0 && !isHabis ? `<div style="position:absolute; top:5px; right:5px; background:var(--pink); color:white; font-size:10px; font-weight:bold; padding:2px 6px; border-radius:5px; z-index:5;">-${disc}%</div>` : ''}
-                <img src="${p.gambar || 'https://via.placeholder.com/150'}" onclick="openZoom('${p.gambar}')" loading="lazy">
+                <img src="${p.gambar || 'https://via.placeholder.com/150'}" onclick="openZoom('${p.gambar}')">
                 <div class="product-name">${p.nama}</div>
                 ${disc > 0 ? `<div style="text-decoration:line-through; color:var(--blue-old); font-size:10px;">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>` : '<div style="height:12px;"></div>'}
                 <div class="price-new">Rp ${hrgFix.toLocaleString('id-ID')}</div>
@@ -308,14 +277,12 @@
         });
         document.getElementById("list").innerHTML = html;
         
-        let catHtml = '<button onclick="filter(\'all\', this)" style="background:var(--primary); color:white; border-color:var(--primary); font-weight:bold;">Semua</button>';
-        kategori.forEach(k => {
-            catHtml += `<button onclick="filter('${k.toLowerCase()}', this)">${k}</button>`;
-        });
+        let catHtml = '<button onclick="filter(\'all\', this)" style="background:var(--primary); color:white;">Semua</button>';
+        kategori.forEach(k => { catHtml += `<button onclick="filter('${k.toLowerCase()}', this)">${k}</button>`; });
         document.getElementById("cat-bar").innerHTML = catHtml;
     }
 
-    // --- CART & ORDER LOGIC ---
+    // --- KERANJANG ---
     function changeQty(id, delta, price, name) {
         if (!order[id]) order[id] = { qty: 0, name, price };
         order[id].qty += delta;
@@ -326,83 +293,48 @@
     }
 
     function updateCart() {
-    let total = 0, renderText = "";
-    for (let id in order) {
-        total += (order[id].qty * order[id].price);
-        // Gunakan \n untuk baris baru di teks ringkasan
-        renderText += `• ${order[id].name} (${order[id].qty})\n`;
-    }
-    
-    document.getElementById("total").innerText = "Rp " + total.toLocaleString('id-ID');
-    
-    // Gunakan innerText agar karakter \n (enter) terbaca sebagai baris baru
-    const displayRender = document.getElementById("cart-list-render");
-    displayRender.innerText = renderText; 
-    
-    // Munculkan atau sembunyikan panel keranjang
-    document.getElementById("cart").classList.toggle("hide", total === 0);
-}
-
-    function autoFillForm() {
-        ['f_nama', 'f_alamat'].forEach(id => {
-            const saved = localStorage.getItem(id);
-            if (saved) document.getElementById(id).value = saved;
-            document.getElementById(id).addEventListener('input', (e) => localStorage.setItem(id, e.target.value));
-        });
-    }
-
-    function hapusIdentitas() {
-        if(confirm("Hapus data pengiriman?")) {
-            ['f_nama', 'f_alamat'].forEach(id => { localStorage.removeItem(id); document.getElementById(id).value = ""; });
+        let total = 0, renderText = "";
+        for (let id in order) {
+            total += (order[id].qty * order[id].price);
+            renderText += `• ${order[id].name} (${order[id].qty})\n`;
         }
+        document.getElementById("total").innerText = "Rp " + total.toLocaleString('id-ID');
+        document.getElementById("cart-list-render").innerText = renderText; 
+        document.getElementById("cart").classList.toggle("hide", total === 0);
     }
 
-    function resetCart() {
-        if(confirm("Kosongkan keranjang belanja?")) {
-            order = {}; updateCart();
-            document.querySelectorAll("[id^='qty-']").forEach(e => e.innerText = "0");
-        }
+    function prosesPemesanan() {
+        const n = document.getElementById("f_nama").value, a = document.getElementById("f_alamat").value, b = document.getElementById("f_bayar").value;
+        if(!n || !a) return alert("Lengkapi Nama & Alamat!");
+        let m = `*PESANAN DUTA TERANG LED*\n--------------------------\n`;
+        for (let id in order) m += `• ${order[id].name} (x${order[id].qty})\n`;
+        m += `--------------------------\n*Total: ${document.getElementById("total").innerText}*\n\n👤 Nama: ${n}\n📍 Alamat: ${a}\n💳 Bayar: ${b}`;
+        window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(m)}`);
     }
 
-    async function prosesPemesanan() {
-    const n = document.getElementById("f_nama").value;
-    const a = document.getElementById("f_alamat").value;
-    const b = document.getElementById("f_bayar").value;
-    
-    if(!n || !a) return alert("Lengkapi Nama & Alamat!");
-    if(Object.keys(order).length === 0) return alert("Keranjang masih kosong!");
-
-    // Susun ringkasan barang langsung dari data 'order'
-    let ringkasanBarang = "";
-    for (let id in order) {
-        ringkasanBarang += `• ${order[id].name} (x${order[id].qty})\n`;
+    // --- CAMERA ---
+    async function startScanner() {
+        const modal = document.getElementById('camera-modal'), v = document.getElementById('video-preview');
+        try {
+            modal.style.display = 'block';
+            streamPointer = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+            v.srcObject = streamPointer;
+        } catch (e) { alert("Izin kamera ditolak."); modal.style.display = 'none'; }
     }
 
-    let m = `*PESANAN DUTA TERANG LED*\n`;
-    m += `--------------------------\n`;
-    m += ringkasanBarang;
-    m += `--------------------------\n`;
-    m += `*Total: ${document.getElementById("total").innerText}*\n\n`;
-    m += `👤 Nama: ${n}\n`;
-    m += `📍 Alamat: ${a}\n`;
-    m += `💳 Bayar: ${b}`;
+    function stopScanner() {
+        if (streamPointer) streamPointer.getTracks().forEach(t => t.stop());
+        document.getElementById('camera-modal').style.display = 'none';
+    }
 
-    // Gunakan encodeURIComponent agar karakter spesial dan enter tidak rusak
-    window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(m)}`);
-}
-
-    // --- UI INTERACTION ---
+    // --- UTILS ---
     function filter(cat, btn) {
         document.querySelectorAll(".card").forEach(c => {
             const pCat = (c.getAttribute('data-category') || '').toLowerCase();
-            c.style.display = (cat === 'all' || pCat === cat.toLowerCase()) ? 'flex' : 'none';
+            c.style.display = (cat === 'all' || pCat === cat) ? 'flex' : 'none';
         });
-
-        document.querySelectorAll("#cat-bar button").forEach(b => { 
-            b.style.background = '#fff'; b.style.color = '#666'; b.style.borderColor = '#ddd'; b.style.fontWeight = 'normal';
-        });
-
-        btn.style.background = 'var(--primary)'; btn.style.color = '#fff'; btn.style.borderColor = 'var(--primary)'; btn.style.fontWeight = 'bold';
+        document.querySelectorAll("#cat-bar button").forEach(b => { b.style.background = '#fff'; b.style.color = '#666'; });
+        btn.style.background = 'var(--primary)'; btn.style.color = '#fff';
     }
 
     function openZoom(url) { 
@@ -411,85 +343,30 @@
         document.getElementById("zoomModal").style.display = 'flex'; 
     }
 
-    // --- CAMERA / QRIS SCANNER ---
-    async function startScanner() {
-        const modal = document.getElementById('camera-modal');
-        const video = document.getElementById('video-preview');
-        try {
-            modal.style.display = 'block';
-            streamPointer = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-            video.srcObject = streamPointer;
-        } catch (err) {
-            alert("Kamera tidak dapat diakses: " + err.message);
-            modal.style.display = 'none';
-        }
-    }
-
-    function stopScanner() {
-        if (streamPointer) streamPointer.getTracks().forEach(track => track.stop());
-        document.getElementById('camera-modal').style.display = 'none';
-    }
-    // Fungsi untuk update angka di ikon Home Screen
-function updateIconBadgeLuar(jumlah) {
-    if ('setAppBadge' in navigator) {
-        if (jumlah > 0) {
-            navigator.setAppBadge(jumlah).catch((error) => {
-                console.log("Badge tidak didukung di perangkat ini.");
-            });
-        } else {
-            navigator.clearAppBadge();
-        }
-    }
-}
-    function tampilkanBadge(teks) {
-    // 1. Update badge di dalam aplikasi (menu Promo)
-    const badge = document.getElementById('badge-promo');
-    badge.innerText = teks;
-    badge.style.display = 'block';
-
-    // 2. Update badge di ikon luar (Home Screen)
-    // Jika teks adalah "!", kita beri angka 1 sebagai tanda
-    const angkaBadge = (teks === "!") ? 1 : parseInt(teks);
-    updateIconBadgeLuar(angkaBadge);
-}
-
-function bukaPromo() {
-    const badge = document.getElementById('badge-promo');
-    
-    // Tampilkan info
-    alert("📢 INFO TERBARU:\n\n" + pesanPromoTerbaru);
-
-    // 3. Bersihkan semua badge (Luar dan Dalam)
-    badge.style.display = 'none';
-    updateIconBadgeLuar(0); // Menghapus angka di ikon luar
-
-    // Simpan status sudah dibaca
-    const temp = localStorage.getItem('temp_state');
-    if (temp) localStorage.setItem('duta_terang_state', temp);
-}
-    function bukaPanduan() {
-    // Anda bisa mengganti alert ini dengan modal atau link YouTube Anda
-    const modalPanduan = confirm("Buka video panduan perakitan LED di YouTube?");
-    if (modalPanduan) {
-        window.open("https://www.youtube.com/@ChannelAnda", "_blank"); 
-    }
-}
-
-// Pastikan fungsi startScanner tetap ada seperti sebelumnya
-async function startScanner() {
-    const modal = document.getElementById('camera-modal');
-    const video = document.getElementById('video-preview');
-    try {
-        modal.style.display = 'block';
-        streamPointer = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: "environment" } 
+    function autoFillForm() {
+        ['f_nama', 'f_alamat'].forEach(id => {
+            const s = localStorage.getItem(id);
+            if (s) document.getElementById(id).value = s;
+            document.getElementById(id).addEventListener('input', e => localStorage.setItem(id, e.target.value));
         });
-        video.srcObject = streamPointer;
-    } catch (err) {
-        alert("Kamera tidak dapat diakses. Pastikan izin kamera aktif.");
-        modal.style.display = 'none';
     }
-}
+
+    function resetCart() { if(confirm("Reset keranjang?")) { order = {}; updateCart(); document.querySelectorAll("[id^='qty-']").forEach(e => e.innerText = "0"); } }
+    function hapusIdentitas() { if(confirm("Hapus data diri?")) { localStorage.clear(); location.reload(); } }
+    function closeModal() { document.getElementById('installModal').style.display = 'none'; sessionStorage.setItem('promo_per_sesi', 'true'); }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault(); deferredPrompt = e;
+        document.getElementById('btn-install-float').style.display = 'flex';
+    });
+
+    async function actionInstall() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt = null;
+            closeModal();
+        } else { alert('Gunakan menu browser untuk install.'); closeModal(); }
+    }
 </script>
 </body>
 </html>
