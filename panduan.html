@@ -13,14 +13,14 @@
         .nav a { text-decoration: none; color: white; font-size: 18px; font-weight: bold; margin-right: 15px; }
 
         .container { padding: 10px; max-width: 800px; margin: auto; }
-        h2 { font-size: 14px; margin: 20px 5px 10px; border-left: 4px solid var(--primary); padding-left: 10px; text-transform: uppercase; }
+        h2 { font-size: 14px; margin: 25px 5px 10px; border-left: 4px solid var(--primary); padding-left: 10px; text-transform: uppercase; color: #555; }
 
-        /* Grid System: Kunci agar judul tidak terpotong */
+        /* Grid System: Menjaga Kerapian & Judul Full */
         .grid { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
             gap: 10px; 
-            align-items: stretch; /* Membuat semua card dalam satu baris sama tinggi */
+            align-items: stretch; /* MEMASTIKAN SEMUA CARD SAMA TINGGI */
         }
 
         /* Card Style */
@@ -28,18 +28,20 @@
             background: #fff; 
             border-radius: 10px; 
             overflow: hidden; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
             display: flex; 
             flex-direction: column; 
             cursor: pointer; 
             height: 100%; 
             border: 1px solid #eee;
+            transition: transform 0.2s;
         }
+        .card:active { transform: scale(0.96); }
 
         /* Thumbnail */
         .thumb { 
             width: 100%; 
-            height: 80px; 
+            height: 75px; 
             background: #222; 
             display: flex; 
             align-items: center; 
@@ -48,37 +50,45 @@
             flex-shrink: 0; 
         }
         .thumb img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
-        .play-icon { position: absolute; color: white; font-size: 24px; opacity: 0.9; }
+        .play-icon { position: absolute; color: white; font-size: 22px; opacity: 0.9; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
 
-        /* Judul Full (Tanpa Batasan) */
+        /* Card Body: Area Judul */
         .card-body { 
-            padding: 10px 5px; 
+            padding: 8px 5px; 
             flex-grow: 1; 
             display: flex; 
-            flex-direction: column;
-            justify-content: flex-start; /* Judul mulai dari atas */
+            align-items: center; /* Judul rata tengah secara vertikal */
+            justify-content: center;
             background: #fff;
         }
+
+        /* Judul Full (Anti Terpotong) */
         .card-title { 
-            font-size: 11px; 
-            font-weight: 700; 
-            line-height: 1.4; 
+            font-size: 10.5px; 
+            font-weight: bold; 
+            line-height: 1.3; 
             color: #222; 
             text-align: center; 
-            /* Menghapus semua limitasi */
             display: block; 
             overflow: visible; 
             white-space: normal; 
-            word-wrap: break-word;
+            word-wrap: break-word; /* Memastikan kata panjang tidak keluar kotak */
         }
 
-        /* Modal View */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 15px; }
+        /* Modal Full Content */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 15px; }
         .modal-content { background: white; width: 100%; max-width: 500px; max-height: 85vh; border-radius: 15px; overflow-y: auto; padding: 20px; position: relative; box-sizing: border-box; }
-        .close-modal { position: sticky; top: 0; float: right; background: #eee; border: none; padding: 10px; border-radius: 50%; font-weight: bold; cursor: pointer; }
-        .modal-body { line-height: 1.8; font-size: 15px; margin-top: 15px; white-space: pre-wrap; color: #444; }
+        .close-modal { position: sticky; top: 0; float: right; background: #f0f0f0; border: none; padding: 10px; border-radius: 50%; font-weight: bold; cursor: pointer; }
+        
+        .modal-body { 
+            line-height: 1.7; 
+            font-size: 15px; 
+            margin-top: 15px; 
+            white-space: pre-wrap; /* Menjaga format Enter/Paragraf dari Sheets */
+            color: #444; 
+        }
 
-        .loading { text-align: center; padding: 50px; color: #888; }
+        .loading { text-align: center; padding: 50px; color: #888; font-weight: bold; }
         .hide { display: none; }
     </style>
 </head>
@@ -90,7 +100,7 @@
 </nav>
 
 <div class="container">
-    <div id="loader" class="loading">Sinkronisasi Data...</div>
+    <div id="loader" class="loading">Menghubungkan ke Database Sparepart...</div>
 
     <section id="sec-video" class="hide">
         <h2>📽️ VIDEO TUTORIAL</h2>
@@ -103,6 +113,7 @@
     </section>
 </div>
 
+<!-- Modal -->
 <div id="modal" class="modal" onclick="if(event.target == this) closeModal()">
     <div class="modal-content">
         <button class="close-modal" onclick="closeModal()">✕</button>
@@ -118,6 +129,8 @@
         try {
             const response = await fetch(CSV_URL);
             const csvText = await response.text();
+            
+            // Parsing Baris (Menangani koma dalam kutipan agar artikel tidak berantakan)
             const rows = csvText.split(/\r?\n/).slice(1);
             let vHtml = "", aHtml = "";
 
@@ -132,17 +145,19 @@
                     judul: clean(cols[1]),
                     isi: clean(cols[2]),
                     link: clean(cols[3]),
-                    tgl: clean(cols[4]) || ""
+                    tgl: clean(cols[4]) || "",
+                    kat: clean(cols[5]) || ""
                 };
                 database.push(item);
 
+                // Template Card
                 const cardHtml = `
                     <div class="card" onclick="openContent(${index})">
                         <div class="thumb" ${item.tipe === 'artikel' ? 'style="background:var(--primary)"' : ''}>
                             ${item.tipe === 'video' ? 
-                                `<img src="https://img.youtube.com/vi/${item.link.split('v=')[1]?.split('&')[0] || item.link.split('/').pop()}/mqdefault.jpg">
+                                `<img src="https://img.youtube.com/vi/${item.link.split('embed/')[1] || item.link.split('/').pop()}/mqdefault.jpg" onerror="this.src='https://placehold.co/200x150?text=LED+Video'">
                                  <span class="play-icon">▶</span>` : 
-                                `<span style="font-size:30px; color:white;">📄</span>`
+                                `<span style="font-size:28px; color:white;">📄</span>`
                             }
                         </div>
                         <div class="card-body">
@@ -151,31 +166,50 @@
                     </div>`;
 
                 if(item.tipe === 'video') vHtml += cardHtml;
-                else aHtml += cardHtml;
+                else if(item.tipe === 'artikel') aHtml += cardHtml;
             });
 
             document.getElementById('loader').classList.add('hide');
-            if(vHtml) { document.getElementById('grid-video').innerHTML = vHtml; document.getElementById('sec-video').classList.remove('hide'); }
-            if(aHtml) { document.getElementById('grid-artikel').innerHTML = aHtml; document.getElementById('sec-artikel').classList.remove('hide'); }
+            if(vHtml) { 
+                document.getElementById('grid-video').innerHTML = vHtml; 
+                document.getElementById('sec-video').classList.remove('hide'); 
+            }
+            if(aHtml) { 
+                document.getElementById('grid-artikel').innerHTML = aHtml; 
+                document.getElementById('sec-artikel').classList.remove('hide'); 
+            }
         } catch (e) {
-            document.getElementById('loader').innerText = "Gagal memuat. Pastikan Sheet dipublish.";
+            document.getElementById('loader').innerText = "Gagal memuat. Pastikan Google Sheet sudah di-Publish ke Web.";
         }
     }
 
     function openContent(id) {
         const item = database[id];
         const ui = document.getElementById('modal-ui');
+        
+        // Tampilan Full Video
         if(item.tipe === 'video') {
-            const embed = item.link.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/");
+            const embed = item.link.includes('embed') ? item.link : item.link.replace("watch?v=", "embed/");
             ui.innerHTML = `
                 <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;background:#000;">
                     <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" src="${embed}?autoplay=1" allowfullscreen></iframe>
                 </div>
-                <h3 style="margin-top:15px;">${item.judul}</h3>
+                <h3 style="margin-top:15px; color:var(--primary);">${item.judul}</h3>
+                <div style="font-size:12px; color:#999; margin-bottom:10px;">Kategori: ${item.kat} | ${item.tgl}</div>
                 <div class="modal-body">${item.isi}</div>`;
-        } else {
-            ui.innerHTML = `<h2 style="color:var(--primary);">${item.judul}</h2><div class="modal-body">${item.isi}</div>`;
+        } 
+        // Tampilan Full Artikel
+        else {
+            ui.innerHTML = `
+                <h2 style="color:var(--primary); font-size:18px; line-height:1.4;">${item.judul}</h2>
+                <div style="display:flex; justify-content:space-between; font-size:12px; color:#999;">
+                    <span>📅 ${item.tgl}</span>
+                    <span style="background:#e0f7fa; color:#00838f; padding:2px 8px; border-radius:5px;">${item.kat}</span>
+                </div>
+                <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+                <div class="modal-body">${item.isi}</div>`;
         }
+        
         document.getElementById('modal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
@@ -183,6 +217,7 @@
     function closeModal() {
         document.getElementById('modal').style.display = 'none';
         document.body.style.overflow = 'auto';
+        document.getElementById('modal-ui').innerHTML = '';
     }
 
     window.onload = loadData;
