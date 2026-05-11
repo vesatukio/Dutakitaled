@@ -174,18 +174,24 @@
 
 <!-- BOTTOM NAVIGATION -->
 <nav class="bottom-nav">
-    <a href="#" class="nav-item active" onclick="location.reload()">
+    <!-- Tombol Home -->
+    <a href="index.html" class="nav-item active">
         <span>🏠</span><span>Home</span>
     </a>
+
+    <!-- Tombol Scan QRIS -->
     <div class="qris-wrapper">
         <button class="btn-qris" onclick="startScanner()">📷</button>
         <div style="text-align: center; font-size: 10px; font-weight: bold; margin-top: 4px; color: var(--primary);">SCAN</div>
     </div>
-    <a href="#" class="nav-item" onclick="bukaPromo()">
+
+    <!-- Tombol Panduan (Link Terpasang) -->
+    <a href="https://vesatukio.github.io/jualled/panduan" class="nav-item">
         <span id="badge-promo" class="badge-notif">0</span>
         <span>🎥</span><span>Panduan</span>
     </a>
 </nav>
+
 
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyhgdk0elMuqM4-00OIR8zbUqp-k80RnbuYyPDDqGHsEk7aSCg60kgT5HTYL_hIVSDc/exec";
