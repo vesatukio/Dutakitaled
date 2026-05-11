@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Duta Terang LED</title>
-    
+    <!-- Meta Tags Agar Link Muncul Gambar di Sosmed -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Duta Terang LED | Solusi Sparepart Lampu & Audio">
+<meta property="og:description" content="Sedia modul LED AC, Driver, & Audio terlengkap. Hemat biaya servis, kualitas terjamin!">
+<meta property="og:image" content="https://vesatukio.github.io/jualled/icon.png"> 
+<meta property="og:url" content="https://vesatukio.github.io/jualled/">
+<meta name="theme-color" content="#00bcd4">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-7H75Z5DYFZ"></script>
     <script>
@@ -68,6 +74,40 @@
         
         #btn-install-float { position: fixed; right: 0; top: 40%; background: var(--pink); color: white; border: none; padding: 10px 5px; border-radius: 10px 0 0 10px; font-size: 11px; z-index: 8500; display: none; flex-direction: column; cursor: pointer; }
         .hide { display: none !important; }
+        /* Tombol Share di setiap produk */
+.btn-share-prod { 
+    position: absolute; 
+    top: 8px; 
+    left: 8px; 
+    background: rgba(255,255,255,0.9); 
+    border: none; 
+    border-radius: 50%; 
+    width: 32px; 
+    height: 32px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    cursor: pointer; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+    z-index: 20; 
+    font-size: 16px; 
+}
+.btn-share-prod:active { transform: scale(1.2); }
+
+/* Perbaikan Label Habis agar lebih jelas */
+.status-habis {
+    position: absolute; 
+    inset: 0; 
+    background: rgba(255,255,255,0.7); 
+    color: var(--danger); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-weight: 900; 
+    z-index: 10; 
+    border-radius: 10px; 
+    pointer-events: none;
+}
     </style>
 </head>
 <body>
@@ -226,20 +266,25 @@
             const hrgFix = p.harga - (p.harga * disc / 100);
             const isHabis = p.stok <= 0;
 
-            html += `
-            <div class="card" data-category="${(p.kategori||'').toLowerCase()}">
-                ${isHabis ? '<div style="position:absolute; inset:0; background:rgba(255,255,255,0.7); color:red; display:flex; align-items:center; justify-content:center; font-weight:900; z-index:10; border-radius:10px;">HABIS</div>' : ''}
-                ${disc > 0 && !isHabis ? `<div style="position:absolute; top:5px; right:5px; background:var(--pink); color:white; font-size:10px; font-weight:bold; padding:2px 6px; border-radius:5px; z-index:5;">-${disc}%</div>` : ''}
-                <img src="${p.gambar || 'https://via.placeholder.com/150'}" onclick="openZoom('${p.gambar}')">
-                <div class="product-name">${p.nama}</div>
-                ${disc > 0 ? `<div style="text-decoration:line-through; color:var(--blue-old); font-size:10px;">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>` : '<div style="height:12px;"></div>'}
-                <div class="price-new">Rp ${hrgFix.toLocaleString('id-ID')}</div>
-                <div class="qty-wrapper">
-                    <button onclick="changeQty('${p.id}', -1, ${hrgFix}, '${p.nama}')" ${isHabis?'disabled':''}>-</button>
-                    <span id="qty-${p.id}">0</span>
-                    <button onclick="changeQty('${p.id}', 1, ${hrgFix}, '${p.nama}')" ${isHabis?'disabled':''}>+</button>
-                </div>
-            </div>`;
+            // Ganti bagian di dalam perulangan produk di fungsi render()
+html += `
+<div class="card" data-category="${(p.kategori||'').toLowerCase()}">
+    ${isHabis ? '<div class="status-habis">HABIS</div>' : ''}
+    
+    <!-- TOMBOL SHARE PRODUK -->
+    <button class="btn-share-prod" onclick="shareProduk('${p.nama}', ${hrgFix})">📲</button>
+
+    ${disc > 0 && !isHabis ? `<div style="position:absolute; top:5px; right:5px; background:var(--pink); color:white; font-size:10px; font-weight:bold; padding:2px 6px; border-radius:5px; z-index:5;">-${disc}%</div>` : ''}
+    <img src="${p.gambar || 'https://via.placeholder.com/150'}" onclick="openZoom('${p.gambar}')">
+    <div class="product-name">${p.nama}</div>
+    ${disc > 0 ? `<div style="text-decoration:line-through; color:var(--blue-old); font-size:10px;">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>` : '<div style="height:12px;"></div>'}
+    <div class="price-new">Rp ${hrgFix.toLocaleString('id-ID')}</div>
+    <div class="qty-wrapper">
+        <button onclick="changeQty('${p.id}', -1, ${hrgFix}, '${p.nama}')" ${isHabis?'disabled':''}>-</button>
+        <span id="qty-${p.id}">0</span>
+        <button onclick="changeQty('${p.id}', 1, ${hrgFix}, '${p.nama}')" ${isHabis?'disabled':''}>+</button>
+    </div>
+</div>`;
         });
         document.getElementById("list").innerHTML = html;
         
@@ -330,6 +375,21 @@
             closeModal();
         } else { alert('Gunakan menu browser untuk install.'); closeModal(); }
     }
+    function shareProduk(nama, harga) {
+    const text = `💡 *REKOMENDASI SPAREPART LED*\n\nProduk: ${nama}\nHarga: Rp ${harga.toLocaleString('id-ID')}\n\nSolusi hemat servis lampu sendiri. Cek stok lengkap & belanja di katalog Duta Terang LED:\nhttps://vesatukio.github.io/jualled/`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'Duta Terang LED',
+            text: text,
+            url: 'https://vesatukio.github.io/jualled/'
+        }).catch(err => console.log('Share gagal', err));
+    } else {
+        // Jika di PC/browser lama, buka WhatsApp otomatis
+        const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+        window.open(waUrl, '_blank');
+    }
+}
 </script>
 </body>
 </html>
