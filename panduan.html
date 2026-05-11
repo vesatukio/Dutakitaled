@@ -3,147 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Katalog Grid 3 Kolom</title>
+    <title>Edukasi Duta Terang</title>
     <style>
-        /* Pengaturan Dasar */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 20px;
-        }
+        :root { --primary: #00bcd4; --bg: #f4f7f6; }
+        body { font-family: sans-serif; margin: 0; background: var(--bg); padding-bottom: 50px; }
+        
+        /* Navigasi */
+        .nav { background: #fff; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .nav a { text-decoration: none; color: var(--primary); font-weight: bold; }
 
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-        }
+        .container { max-width: 1100px; margin: auto; padding: 20px; }
+        h2 { border-left: 5px solid var(--primary); padding-left: 10px; margin-top: 40px; }
 
-        /* Container Utama Grid */
-        .grid-container {
-            display: grid;
-            /* Membuat 3 kolom dengan ukuran yang sama */
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 20px; /* Jarak antar kartu */
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        /* Grid System 3 Kolom */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 
-        /* Desain Kartu (Card) */
-        .card {
-            background-color: #fff;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
+        /* Video Card */
+        .v-card { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .v-wrap { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
+        .v-wrap iframe { position: absolute; top:0; left:0; width:100%; height:100%; border:0; }
+        .v-info { padding: 12px; font-size: 14px; font-weight: bold; }
 
-        .card:hover {
-            transform: translateY(-5px);
-        }
+        /* Artikel Card */
+        .a-card { background: #fff; padding: 20px; border-radius: 10px; border-top: 4px solid var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .a-card h3 { margin-top: 0; font-size: 16px; }
+        .a-card p { font-size: 13px; color: #666; line-height: 1.5; }
 
-        .card-image {
-            width: 100%;
-            height: 200px;
-            background-color: #e0e0e0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #999;
-        }
-
-        .card-content {
-            padding: 20px;
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #222;
-        }
-
-        .card-text {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.6;
-        }
-
-        /* RESPONSIVE: Mengubah grid menjadi 1 atau 2 kolom di layar kecil */
-        @media (max-width: 992px) {
-            .grid-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .grid-container {
-                grid-template-columns: 1fr;
-            }
-        }
+        @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <h2>Katalog Sparepart LED</h2>
+<div class="nav">
+    <a href="index.html">⬅️ Kembali ke Beranda</a>
+</div>
 
-    <div class="grid-container">
-        <!-- Kartu 1 -->
-        <div class="card">
-            <div class="card-image">FOTO PRODUK</div>
-            <div class="card-content">
-                <div class="card-title">Driver LED AC 12W</div>
-                <p class="card-text">Komponen berkualitas tinggi untuk perbaikan lampu LED rumahan. Tahan panas dan awet.</p>
-            </div>
-        </div>
+<div class="container">
+    <h2>📽️ Video Tutorial</h2>
+    <div id="video-grid" class="grid"><p>Memuat video...</p></div>
 
-        <!-- Kartu 2 -->
-        <div class="card">
-            <div class="card-image">FOTO PRODUK</div>
-            <div class="card-content">
-                <div class="card-title">PCB Modul 18W</div>
-                <p class="card-text">Cahaya putih terang (Cool Daylight) dengan susunan chip LED terbaru untuk efisiensi daya.</p>
-            </div>
-        </div>
+    <h2>📖 Artikel Terbaru</h2>
+    <div id="article-grid" class="grid"><p>Memuat artikel...</p></div>
+</div>
 
-        <!-- Kartu 3 -->
-        <div class="card">
-            <div class="card-image">FOTO PRODUK</div>
-            <div class="card-content">
-                <div class="card-title">Casing Lampu Bulat</div>
-                <p class="card-text">Material plastik PBT tahan api, cocok untuk rakitan lampu LED hemat energi.</p>
-            </div>
-        </div>
+<script>
+    const SCRIPT_URL = "URL_DEPLOYMENT_ANDA_DI_SINI";
 
-        <!-- Kartu 4 -->
-        <div class="card">
-            <div class="card-image">FOTO PRODUK</div>
-            <div class="card-content">
-                <div class="card-title">Kabel AC Steker</div>
-                <p class="card-text">Kabel input listrik dengan standar keamanan tinggi untuk berbagai perangkat elektronik.</p>
-            </div>
-        </div>
+    async function loadData() {
+        try {
+            const res = await fetch(SCRIPT_URL);
+            const data = await res.json();
+            
+            let vHtml = "", aHtml = "";
 
-        <!-- Kartu 5 -->
-        <div class="card">
-            <div class="card-image">FOTO PRODUK</div>
-            <div class="card-content">
-                <div class="card-title">Pendingin Aluminium</div>
-                <p class="card-text">Heatsink tambahan untuk menjaga suhu chip LED agar tidak cepat putus.</p>
-            </div>
-        </div>
+            data.forEach(item => {
+                if(item.tipe === 'video') {
+                    vHtml += `
+                        <div class="v-card">
+                            <div class="v-wrap"><iframe src="${item.link_media}" allowfullscreen></iframe></div>
+                            <div class="v-info">${item.judul}</div>
+                        </div>`;
+                } else {
+                    aHtml += `
+                        <div class="a-card">
+                            <h3>${item.judul}</h3>
+                            <p>${item.isi}</p>
+                            <small style="color:#999">${item.tanggal}</small>
+                        </div>`;
+                }
+            });
 
-        <!-- Kartu 6 -->
-        <div class="card">
-            <div class="card-image">FOTO PRODUK</div>
-            <div class="card-content">
-                <div class="card-title">Lem Silikon Gasket</div>
-                <p class="card-text">Perekat khusus tahan panas untuk menempelkan PCB ke pendingin aluminium.</p>
-            </div>
-        </div>
-    </div>
+            document.getElementById('video-grid').innerHTML = vHtml || "<p>Belum ada video.</p>";
+            document.getElementById('article-grid').innerHTML = aHtml || "<p>Belum ada artikel.</p>";
+
+        } catch (e) {
+            document.getElementById('video-grid').innerHTML = "Gagal memuat data.";
+        }
+    }
+
+    loadData();
+</script>
 
 </body>
 </html>
