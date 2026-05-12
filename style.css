@@ -65,7 +65,28 @@ header { background: var(--primary); color: #fff; padding: 12px 15px; display: f
 #btn-install-float { position: fixed; right: 0; top: 40%; background: var(--pink); color: white; border: none; padding: 10px 5px; border-radius: 10px 0 0 10px; font-size: 11px; z-index: 8500; display: none; flex-direction: column; cursor: pointer; }
 .hide { display: none !important; }
 
-.btn-share-prod { position: absolute; top: 8px; left: 8px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 20; font-size: 16px; }
-.btn-share-prod:active { transform: scale(1.2); }
+..btn-share-prod {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(255,255,255,0.85); /* Putih transparan */
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20;
+    font-size: 18px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.btn-share-prod:active {
+    transform: scale(1.2);
+    background: var(--primary);
+}
 
 .status-habis { position: absolute; inset: 0; background: rgba(255,255,255,0.7); color: var(--danger); display: flex; align-items: center; justify-content: center; font-weight: 900; z-index: 10; border-radius: 10px; pointer-events: none; }
