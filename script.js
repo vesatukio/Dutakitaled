@@ -60,8 +60,7 @@ function render() {
         const hrgFix = p.harga - (p.harga * disc / 100);
         const isHabis = p.stok <= 0;
 
-        html += `
-        html += `
+       html += `
 <div class="card" data-category="${(p.kategori||'').toLowerCase()}">
     ${isHabis ? '<div class="status-habis">HABIS</div>' : ''}
     
@@ -183,7 +182,7 @@ async function actionInstall() {
 }
 
 function shareProduk(nama, harga) {
-    const urlToko = "https://vesatukio.github.io/jualled/";
+    const urlToko = `https://vesatukio.github.io/jualled/?item=${encodeURIComponent(nama)}`;
     const hargaIDR = "Rp " + harga.toLocaleString('id-ID');
 
     // Koleksi kalimat Soft-Selling
