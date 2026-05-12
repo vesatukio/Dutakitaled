@@ -61,20 +61,36 @@ function render() {
         const isHabis = p.stok <= 0;
 
         html += `
-        <div class="card" data-category="${(p.kategori||'').toLowerCase()}">
-            ${isHabis ? '<div class="status-habis">HABIS</div>' : ''}
-            <button class="btn-share-prod" onclick="shareProduk('${p.nama}', ${hrgFix})">📲</button>
-            ${disc > 0 && !isHabis ? `<div style="position:absolute; top:5px; right:5px; background:var(--pink); color:white; font-size:10px; font-weight:bold; padding:2px 6px; border-radius:5px; z-index:5;">-${disc}%</div>` : ''}
-            <img src="${p.gambar || 'https://via.placeholder.com/150'}" onclick="openZoom('${p.gambar}')">
-            <div class="product-name">${p.nama}</div>
-            ${disc > 0 ? `<div style="text-decoration:line-through; color:var(--blue-old); font-size:10px;">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>` : '<div style="height:12px;"></div>'}
-            <div class="price-new">Rp ${hrgFix.toLocaleString('id-ID')}</div>
-            <div class="qty-wrapper">
-                <button onclick="changeQty('${p.id}', -1, ${hrgFix}, '${p.nama}')" ${isHabis?'disabled':''}>-</button>
-                <span id="qty-${p.id}">0</span>
-                <button onclick="changeQty('${p.id}', 1, ${hrgFix}, '${p.nama}')" ${isHabis?'disabled':''}>+</button>
-            </div>
-        </div>`;
+        html += `
+<div class="card" data-category="${(p.kategori||'').toLowerCase()}">
+    ${isHabis ? '<div class="status-habis">HABIS</div>' : ''}
+    
+    <!-- Tombol Share Pojok Kanan Atas (Menyatu) -->
+    <button class="btn-share-prod" onclick="shareProduk('${p.nama}', ${hrgFix})" title="Bagikan Produk">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px;">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+            <polyline points="16 6 12 2 8 6"></polyline>
+            <line x1="12" y1="2" x2="12" y2="15"></line>
+        </svg>
+    </button>
+
+    <!-- Label Diskon (Pindah ke kiri jika share di kanan) -->
+    ${disc > 0 && !isHabis ? `<div style="position:absolute; top:10px; left:10px; background:var(--pink); color:white; font-size:10px; font-weight:bold; padding:3px 8px; border-radius:5px; z-index:5; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.2);">-${disc}%</div>` : ''}
+    
+    <img src="${p.gambar || 'https://via.placeholder.com/150'}" onclick="openZoom('${p.gambar}')">
+    
+    <div class="product-name">${p.nama}</div>
+    
+    ${disc > 0 ? `<div style="text-decoration:line-through; color:#999; font-size:10px; margin-top:5px;">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>` : '<div style="height:15px;"></div>'}
+    
+    <div class="price-new">Rp ${hrgFix.toLocaleString('id-ID')}</div>
+    
+    <div class="qty-wrapper">
+        <button onclick="changeQty('${p.id}', -1, ${hrgFix}, '${p.nama}')" ${isHabis?'disabled':''}>-</button>
+        <span id="qty-${p.id}">0</span>
+        <button onclick="changeQty('${p.id}', 1, ${hrgFix}, '${p.nama}')" ${isHabis?'disabled':''}>+</button>
+    </div>
+</div>`;
     });
     document.getElementById("list").innerHTML = html;
     
