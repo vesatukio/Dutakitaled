@@ -1,5 +1,8 @@
 /* script.js */
-const API_URL = "https://script.google.com/macros/s/AKfycbyhgdk0elMuqM4-00OIR8zbUqp-k80RnbuYyPDDqGHsEk7aSCg60kgT5HTYL_hIVSDc/exec";
+// Dua URL Google Sheets CSV Baru Anda
+const URL_PRODUK1 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRAd4pEtxlxD_EaVYx4L_vhhz0U3WmPYNxOXENt1NiTEGRZjpoIECzIRQSQDYhmjGQQYGN6VaMUuQ-C/pub?gid=0&single=true&output=csv";
+const URL_PRODUK2 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRAd4pEtxlxD_EaVYx4L_vhhz0U3WmPYNxOXENt1NiTEGRZjpoIECzIRQSQDYhmjGQQYGN6VaMUuQ-C/pub?gid=971357804&single=true&output=csv";
+
 const WA_NUMBER = "6288224166270";
 let produk = [], order = {}, deferredPrompt, streamPointer = null;
 let pesanPromoTerbaru = "Cek video panduan kami di YouTube!";
@@ -11,14 +14,49 @@ window.onload = () => {
     }
 };
 
+// Fungsi pembantu untuk mengubah text CSV dari Google Sheet menjadi Array Object / JSON
+function parseCSV(text) {
+    const lines = text.split("\n").map(line => line.trim()).filter(line => line);
+    if (lines.length === 0) return [];
+    
+    // Mengambil nama kolom/header di baris pertama spreadsheet
+    const headers = lines[0].split(",").map(h => h.trim().replace(/^"|"$/g, '').toLowerCase());
+    
+    return lines.slice(1).map(line => {
+        // Regex untuk mengatasi koma di dalam tanda kutip jika ada teks deskripsi
+        const matches = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(",");
+        const obj = {};
+        headers.forEach((header, index) => {
+            let val = matches[index] ? matches[index].trim().replace(/^"|"$/g, '') : "";
+            obj[header] = val;
+        });
+        return obj;
+    });
+}
+
 async function load() {
     try {
-        const res = await fetch(API_URL);
-        produk = await res.json();
+        // Mengambil data dari kedua sheet secara bersamaan
+        const [res1, res2] = await Promise.all([
+            fetch(URL_PRODUK1),
+            fetch(URL_PRODUK2)
+        ]);
+        
+        const text1 = await res1.text();
+        const text2 = await res2.text();
+        
+        // Konversi hasil CSV ke objek JSON
+        const produk1 = parseCSV(text1);
+        const produk2 = parseCSV(text2);
+        
+        // Gabungkan produk dari sheet 1 dan sheet 2 ke dalam satu array global
+        produk = [...produk1, ...produk2];
+        
         prosesUpdateSistem(produk);
         render();
         autoFillForm();
     } catch (e) { 
+        console.error(e);
         document.getElementById("list").innerHTML = "<p style='grid-column: span 2; text-align:center;'>Koneksi gagal.</p>"; 
     }
 }
@@ -27,7 +65,7 @@ function prosesUpdateSistem(data) {
     const memori = JSON.parse(localStorage.getItem('duta_terang_state')) || { totalHarga: 0, infoTeks: "" };
     let currentTotal = 0, currentInfo = "";
     data.forEach(p => {
-        currentTotal += Number(p.harga);
+        currentTotal += Number(p.harga || 0);
         if (p.info && !currentInfo) currentInfo = p.info;
     });
     if (currentInfo !== memori.infoTeks || currentTotal !== memori.totalHarga) {
@@ -57,8 +95,9 @@ function render() {
         if (!p.nama) return;
         kategori.add(p.kategori || "Lainnya");
         const disc = Number(p.diskon) || 0;
-        const hrgFix = p.harga - (p.harga * disc / 100);
-        const isHabis = p.stok <= 0;
+        const hargaAsli = Number(p.harga) || 0;
+        const hrgFix = hargaAsli - (hargaAsli * disc / 100);
+        const isHabis = Number(p.stok) <= 0;
 
         html += `
 <div class="card" data-category="${(p.kategori||'').toLowerCase()}">
@@ -80,7 +119,7 @@ function render() {
     
     <div class="product-name">${p.nama}</div>
     
-    ${disc > 0 ? `<div style="text-decoration:line-through; color:#999; font-size:10px; margin-top:5px;">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>` : '<div style="height:15px;"></div>'}
+    ${disc > 0 ? `<div style="text-decoration:line-through; color:#999; font-size:10px; margin-top:5px;">Rp ${hargaAsli.toLocaleString('id-ID')}</div>` : '<div style="height:15px;"></div>'}
     
     <div class="price-new">Rp ${hrgFix.toLocaleString('id-ID')}</div>
     
@@ -185,7 +224,6 @@ function shareProduk(nama, harga) {
     const urlToko = `https://vesatukio.github.io/jualled/?item=${encodeURIComponent(nama)}`;
     const hargaIDR = "Rp " + harga.toLocaleString('id-ID');
 
-    // Koleksi kalimat Soft-Selling
     const listPesan = [
         `Lampu mati jangan langsung dibuang! 💡 Ganti aja modulnya pakai *${nama}*. Cuma ${hargaIDR} di Duta Terang LED. Cek stoknya:`,
         `Solusi hemat servis lampu sendiri. Ready *${nama}* kualitas mantap harga teknisi (${hargaIDR}). Intip katalognya yuk:`,
@@ -193,18 +231,15 @@ function shareProduk(nama, harga) {
         `Benerin lampu jadi lebih murah daripada beli baru. Pakai *${nama}* ini beres! Harga cuma ${hargaIDR}:`
     ];
 
-    // Pilih pesan secara acak
     const pesanRandom = listPesan[Math.floor(Math.random() * listPesan.length)];
     const textFinal = `${pesanRandom}\n\n👉 ${urlToko}`;
 
-    // Jalankan fitur Share
     if (navigator.share) {
         navigator.share({
             title: 'Duta Terang LED',
             text: textFinal,
         }).catch(err => console.log('Batal share'));
     } else {
-        // Jika buka di Laptop (Fallback ke WhatsApp)
         const waUrl = `https://wa.me/?text=${encodeURIComponent(textFinal)}`;
         window.open(waUrl, '_blank');
     }
