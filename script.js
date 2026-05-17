@@ -43,6 +43,7 @@ function parseCSV(text) {
 
     const headers = splitCSVLine(lines[0], pemisah).map(h => h.toLowerCase().replace(/\s/g, ''));
     
+    // Mendaftarkan indeks untuk kolom gambar1, gambar2, dan gambar3
     const idx = {
         id: headers.indexOf('id'),
         nama: headers.indexOf('nama'),
@@ -50,7 +51,9 @@ function parseCSV(text) {
         harga: headers.indexOf('harga'),
         diskon: headers.indexOf('diskon'),
         stok: headers.indexOf('stok'),
-        gambar: headers.indexOf('gambar'),
+        gambar1: headers.indexOf('gambar1'),
+        gambar2: headers.indexOf('gambar2'),
+        gambar3: headers.indexOf('gambar3'),
         info: headers.indexOf('info')
     };
 
@@ -64,12 +67,13 @@ function parseCSV(text) {
             harga: idx.harga !== -1 ? columns[idx.harga] : "0",
             diskon: idx.diskon !== -1 ? columns[idx.diskon] : "0",
             stok: idx.stok !== -1 ? columns[idx.stok] : "0",
-            gambar: idx.gambar !== -1 ? columns[idx.gambar] : "",
+            gambar1: idx.gambar1 !== -1 ? columns[idx.gambar1] : "",
+            gambar2: idx.gambar2 !== -1 ? columns[idx.gambar2] : "",
+            gambar3: idx.gambar3 !== -1 ? columns[idx.gambar3] : "",
             info: idx.info !== -1 ? columns[idx.info] : ""
         };
     });
 }
-
 async function load() {
     try {
         const [res1, res2] = await Promise.all([
@@ -125,7 +129,6 @@ function bukaPromo() {
 function render() {
     let html = "", kategori = new Set();
     
-    // Perulangan produk dengan index tambahan (indexProduk) untuk penanda slider gambar
     produk.forEach((p, indexProduk) => {
         if (!p.nama) return;
         kategori.add(p.kategori || "Lainnya");
@@ -134,11 +137,14 @@ function render() {
         const hrgFix = hargaAsli - (hargaAsli * disc / 100);
         const isHabis = Number(p.stok) <= 0;
 
-        // 1. MEMPROSES MULTI-GAMBAR (Maksimal 3 Gambar)
-        // Memecah teks kolom gambar berdasarkan karakter "|" dan mengambil maksimal 3 item
-        let daftarGambar = p.gambar ? p.gambar.split("|").map(g => g.trim()).filter(g => g) : [];
+        // 1. MENGGABUNGKAN KOLOM GAMBAR 1, 2, & 3 SECARA OTOMATIS
+        let daftarGambar = [];
+        if (p.gambar1) daftarGambar.push(p.gambar1.trim());
+        if (p.gambar2) daftarGambar.push(p.gambar2.trim());
+        if (p.gambar3) daftarGambar.push(p.gambar3.trim());
+        
+        // Jika semua kolom gambar kosong, pasang gambar placeholder bawaan
         if (daftarGambar.length === 0) daftarGambar = ['https://via.placeholder.com/150'];
-        daftarGambar = daftarGambar.slice(0, 3); // Batasi maksimal 3 gambar
 
         // Membuat elemen HTML untuk masing-masing gambar
         let htmlGambar = "";
@@ -146,7 +152,7 @@ function render() {
             htmlGambar += `<img src="${imgUrl}" class="slide-img prodImg-${indexProduk}" data-index="${indexImg}" style="display: ${indexImg === 0 ? 'block' : 'none'}; width:100%; cursor:pointer;" onclick="openZoom('${imgUrl}')">`;
         });
 
-        // Membuat tombol navigasi panah jika gambar di dalam baris produk tersebut lebih dari satu
+        // Membuat tombol navigasi panah jika gambar yang terisi lebih dari satu kolom
         let tombolNavigasi = "";
         if (daftarGambar.length > 1) {
             tombolNavigasi = `
@@ -191,7 +197,6 @@ function render() {
     });
     document.getElementById("list").innerHTML = html;
     
-    // Pembuatan bar kategori kembali ke bawaan sistem Anda yang lama murni otomatis
     let catHtml = '<button onclick="filter(\'all\', this)" style="background:var(--primary); color:white;">Semua</button>';
     kategori.forEach(k => { catHtml += `<button onclick="filter('${k.toLowerCase()}', this)">${k}</button>`; });
     document.getElementById("cat-bar").innerHTML = catHtml;
