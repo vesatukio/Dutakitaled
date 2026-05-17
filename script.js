@@ -124,7 +124,9 @@ function bukaPromo() {
 
 function render() {
     let html = "", kategori = new Set();
-    produk.forEach(p => {
+    
+    // Perulangan produk dengan index tambahan (indexProduk) untuk penanda slider gambar
+    produk.forEach((p, indexProduk) => {
         if (!p.nama) return;
         kategori.add(p.kategori || "Lainnya");
         const disc = Number(p.diskon) || 0;
@@ -132,11 +134,34 @@ function render() {
         const hrgFix = hargaAsli - (hargaAsli * disc / 100);
         const isHabis = Number(p.stok) <= 0;
 
+        // 1. MEMPROSES MULTI-GAMBAR (Maksimal 3 Gambar)
+        // Memecah teks kolom gambar berdasarkan karakter "|" dan mengambil maksimal 3 item
+        let daftarGambar = p.gambar ? p.gambar.split("|").map(g => g.trim()).filter(g => g) : [];
+        if (daftarGambar.length === 0) daftarGambar = ['https://via.placeholder.com/150'];
+        daftarGambar = daftarGambar.slice(0, 3); // Batasi maksimal 3 gambar
+
+        // Membuat elemen HTML untuk masing-masing gambar
+        let htmlGambar = "";
+        daftarGambar.forEach((imgUrl, indexImg) => {
+            htmlGambar += `<img src="${imgUrl}" class="slide-img prodImg-${indexProduk}" data-index="${indexImg}" style="display: ${indexImg === 0 ? 'block' : 'none'}; width:100%; cursor:pointer;" onclick="openZoom('${imgUrl}')">`;
+        });
+
+        // Membuat tombol navigasi panah jika gambar di dalam baris produk tersebut lebih dari satu
+        let tombolNavigasi = "";
+        if (daftarGambar.length > 1) {
+            tombolNavigasi = `
+                <div class="slider-nav" style="position:absolute; top:45%; width:100%; display:flex; justify-content:space-between; padding:0 5px; box-sizing:border-box; z-index:4; pointer-events:none;">
+                    <button onclick="geserGambar(${indexProduk}, -1, ${daftarGambar.length})" style="pointer-events:auto; background:rgba(0,0,0,0.5); color:white; border:none; border-radius:50%; width:24px; height:24px; font-weight:bold; cursor:pointer; font-size:12px;"><</button>
+                    <button onclick="geserGambar(${indexProduk}, 1, ${daftarGambar.length})" style="pointer-events:auto; background:rgba(0,0,0,0.5); color:white; border:none; border-radius:50%; width:24px; height:24px; font-weight:bold; cursor:pointer; font-size:12px;">></button>
+                </div>
+            `;
+        }
+
         html += `
-<div class="card" data-category="${(p.kategori||'').toLowerCase()}">
+<div class="card" data-category="${(p.kategori||'').toLowerCase()}" style="position:relative;">
     ${isHabis ? '<div class="status-habis">HABIS</div>' : ''}
     
-    <button class="btn-share-prod" onclick="shareProduk('${p.nama}', ${hrgFix})" title="Bagikan Produk" style="left: 10px; right: auto;">
+    <button class="btn-share-prod" onclick="shareProduk('${p.nama}', ${hrgFix})" title="Bagikan Produk" style="left: 10px; right: auto; z-index:5;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px;">
             <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
             <polyline points="16 6 12 2 8 6"></polyline>
@@ -146,7 +171,10 @@ function render() {
 
     ${disc > 0 && !isHabis ? `<div style="position:absolute; top:10px; right:10px; background:var(--pink); color:white; font-size:10px; font-weight:bold; padding:3px 8px; border-radius:5px; z-index:5; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.2);">-${disc}%</div>` : ''}
     
-    <img src="${p.gambar || 'https://via.placeholder.com/150'}" onclick="openZoom('${p.gambar}')">
+    <div class="img-container" style="position:relative; width:100%; overflow:hidden; min-height:150px; display:flex; align-items:center;">
+        ${htmlGambar}
+        ${tombolNavigasi}
+    </div>
     
     <div class="product-name">${p.nama}</div>
     
@@ -163,6 +191,7 @@ function render() {
     });
     document.getElementById("list").innerHTML = html;
     
+    // Pembuatan bar kategori kembali ke bawaan sistem Anda yang lama murni otomatis
     let catHtml = '<button onclick="filter(\'all\', this)" style="background:var(--primary); color:white;">Semua</button>';
     kategori.forEach(k => { catHtml += `<button onclick="filter('${k.toLowerCase()}', this)">${k}</button>`; });
     document.getElementById("cat-bar").innerHTML = catHtml;
@@ -274,4 +303,27 @@ function shareProduk(nama, harga) {
         const waUrl = `https://wa.me/?text=${encodeURIComponent(textFinal)}`;
         window.open(waUrl, '_blank');
     }
+}
+// Fungsi pembantu menangani logika perpindahan gambar slide produk saat diklik panah
+function geserGambar(idProduk, arah, totalGambar) {
+    const elemenGambar = document.querySelectorAll(`.prodImg-${idProduk}`);
+    let indeksSekarang = 0;
+
+    // Cari tahu gambar index ke berapa yang saat ini aktif tampil
+    elemenGambar.forEach((img, index) => {
+        if (img.style.display === 'block') {
+            indeksSekarang = index;
+        }
+    });
+
+    // Sembunyikan gambar aktif saat ini
+    elemenGambar[indeksSekarang].style.display = 'none';
+
+    // Hitung target gambar berikutnya
+    let indeksBaru = indeksSekarang + arah;
+    if (indeksBaru >= totalGambar) indeksBaru = 0; // Balik ke awal jika klik kanan saat mentok
+    if (indeksBaru < 0) indeksBaru = totalGambar - 1; // Balik ke akhir jika klik kiri saat mentok
+
+    // Tampilkan gambar baru
+    elemenGambar[indeksBaru].style.display = 'block';
 }
