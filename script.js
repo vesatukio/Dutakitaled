@@ -1,5 +1,5 @@
 /* script.js */
-// Dua URL Google Sheets CSV Baru Anda
+// URL Google Sheets CSV Baru Anda
 const URL_PRODUK1 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRAd4pEtxlxD_EaVYx4L_vhhz0U3WmPYNxOXENt1NiTEGRZjpoIECzIRQSQDYhmjGQQYGN6VaMUuQ-C/pub?gid=0&single=true&output=csv";
 const URL_PRODUK2 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRAd4pEtxlxD_EaVYx4L_vhhz0U3WmPYNxOXENt1NiTEGRZjpoIECzIRQSQDYhmjGQQYGN6VaMUuQ-C/pub?gid=971357804&single=true&output=csv";
 
@@ -14,56 +14,64 @@ window.onload = () => {
     }
 };
 
-// Fungsi pembantu untuk mengubah text CSV dari Google Sheet menjadi Array Object / JSON
-// Fungsi pembantu baru yang lebih akurat untuk membaca CSV Google Sheet
+// Fungsi pembantu untuk membaca CSV dengan pemisah koma (,) atau titik koma (;) secara otomatis
 function parseCSV(text) {
-    // Memisah baris dan membersihkan spasi/baris kosong
     const lines = text.split(/\r?\n/).map(line => line.trim()).filter(line => line);
     if (lines.length === 0) return [];
     
-    // Ambil header di baris pertama, bersihkan tanda kutip, ubah jadi huruf kecil semua
-    const headers = lines[0].split(",").map(h => h.trim().replace(/^"|"$/g, '').toLowerCase());
+    const barisPertama = lines[0];
+    const pemisah = barisPertama.includes(';') ? ';' : ',';
     
-    return lines.slice(1).map(line => {
-        const obj = {};
-        let currentIdx = 0;
-        
-        // Membaca baris kolom demi kolom dengan aman meskipun ada koma di dalam teks/link
-        headers.forEach((header) => {
-            let val = "";
-            if (line.charAt(currentIdx) === '"') {
-                // Jika data diawali tanda kutip (string aman), cari penutup kutip berikutnya
-                let nextQuote = line.indexOf('"', currentIdx + 1);
-                while (nextQuote !== -1 && line.charAt(nextQuote + 1) === '"') {
-                    nextQuote = line.indexOf('"', nextQuote + 2);
-                }
-                if (nextQuote !== -1) {
-                    val = line.substring(currentIdx + 1, nextQuote).replace(/""/g, '"');
-                    currentIdx = nextQuote + 1;
-                    if (line.charAt(currentIdx) === ',') currentIdx++;
-                } else {
-                    val = line.substring(currentIdx + 1);
-                    currentIdx = line.length;
-                }
+    const splitCSVLine = (line, separator) => {
+        const result = [];
+        let current = "";
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+            let char = line.charAt(i);
+            if (char === '"') {
+                inQuotes = !inQuotes;
+            } else if (char === separator && !inQuotes) {
+                result.push(current.trim().replace(/^"|"$/g, ''));
+                current = "";
             } else {
-                // Jika data biasa tanpa kutip (seperti link gambar atau angka)
-                let nextComma = line.indexOf(',', currentIdx);
-                if (nextComma !== -1) {
-                    val = line.substring(currentIdx, nextComma);
-                    currentIdx = nextComma + 1;
-                } else {
-                    val = line.substring(currentIdx);
-                    currentIdx = line.length;
-                }
+                current += char;
             }
-            obj[header] = val.trim();
-        });
-        return obj;
+        }
+        result.push(current.trim().replace(/^"|"$/g, ''));
+        return result;
+    };
+
+    const headers = splitCSVLine(lines[0], pemisah).map(h => h.toLowerCase().replace(/\s/g, ''));
+    
+    const idx = {
+        id: headers.indexOf('id'),
+        nama: headers.indexOf('nama'),
+        kategori: headers.indexOf('kategori'),
+        harga: headers.indexOf('harga'),
+        diskon: headers.indexOf('diskon'),
+        stok: headers.indexOf('stok'),
+        gambar: headers.indexOf('gambar'),
+        info: headers.indexOf('info')
+    };
+
+    return lines.slice(1).map(line => {
+        const columns = splitCSVLine(line, pemisah);
+        
+        return {
+            id: idx.id !== -1 ? columns[idx.id] : "",
+            nama: idx.nama !== -1 ? columns[idx.nama] : "Tanpa Nama",
+            kategori: idx.kategori !== -1 ? columns[idx.kategori] : "Lainnya",
+            harga: idx.harga !== -1 ? columns[idx.harga] : "0",
+            diskon: idx.diskon !== -1 ? columns[idx.diskon] : "0",
+            stok: idx.stok !== -1 ? columns[idx.stok] : "0",
+            gambar: idx.gambar !== -1 ? columns[idx.gambar] : "",
+            info: idx.info !== -1 ? columns[idx.info] : ""
+        };
     });
 }
+
 async function load() {
     try {
-        // Mengambil data dari kedua sheet secara bersamaan
         const [res1, res2] = await Promise.all([
             fetch(URL_PRODUK1),
             fetch(URL_PRODUK2)
@@ -72,11 +80,9 @@ async function load() {
         const text1 = await res1.text();
         const text2 = await res2.text();
         
-        // Konversi hasil CSV ke objek JSON
         const produk1 = parseCSV(text1);
         const produk2 = parseCSV(text2);
         
-        // Gabungkan produk dari sheet 1 dan sheet 2 ke dalam satu array global
         produk = [...produk1, ...produk2];
         
         prosesUpdateSistem(produk);
@@ -130,7 +136,6 @@ function render() {
 <div class="card" data-category="${(p.kategori||'').toLowerCase()}">
     ${isHabis ? '<div class="status-habis">HABIS</div>' : ''}
     
-    <!-- Tombol Share Pojok Kiri Atas -->
     <button class="btn-share-prod" onclick="shareProduk('${p.nama}', ${hrgFix})" title="Bagikan Produk" style="left: 10px; right: auto;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px;">
             <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
@@ -139,7 +144,6 @@ function render() {
         </svg>
     </button>
 
-    <!-- Label Diskon Pojok Kanan Atas -->
     ${disc > 0 && !isHabis ? `<div style="position:absolute; top:10px; right:10px; background:var(--pink); color:white; font-size:10px; font-weight:bold; padding:3px 8px; border-radius:5px; z-index:5; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.2);">-${disc}%</div>` : ''}
     
     <img src="${p.gambar || 'https://via.placeholder.com/150'}" onclick="openZoom('${p.gambar}')">
